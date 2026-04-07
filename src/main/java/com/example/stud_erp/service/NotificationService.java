@@ -140,8 +140,17 @@ public class NotificationService {
     }
 
     // ✅ PERMANENT DELETE
-    public void deletePermanently(Long id) {
+    public void deletePermanently(Long id){
         notificationRepository.deleteById(id);
+    }
+
+   //  Unarchive
+    public void unarchiveNotification(Long id) {
+        Notification n = notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        n.setIsArchived(false);
+        notificationRepository.save(n);
     }
 }
 
