@@ -138,6 +138,7 @@ public class NotificationController {
         return "Archived successfully";
     }
 
+
     // ✅ NEW
     @GetMapping("/archived/{studentId}")
     public List<Notification> getArchived(@PathVariable Long studentId) {
@@ -149,5 +150,12 @@ public class NotificationController {
     public String delete(@PathVariable Long id) {
         notificationService.deletePermanently(id);
         return "Deleted permanently";
+    }
+// Unarchive
+
+    @PutMapping("/unarchive/{id}")
+    public String unarchive(@PathVariable Long id) {
+        notificationService.unarchiveNotification(id);
+        return "Restored successfully";
     }
 }

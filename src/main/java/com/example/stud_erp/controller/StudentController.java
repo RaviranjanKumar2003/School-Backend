@@ -214,6 +214,31 @@ public ResponseEntity<?> updateStudent(
 
 //=============================================== IMAGE =================================
 
+//    @PostMapping("/image/upload/{id}")
+//    public ResponseEntity<?> uploadStudentImage(
+//            @PathVariable Long id,
+//            @RequestParam("image") MultipartFile image
+//    ) {
+//        try {
+//
+//            Student student = studentService.getById(id)
+//                    .orElseThrow(() -> new RuntimeException("Student not found"));
+//
+//            if (student.getImageUrl() != null) {
+//                imageService.deleteImage(student.getImageUrl());
+//            }
+//
+//            String fileName = imageService.uploadImage(image);
+//            student.setImageUrl(fileName);
+//
+//            return ResponseEntity.ok(studentService.addStudent(student));
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().body("Image upload failed");
+//        }
+//    }
+
+
     @PostMapping("/image/upload/{id}")
     public ResponseEntity<?> uploadStudentImage(
             @PathVariable Long id,
@@ -231,13 +256,12 @@ public ResponseEntity<?> updateStudent(
             String fileName = imageService.uploadImage(image);
             student.setImageUrl(fileName);
 
-            return ResponseEntity.ok(studentService.addStudent(student));
+            return ResponseEntity.ok(studentService.updateStudent(id, student));
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Image upload failed");
         }
     }
-
 
     @GetMapping("/image/get/{id}")
     public void getStudentImage(
