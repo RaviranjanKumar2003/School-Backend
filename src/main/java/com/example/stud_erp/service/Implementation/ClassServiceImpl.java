@@ -31,34 +31,16 @@ public class ClassServiceImpl implements ClassService {
 
         ClassEntity saved = classRepo.save(cls);
 
-        dto.setId(saved.getId());
-        return dto;
+        return convertToDTO(saved); // ✅ better return
     }
 
     // ✅ GET ALL
     @Override
     public List<ClassDTO> getAllClasses() {
-        return classRepo.findAll().stream().map(cls -> {
-            ClassDTO dto = new ClassDTO();
-            dto.setId(cls.getId());
-            dto.setClassName(cls.getClassName());
-
-            if (cls.getSubjects() != null) {
-                dto.setSubjects(
-                        cls.getSubjects()
-                                .stream()
-                                .map(sub -> {
-                                    SubjectDTO s = new SubjectDTO();
-                                    s.setId(sub.getId());
-                                    s.setSubjectName(sub.getSubjectName());
-                                    return s;
-                                })
-                                .collect(Collectors.toList())
-                );
-            }
-
-            return dto;
-        }).collect(Collectors.toList());
+        return classRepo.findAll()
+                .stream()
+                .map(this::convertToDTO) // ✅ reusable method
+                .collect(Collectors.toList());
     }
 
     // ✅ DELETE CLASS
@@ -70,33 +52,67 @@ public class ClassServiceImpl implements ClassService {
     // ✅ ADD SUBJECT
     @Override
     public ClassDTO addSubject(Long classId, String subjectName) {
-        ClassEntity cls = classRepo.findById(classId).orElseThrow();
+
+        ClassEntity cls = classRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
         Subject sub = new Subject();
         sub.setSubjectName(subjectName);
         sub.setClassEntity(cls);
 
+        // ✅ Auto numbering (important)
+        int count = cls.getSubjects() == null ? 0 : cls.getSubjects().size();
+        sub.setNumber(count + 1);
+
         subjectRepo.save(sub);
 
-        return getAllClasses()
-                .stream()
-                .filter(c -> c.getId().equals(classId))
-                .findFirst()
-                .orElse(null);
+        if (cls.getSubjects() != null) {
+            cls.getSubjects().add(sub);
+        }
+
+        return convertToDTO(cls); // ✅ direct return (fast)
     }
 
     // ✅ DELETE SUBJECT
     @Override
     public void deleteSubject(Long classId, String subjectName) {
-        ClassEntity cls = classRepo.findById(classId).orElseThrow();
 
-        List<Subject> updated =
-                cls.getSubjects()
-                        .stream()
-                        .filter(s -> !s.getSubjectName().equals(subjectName))
-                        .collect(Collectors.toList());
+        ClassEntity cls = classRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
-        cls.setSubjects(updated);
+        if (cls.getSubjects() != null) {
+            cls.getSubjects().removeIf(
+                    s -> s.getSubjectName().equalsIgnoreCase(subjectName)
+            );
+        }
+
         classRepo.save(cls);
+    }
+
+    // ✅ COMMON DTO MAPPER (MOST IMPORTANT)
+    private ClassDTO convertToDTO(ClassEntity cls) {
+
+        ClassDTO dto = new ClassDTO();
+        dto.setId(cls.getId());
+        dto.setClassName(cls.getClassName());
+
+        if (cls.getSubjects() != null) {
+
+            List<SubjectDTO> subjectList = cls.getSubjects()
+                    .stream()
+                    .map(sub -> {
+                        SubjectDTO s = new SubjectDTO();
+                        s.setId(sub.getId());
+                        s.setSubjectName(sub.getSubjectName());
+                        s.setClassId(cls.getId()); // ✅ important
+                        s.setNumber(sub.getNumber()); // ✅ important
+                        return s;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setSubjects(subjectList);
+        }
+
+        return dto;
     }
 }

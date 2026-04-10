@@ -8,25 +8,24 @@ public class ClassDTO {
     private String className;
     private List<SubjectDTO> subjects;
 
-// GETTERS & SETTERS
     public Long getId() {
         return id;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public List<SubjectDTO> getSubjects() {
-        return subjects;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public List<SubjectDTO> getSubjects() {
+        return subjects;
     }
 
     public void setSubjects(List<SubjectDTO> subjects) {

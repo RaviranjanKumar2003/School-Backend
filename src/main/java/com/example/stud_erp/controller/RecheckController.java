@@ -1,4 +1,3 @@
-
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.RecheckRequest;
@@ -27,16 +26,17 @@ public class RecheckController {
     @Autowired
     private NotificationService notificationService;
 
-    // ✅ 1. STUDENT REQUEST RECHECK (UPDATED 🔥)
+    // ✅ 1. STUDENT REQUEST RECHECK
     @PostMapping("/request")
     public RecheckRequest requestRecheck(@RequestBody RecheckRequest request) {
 
         RecheckRequest saved = recheckService.createRequest(request);
 
-        // 🔔 Notify Admin
+        // 🔔 Notify Admin/Teachers
         NotificationDTO dto = new NotificationDTO();
         dto.setTitle("Recheck Request");
-        dto.setMessage("Student requested recheck for subject: " + request.getSubject());
+        dto.setMessage("Student requested recheck for subjects: "
+                + String.join(", ", request.getSubjects()));
         dto.setRecipientType("ALL_TEACHERS");
         dto.setSender("STUDENT");
 
@@ -55,7 +55,8 @@ public class RecheckController {
         NotificationDTO dto = new NotificationDTO();
         dto.setTitle("Recheck Approved");
         dto.setMessage("Recheck approved for studentId: "
-                + updated.getStudentId() + ", Subject: " + updated.getSubject());
+                + updated.getStudentId()
+                + ", Subjects: " + String.join(", ", updated.getSubjects()));
         dto.setRecipientType("ALL_TEACHERS");
         dto.setSender("ADMIN");
 
@@ -64,7 +65,7 @@ public class RecheckController {
         return updated;
     }
 
-    // ❌ NEW (Reject added 🔥)
+    // ❌ 3. ADMIN REJECT
     @PutMapping("/reject/{id}")
     public RecheckRequest rejectRecheck(@PathVariable Long id) {
 
@@ -83,32 +84,36 @@ public class RecheckController {
         return updated;
     }
 
-    // ✅ 3. TEACHER VIEW APPROVED LIST
+    // ✅ 4. TEACHER VIEW APPROVED LIST
     @GetMapping("/teacher")
     public List<RecheckRequest> getApprovedRequests() {
-        return recheckService.getPendingRequests()
+        return recheckService.getAllRequests()
                 .stream()
-                .filter(r -> r.getStatus().equals("APPROVED"))
+                .filter(r -> "APPROVED".equals(r.getStatus()))
                 .toList();
     }
 
-    // ✅ 4. TEACHER UPDATE MARKS AFTER RECHECK (UPDATED 🔥)
+    // ✅ 5. TEACHER UPDATE MARKS (MULTI SUBJECT 🔥)
     @PutMapping("/update/{id}")
     public String updateAfterRecheck(@PathVariable Long id, @RequestBody Result body) {
 
-        RecheckRequest req = recheckService.approveRequest(id); // ensure exists
+        // 🔍 get request
+        RecheckRequest req = recheckService.getById(id);
 
         int newMarks = body.getMarks();
 
-        // 🔥 update via service (central logic)
-        resultService.updateMarks(req.getStudentId(), req.getSubject(), newMarks);
+        // 🔥 loop all subjects
+        for (String subject : req.getSubjects()) {
+            resultService.updateMarks(req.getStudentId(), subject, newMarks);
+        }
 
-        // 🔥 mark request completed
+        // 🔥 mark completed
         req.setStatus("COMPLETED");
+        recheckService.save(req);
 
-        // 🔔 Notification
+        // 🔔 Notify Student
         NotificationDTO dto = new NotificationDTO();
-        dto.setTitle("Recheck Result");
+        dto.setTitle("Recheck Completed");
         dto.setMessage("Your marks have been updated after recheck");
         dto.setRecipientType("INDIVIDUAL");
         dto.setRecipientId(req.getStudentId());
@@ -119,7 +124,7 @@ public class RecheckController {
         return "Recheck Process Completed ✅";
     }
 
-    // ✅ 5. ADMIN VIEW ALL REQUESTS
+    // ✅ 6. ADMIN VIEW ALL
     @GetMapping("/all")
     public List<RecheckRequest> getAllRequests() {
         return recheckService.getAllRequests();

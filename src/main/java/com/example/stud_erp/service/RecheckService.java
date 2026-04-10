@@ -13,17 +13,21 @@ public class RecheckService {
     @Autowired
     private RecheckRepository recheckRepository;
 
-    // ✅ 1. CREATE REQUEST (Student)
+    // ✅ 1. CREATE REQUEST (MULTI SUBJECT FIXED 🔥)
     public RecheckRequest createRequest(RecheckRequest request) {
 
-        List<RecheckRequest> existing =
-                recheckRepository.findByStudentIdAndSubject(
-                        request.getStudentId(),
-                        request.getSubject()
-                );
+        // 🔥 check duplicate for each subject
+        for (String subject : request.getSubjects()) {
 
-        if (!existing.isEmpty()) {
-            throw new RuntimeException("Recheck already requested for this subject");
+            List<RecheckRequest> existing =
+                    recheckRepository.findByStudentIdAndSubjectsContaining(
+                            request.getStudentId(),
+                            subject
+                    );
+
+            if (!existing.isEmpty()) {
+                throw new RuntimeException("Recheck already requested for subject: " + subject);
+            }
         }
 
         request.setStatus("PENDING");
@@ -31,27 +35,25 @@ public class RecheckService {
         return recheckRepository.save(request);
     }
 
-    // ✅ 2. GET ALL PENDING REQUESTS (Admin)
+    // ✅ 2. GET ALL PENDING REQUESTS
     public List<RecheckRequest> getPendingRequests() {
         return recheckRepository.findByStatus("PENDING");
     }
 
-    // ✅ 3. APPROVE REQUEST (Admin)
+    // ✅ 3. APPROVE REQUEST
     public RecheckRequest approveRequest(Long id) {
 
-        RecheckRequest req = recheckRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+        RecheckRequest req = getById(id);
 
         req.setStatus("APPROVED");
 
         return recheckRepository.save(req);
     }
 
-    // ✅ 4. REJECT REQUEST (Admin)
+    // ❌ 4. REJECT REQUEST
     public RecheckRequest rejectRequest(Long id) {
 
-        RecheckRequest req = recheckRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+        RecheckRequest req = getById(id);
 
         req.setStatus("REJECTED");
 
@@ -63,14 +65,19 @@ public class RecheckService {
         return recheckRepository.findByStudentId(studentId);
     }
 
-    // 🔥 6. GET ALL REQUESTS (FIX FOR ERROR)
+    // ✅ 6. GET ALL REQUESTS
     public List<RecheckRequest> getAllRequests() {
         return recheckRepository.findAll();
     }
 
-    // 🔥 7. GET BY ID (IMPORTANT FIX)
+    // ✅ 7. GET BY ID
     public RecheckRequest getById(Long id) {
         return recheckRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
+    }
+
+    // 🔥 8. SAVE (for controller use)
+    public RecheckRequest save(RecheckRequest req) {
+        return recheckRepository.save(req);
     }
 }

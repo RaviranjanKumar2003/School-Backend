@@ -10,9 +10,9 @@ public interface RecheckRepository extends JpaRepository<RecheckRequest, Long> {
     // ✅ Student ke sabhi recheck request
     List<RecheckRequest> findByStudentId(Long studentId);
 
-    // ✅ Pending requests (Admin panel ke liye)
+    // ✅ Pending / Approved / Rejected filter
     List<RecheckRequest> findByStatus(String status);
 
-    // ✅ Specific subject ka request check karne ke liye
-    List<RecheckRequest> findByStudentIdAndSubject(Long studentId, String subject);
+    // 🔥 MULTI SUBJECT SUPPORT (IMPORTANT)
+    List<RecheckRequest> findByStudentIdAndSubjectsContaining(Long studentId, String subject);
 }

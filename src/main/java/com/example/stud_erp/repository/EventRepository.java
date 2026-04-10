@@ -1,45 +1,100 @@
+//package com.example.stud_erp.repository;
+//
+//import com.example.stud_erp.entity.Event;
+//import org.springframework.data.jpa.repository.JpaRepository;
+//
+//import java.time.LocalDate;
+//import java.time.LocalDateTime;
+//import java.util.List;
+//
+//public interface EventRepository extends JpaRepository<Event, Long> {
+//
+//    /* 🔥 ================= ADMIN ================= */
+//
+//    // All events (latest first)
+//    List<Event> findAllByOrderByDateDesc();
+//
+//
+//    /* 🔥 ================= PUBLIC EVENTS ================= */
+//
+//    // All published events
+//    List<Event> findByIsPublishedTrueOrderByDateDesc();
+//
+//
+//    /* 🔥 ================= TARGET BASED ================= */
+//
+//    // Student / Teacher / All filter
+//    List<Event> findByIsPublishedTrueAndTargetInOrderByDateDesc(List<String> targets);
+//
+//
+//    /* 🔥 ================= 🔥 NEW (IMPORTANT) ================= */
+//
+//    // ✅ STUDENT FILTER (Admission ke baad wale events)
+//    List<Event> findByIsPublishedTrueAndTargetInAndCreatedAtGreaterThanEqualOrderByDateDesc(
+//            List<String> targets,
+//            LocalDateTime createdAt
+//    );
+//
+//
+//    /* 🔥 ================= OPTIONAL (PRO LEVEL) ================= */
+//
+//    // Only TEACHER events
+//    List<Event> findByIsPublishedTrueAndTargetOrderByDateDesc(String target);
+//
+//
+//    /* 🔥 ================= DATE FILTER ================= */
+//
+//    // Upcoming events
+//    List<Event> findByIsPublishedTrueAndDateGreaterThanEqualOrderByDateDesc(LocalDate date);
+//
+//    // Past events
+//    List<Event> findByIsPublishedTrueAndDateLessThanOrderByDateDesc(LocalDate date);
+//}
+
 package com.example.stud_erp.repository;
 
 import com.example.stud_erp.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    /* 🔥 ================= ADMIN ================= */
+    /* ================= ADMIN ================= */
 
-    // All events (latest first)
     List<Event> findAllByOrderByDateDesc();
 
 
-    /* 🔥 ================= PUBLIC EVENTS ================= */
+    /* ================= PUBLIC ================= */
 
-    // All published events
     List<Event> findByIsPublishedTrueOrderByDateDesc();
 
 
-    /* 🔥 ================= TARGET BASED ================= */
+    /* ================= TARGET ================= */
 
-    // Student / Teacher / All filter
+    // 🔥 MULTIPLE TARGET (STUDENT / TEACHER / ALL)
     List<Event> findByIsPublishedTrueAndTargetInOrderByDateDesc(List<String> targets);
 
-
-    /* 🔥 ================= OPTIONAL (PRO LEVEL) ================= */
-
-    // Only TEACHER events
+    // 🔥 SINGLE TARGET (IMPORTANT FIX ✅)
     List<Event> findByIsPublishedTrueAndTargetOrderByDateDesc(String target);
 
-    // Only STUDENT events
 
+    /* ================= DATE ================= */
 
+    // 🔥 UPCOMING
+    List<Event> findByIsPublishedTrueAndDateGreaterThanEqualOrderByDateAsc(LocalDate date);
 
-    /* 🔥 ================= DATE FILTER (FIXED ✅) ================= */
-
-    // Upcoming events
-    List<Event> findByIsPublishedTrueAndDateGreaterThanEqualOrderByDateDesc(LocalDate date);
-
-    // Past events
+    // 🔥 PAST
     List<Event> findByIsPublishedTrueAndDateLessThanOrderByDateDesc(LocalDate date);
+
+
+    /* ================= EXTRA ================= */
+
+    // 🔥 Admission based filter
+    List<Event> findByIsPublishedTrueAndTargetInAndCreatedAtGreaterThanEqualOrderByDateDesc(
+            List<String> targets,
+            LocalDateTime createdAt
+    );
 }

@@ -10,45 +10,69 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔹 Student Info
     private Long studentId;
-
-    // 🔹 Subject Info
     private String subject;
 
-    // 🔹 Marks
     private int marks;
+    private int totalMarks; // 🔥 NEW
 
-    // 🔹 Teacher Info
     private Long professorId;
 
-    // 🔥 NEW FIELDS (CORE SYSTEM)
-    private String status;        // PASS / FAIL / ABSENT
-    private Double percentage;   // overall percentage
-    private String grade;        // A+, A, B...
+    private String status;
+    private Double percentage;
+    private String grade;
 
-    // 🔹 Constructors
     public Result() {}
 
-    public Result(Long studentId, String subject, int marks, Long professorId) {
+    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId) {
         this.studentId = studentId;
         this.subject = subject;
         this.marks = marks;
+        this.totalMarks = totalMarks;
         this.professorId = professorId;
     }
 
-    // 🔹 Getters & Setters
+    // 🔹 AUTO CALCULATION
+    @PrePersist
+    @PreUpdate
+    public void calculate() {
+
+        // Status
+        if (marks == 0) {
+            this.status = "ABSENT";
+        } else if (marks < 33) {
+            this.status = "FAIL";
+        } else {
+            this.status = "PASS";
+        }
+
+        // Percentage
+        if (totalMarks > 0) {
+            this.percentage = (marks * 100.0) / totalMarks;
+        } else {
+            this.percentage = 0.0;
+        }
+
+        // Grade
+        if (percentage >= 90) this.grade = "A+";
+        else if (percentage >= 75) this.grade = "A";
+        else if (percentage >= 60) this.grade = "B";
+        else if (percentage >= 50) this.grade = "C";
+        else this.grade = "D";
+    }
+
+    // getters setters (same as before)
 
     public Long getId() {
         return id;
     }
 
-    public Long getStudentId() {
-        return studentId;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getStudentId() {
+        return studentId;
     }
 
     public void setStudentId(Long studentId) {
@@ -69,6 +93,14 @@ public class Result {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+
+    public void setTotalMarks(int totalMarks) {
+        this.totalMarks = totalMarks;
     }
 
     public Long getProfessorId() {
@@ -101,18 +133,5 @@ public class Result {
 
     public void setGrade(String grade) {
         this.grade = grade;
-    }
-
-    // 🔥 OPTIONAL (AUTO LOGIC - ADVANCED USE)
-    @PrePersist
-    @PreUpdate
-    public void calculateStatus() {
-        if (marks == 0) {
-            this.status = "ABSENT";
-        } else if (marks < 33) {
-            this.status = "FAIL";
-        } else {
-            this.status = "PASS";
-        }
     }
 }
