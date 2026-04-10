@@ -1,7 +1,6 @@
 package com.example.stud_erp.service;
 
 import com.example.stud_erp.payload.ClassDTO;
-
 import java.util.List;
 
 public interface ClassService {
