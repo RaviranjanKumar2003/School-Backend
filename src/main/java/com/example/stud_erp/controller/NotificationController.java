@@ -91,11 +91,94 @@
 
 // update for deletion
 
+// pintu comment kiya hai
+//package com.example.stud_erp.controller;
+//
+//import com.example.stud_erp.entity.Notification;
+//import com.example.stud_erp.payload.NotificationDTO;
+//import com.example.stud_erp.service.NotificationService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/api/notifications")
+//@CrossOrigin("*")
+//public class NotificationController {
+//
+//    @Autowired
+//    private NotificationService notificationService;
+//
+//    @PostMapping("/send")
+//    public String sendNotification(@RequestBody NotificationDTO dto) {
+//        return notificationService.sendNotification(dto);
+//    }
+//
+//    @GetMapping("/student/{id}")
+//    public List<Notification> getStudentNotifications(@PathVariable Long id) {
+//        return notificationService.getNotificationsForStudent(id);
+//    }
+//
+//    @GetMapping("/professor/{id}")
+//    public List<Notification> getProfessorNotifications(@PathVariable Long id) {
+//        return notificationService.getNotificationsForProfessor(id);
+//    }
+//
+//    @PutMapping("/read/{id}")
+//    public String markAsRead(@PathVariable Long id) {
+//        notificationService.markAsRead(id);
+//        return "Notification marked as read";
+//    }
+//
+//    // ✅ NEW
+//    @PutMapping("/archive/{id}")
+//    public String archive(@PathVariable Long id) {
+//        notificationService.archiveNotification(id);
+//        return "Archived successfully";
+//    }
+//
+//
+//    // ✅ NEW
+//    @GetMapping("/archived/{studentId}")
+//    public List<Notification> getArchived(@PathVariable Long studentId) {
+//        return notificationService.getArchivedNotifications(studentId);
+//    }
+//
+//    // ✅ NEW
+//    @DeleteMapping("/delete/{id}")
+//    public String delete(@PathVariable Long id) {
+//        notificationService.deletePermanently(id);
+//        return "Deleted permanently";
+//    }
+//// Unarchive
+//
+//    @PutMapping("/unarchive/{id}")
+//    public String unarchive(@PathVariable Long id) {
+//        notificationService.unarchiveNotification(id);
+//        return "Restored successfully";
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.Notification;
 import com.example.stud_erp.payload.NotificationDTO;
+import com.example.stud_erp.payload.NotificationResponse;
 import com.example.stud_erp.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -116,46 +199,41 @@ public class NotificationController {
     }
 
     @GetMapping("/student/{id}")
-    public List<Notification> getStudentNotifications(@PathVariable Long id) {
+    public List<NotificationResponse> getStudentNotifications(@PathVariable Long id) {
         return notificationService.getNotificationsForStudent(id);
     }
 
-    @GetMapping("/professor/{id}")
-    public List<Notification> getProfessorNotifications(@PathVariable Long id) {
-        return notificationService.getNotificationsForProfessor(id);
+    @PutMapping("/archive/{notificationId}/{studentId}")
+    public String archive(@PathVariable Long notificationId, @PathVariable Long studentId) {
+        notificationService.archiveNotification(notificationId, studentId);
+        return "Archived";
     }
 
-    @PutMapping("/read/{id}")
-    public String markAsRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
-        return "Notification marked as read";
+    @DeleteMapping("/delete/{notificationId}/{studentId}")
+    public String delete(@PathVariable Long notificationId, @PathVariable Long studentId) {
+        notificationService.deletePermanently(notificationId, studentId);
+        return "Deleted";
     }
 
-    // ✅ NEW
-    @PutMapping("/archive/{id}")
-    public String archive(@PathVariable Long id) {
-        notificationService.archiveNotification(id);
-        return "Archived successfully";
+    @GetMapping("/unread/{studentId}")
+    public int unread(@PathVariable Long studentId) {
+        return notificationService.getUnreadCount(studentId);
     }
 
+    @PutMapping("/read/{notificationId}/{studentId}")
+    public String read(@PathVariable Long notificationId, @PathVariable Long studentId) {
+        notificationService.markAsRead(notificationId, studentId);
+        return "Read";
+    }
 
-    // ✅ NEW
+    @PutMapping("/unarchive/{notificationId}/{studentId}")
+    public String unarchive(@PathVariable Long notificationId, @PathVariable Long studentId) {
+        notificationService.unarchiveNotification(notificationId, studentId);
+        return "Restored";
+    }
+
     @GetMapping("/archived/{studentId}")
-    public List<Notification> getArchived(@PathVariable Long studentId) {
+    public List<NotificationResponse> getArchived(@PathVariable Long studentId) {
         return notificationService.getArchivedNotifications(studentId);
-    }
-
-    // ✅ NEW
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        notificationService.deletePermanently(id);
-        return "Deleted permanently";
-    }
-// Unarchive
-
-    @PutMapping("/unarchive/{id}")
-    public String unarchive(@PathVariable Long id) {
-        notificationService.unarchiveNotification(id);
-        return "Restored successfully";
     }
 }

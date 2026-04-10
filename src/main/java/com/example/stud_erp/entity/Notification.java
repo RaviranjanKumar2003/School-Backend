@@ -36,6 +36,9 @@ public class Notification {
     // ✅ NEW FIELD (Soft Delete)
     private boolean isArchived = false;
 
+    public Notification() {
+    }
+
     public Notification(NotificationDTO dto) {
         this.title = dto.getTitle();
         this.subject = dto.getSubject();

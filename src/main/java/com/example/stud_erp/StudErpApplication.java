@@ -11,7 +11,6 @@ public class 	StudErpApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(StudErpApplication.class, args);
 	}
-
 }
 
 	
