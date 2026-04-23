@@ -37,7 +37,9 @@ public class FeeScheduler {
 
         for (StudentFee fee : list) {
 
-            Student s = studentRepo.findById(fee.getStudentId()).orElse(null);
+            Student s = studentRepo
+                    .findByStudentId(fee.getStudentId())
+                    .orElse(null);
 
             // agar student nahi mila to skip
             if (s == null) continue;

@@ -1,33 +1,20 @@
 package com.example.stud_erp.service;
 
-
 import com.example.stud_erp.entity.ClassSession;
-import com.example.stud_erp.repository.ClassRepository;
-import com.example.stud_erp.repository.ClassSessionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class ClassSessionService {
+public interface ClassSessionService {
 
-    @Autowired
-    private ClassSessionRepository classRepository;
+    // 🔥 CREATE SESSION
+    ClassSession createSession(ClassSession session);
 
-    public List<ClassSession> getAllClasses() {
-        return classRepository.findAll();
-    }
+    // 🔥 GET ALL
+    List<ClassSession> getAllSessions();
 
-    public ClassSession getClassById(Long id) {
-        return classRepository.findById(id).orElse(null);
-    }
+    // 🔥 GET BY CLASS
+    List<ClassSession> getByClass(Integer classNumber);
 
-    public ClassSession saveClass(ClassSession clazz) {
-        return classRepository.save(clazz);
-    }
-
-    public void deleteClass(Long id) {
-        classRepository.deleteById(id);
-    }
+    // 🔥 DELETE
+    void deleteSession(Long id);
 }

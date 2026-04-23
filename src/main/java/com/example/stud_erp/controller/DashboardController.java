@@ -117,31 +117,43 @@ public class DashboardController {
     @GetMapping("/subjects")
     public List<Map<String, Object>> getSubjects() {
 
-        List<Map<String, Object>> subjects = new ArrayList<>();
+        Map<String, Map<String, Object>> subjectMap = new HashMap<>();
 
         professorRepository.findAll().forEach(professor -> {
 
-            Map<String, Object> subject = new HashMap<>();
+            if (professor.getAssignments() != null) {
 
-            subject.put("img", professor.getImageUrl());
-            subject.put("name", professor.getSubject());
-            subject.put("budget", "30 Lectures");
-            subject.put("completion", 80);
+                professor.getAssignments().forEach(assign -> {
 
-            List<Map<String, String>> members = new ArrayList<>();
+                    String subjectName = assign.getSubjectName();
 
-            Map<String, String> member = new HashMap<>();
-            member.put("img", professor.getImageUrl());
-            member.put("name", professor.getName());
+                    // अगर subject पहले से map में नहीं है
+                    subjectMap.putIfAbsent(subjectName, new HashMap<>());
 
-            members.add(member);
+                    Map<String, Object> subject = subjectMap.get(subjectName);
 
-            subject.put("members", members);
+                    subject.put("name", subjectName);
+                    subject.put("budget", "30 Lectures");
+                    subject.put("completion", 80);
 
-            subjects.add(subject);
+                    // members list
+                    List<Map<String, String>> members =
+                            (List<Map<String, String>>) subject.getOrDefault("members", new ArrayList<>());
+
+                    Map<String, String> member = new HashMap<>();
+                    member.put("img", professor.getImageUrl());
+                    member.put("name", professor.getName());
+
+                    members.add(member);
+
+                    subject.put("members", members);
+
+                    subjectMap.put(subjectName, subject);
+                });
+            }
         });
 
-        return subjects;
+        return new ArrayList<>(subjectMap.values());
     }
 
 

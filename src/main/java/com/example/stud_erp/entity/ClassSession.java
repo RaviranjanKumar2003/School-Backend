@@ -2,12 +2,11 @@ package com.example.stud_erp.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "class_session")
 public class ClassSession {
@@ -18,11 +17,17 @@ public class ClassSession {
 
     private String lecturer;
     private String subject;
+
+    private Integer classNumber;   // ✅ ADD THIS
+    private LocalDate date;        // ✅ ADD THIS
     private LocalTime time;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classSession")
     @JsonManagedReference
     private List<Attendance> attendance;
+
+// GETTERS & SETTERS
+
 
     public Long getId() {
         return id;
@@ -46,6 +51,22 @@ public class ClassSession {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public Integer getClassNumber() {
+        return classNumber;
+    }
+
+    public void setClassNumber(Integer classNumber) {
+        this.classNumber = classNumber;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getTime() {

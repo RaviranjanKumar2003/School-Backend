@@ -1,52 +1,135 @@
-//package com.example.stud_erp.payload;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-//public class ProfessorDTO {
-//    private Long id;
-//    private String name;
-//
-//    public ProfessorDTO(Long id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
-//}
-
-
-
 package com.example.stud_erp.payload;
+
+import java.util.List;
 
 public class ProfessorDTO {
 
-    private Long id;
     private String name;
+    private String email;
+    private String phone;
 
-    public ProfessorDTO() {
+    private String designation;
+    private String qualification;
+    private String experience;
+    private String joiningDate;
+
+    private String username;
+    private String password;
+
+    private String schoolCode;
+
+    private List<AssignmentDTO> assignments;
+
+    // INNER DTO
+    public static class AssignmentDTO {
+        private String className;
+        private String subjectName;
+
+        public String getClassName() {
+            return className;
+        }
+
+        public void setClassName(String className) {
+            this.className = className;
+        }
+
+        public String getSubjectName() {
+            return subjectName;
+        }
+
+        public void setSubjectName(String subjectName) {
+            this.subjectName = subjectName;
+        }
     }
 
-    public ProfessorDTO(Long id, String name) {
-        this.id = id;
-        this.name = name;
+// GETTERS & SETTERS
+
+
+    public String getSchoolCode() {
+        return schoolCode;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
     }
 
     public String getName() {
         return name;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public String getJoiningDate() {
+        return joiningDate;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public List<AssignmentDTO> getAssignments() {
+        return assignments;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public void setJoiningDate(String joiningDate) {
+        this.joiningDate = joiningDate;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAssignments(List<AssignmentDTO> assignments) {
+        this.assignments = assignments;
     }
 }

@@ -429,6 +429,7 @@ public class StudentDTO {
 
     // ✅ CHANGE: year → classNumber
     private int classNumber;
+    private String className;
 
     private Long studRollNo;
     private String studName;
@@ -445,6 +446,9 @@ public class StudentDTO {
 
     private List<SemesterDTO> semesters;
     private List<AttendanceDTO> attendance;
+
+    private StudentFeeDTO fee;
+
 
     public StudentDTO() {
     }
@@ -483,6 +487,27 @@ public class StudentDTO {
     }
 
     // ================= GETTERS SETTERS =================
+
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public StudentFeeDTO getFee() {
+        return fee;
+    }
+
+    public void setFee(StudentFeeDTO fee) {
+        this.fee = fee;
+    }
+
+    public int getYear() {
+        return year;
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
