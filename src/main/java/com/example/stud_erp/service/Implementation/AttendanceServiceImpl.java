@@ -3,6 +3,7 @@ package com.example.stud_erp.service.Implementation;
 import com.example.stud_erp.entity.Attendance;
 import com.example.stud_erp.entity.ClassSession;
 import com.example.stud_erp.entity.Student;
+import com.example.stud_erp.entity.TeacherAttendance;
 import com.example.stud_erp.payload.AttendanceDTO;
 import com.example.stud_erp.payload.ClassSessionDTO;
 import com.example.stud_erp.repository.AttendanceRepository;
@@ -13,6 +14,7 @@ import com.example.stud_erp.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Autowired
     private AttendanceRepository attendanceRepo;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     // 🔥 SAVE ATTENDANCE
     @Override
@@ -117,4 +122,40 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         return dto;
     }
+
+    @Override
+    public List<Attendance> getByDate(LocalDate date) {
+        return attendanceRepository.findByDate(date);
+    }
+
+    @Override
+    public ClassSessionDTO getClassAttendanceByDate(Integer classNumber, LocalDate date) {
+
+        List<Attendance> records = attendanceRepository
+                .findByClassNumberAndDate(classNumber, date);
+
+        if (records.isEmpty()) {
+            return null;
+        }
+
+        ClassSessionDTO dto = new ClassSessionDTO();
+        dto.setClassNumber(classNumber);
+        dto.setDate(date);
+
+        List<AttendanceDTO> students = records.stream().map(a -> {
+            AttendanceDTO s = new AttendanceDTO();
+
+            s.setStudentId(a.getStudent().getId());
+            s.setStudentName(a.getStudent().getStudName());
+            s.setStudRollNo(a.getStudent().getStudRollNo());
+            s.setStatus(a.getStatus());
+
+            return s;
+        }).toList();
+
+        dto.setStudents(students);
+
+        return dto;
+    }
+
 }

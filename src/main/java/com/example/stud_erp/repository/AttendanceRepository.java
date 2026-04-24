@@ -2,10 +2,12 @@
 package com.example.stud_erp.repository;
 
 import com.example.stud_erp.entity.Attendance;
+import com.example.stud_erp.entity.TeacherAttendance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -31,4 +33,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             String lecturer,
             String subject
     );
+
+    List<Attendance> findByDate(LocalDate date);
+
+    List<Attendance> findByClassNumberAndDate(Integer classNumber, LocalDate date);
 }

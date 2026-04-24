@@ -3,23 +3,32 @@ package com.example.stud_erp.payload;
 import lombok.Data;
 
 @Data
-public class AttendanceDTO {
+public class StuAttendanceDTO {
 
     private Long studentId;
     private String studentName;
-    private String status; // P / A
+    private String studentLastName; // ✅ ADD
+    private String email;           // ✅ ADD
+    private String status;
     private Long studRollNo;
-
 
 // GETTERS & SETTERS
 
 
-    public Long getStudRollNo() {
-        return studRollNo;
+    public String getStudentLastName() {
+        return studentLastName;
     }
 
-    public void setStudRollNo(Long studRollNo) {
-        this.studRollNo = studRollNo;
+    public void setStudentLastName(String studentLastName) {
+        this.studentLastName = studentLastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getStudentId() {
@@ -44,5 +53,13 @@ public class AttendanceDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Long getStudRollNo() {
+        return studRollNo;
+    }
+
+    public void setStudRollNo(Long studRollNo) {
+        this.studRollNo = studRollNo;
     }
 }
