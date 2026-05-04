@@ -2,69 +2,42 @@ package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.ClassSession;
 import com.example.stud_erp.service.ClassSessionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/class-sessions")
+@RequestMapping("/api/class-session")
+@CrossOrigin("*")
 public class ClassSessionController {
 
     @Autowired
-    private ClassSessionService classService;
+    private ClassSessionService service;
 
-    @GetMapping
-    public List<ClassSession> getAllClasses() {
-        return classService.getAllClasses();
+    // 🔥 CREATE SESSION
+    @PostMapping("/create")
+    public ClassSession create(@RequestBody ClassSession session) {
+        return service.createSession(session);
     }
 
-    @GetMapping("/{id}")
-    public Map<String, Object> getClassById(@PathVariable Long id) {
-        ClassSession clazz = classService.getClassById(id);
-        if (clazz == null) {
-            return null; // Handle not found case
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("Lecturer", clazz.getLecturer());
-        response.put("Subject", clazz.getSubject());
-        response.put("Time", clazz.getTime());
-
-        Map<String, String> attendanceMap = new HashMap<>();
-        int presentCount = 0;
-        int absentCount = 0;
-
-        for (var attendance : clazz.getAttendance()) {
-            attendanceMap.put(attendance.getStudentName(), attendance.getStatus());
-            if ("p".equalsIgnoreCase(attendance.getStatus())) {
-                presentCount++;
-            } else {
-                absentCount++;
-            }
-        }
-
-        response.put("Attendance", attendanceMap);
-
-        Map<String, Integer> totals = new HashMap<>();
-        totals.put("Present", presentCount);
-        totals.put("Absent", absentCount);
-
-        response.put("Totals", totals);
-
-        return response;
+    // 🔥 GET ALL
+    @GetMapping("/all")
+    public List<ClassSession> getAll() {
+        return service.getAllSessions();
     }
 
-    @PostMapping
-    public ClassSession createClass(@RequestBody ClassSession clazz) {
-        return classService.saveClass(clazz);
+    // 🔥 GET BY CLASS
+    @GetMapping("/class/{classNumber}")
+    public List<ClassSession> getByClass(@PathVariable Integer classNumber) {
+        return service.getByClass(classNumber);
     }
 
+    // 🔥 DELETE
     @DeleteMapping("/{id}")
-    public void deleteClass(@PathVariable Long id) {
-        classService.deleteClass(id);
+    public String delete(@PathVariable Long id) {
+        service.deleteSession(id);
+        return "Session Deleted";
     }
 }
-

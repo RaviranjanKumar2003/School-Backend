@@ -61,18 +61,184 @@
 
 
 
+//package com.example.stud_erp.controller;
+//
+//import com.example.stud_erp.entity.Student;
+//import com.example.stud_erp.entity.StudentFee;
+//import com.example.stud_erp.repository.StudentFeeRepository;
+//import com.example.stud_erp.repository.StudentRepository;
+//import com.example.stud_erp.service.EmailService;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.time.LocalDate;
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/api/fees")
+//@CrossOrigin("*")
+//public class StudentFeeController {
+//
+//    @Autowired
+//    private StudentFeeRepository repo;
+//
+//    @Autowired
+//    private StudentRepository studentRepo;
+//
+//    @Autowired
+//    private EmailService emailService;
+//
+//    // ✅ ADD FEE WITH DUES
+//    @PostMapping("/add")
+//    public StudentFee addFee(@RequestBody StudentFee fee) {
+//
+//        List<StudentFee> old = repo.findByStudentIdOrderByIdDesc(fee.getStudentId());
+//
+//        if (!old.isEmpty()) {
+//            StudentFee last = old.get(0);
+//
+//            if (last.getPendingAmount() != null && last.getPendingAmount() > 0) {
+//                fee.setTotalFee(fee.getTotalFee() + last.getPendingAmount());
+//            }
+//        }
+//
+//        fee.setPaymentDate(LocalDate.now());
+//
+//        return repo.save(fee);
+//    }
+//
+//    // ✅ GET ALL (🔥 AUTO CREATE FIX)
+//    @GetMapping("/all")
+//    public List<StudentFee> all() {
+//
+//        List<StudentFee> fees = repo.findAll();
+//
+//        if (fees.isEmpty()) {
+//
+//            List<Student> students = studentRepo.findAll();
+//
+//            for (Student s : students) {
+//
+//                StudentFee f = new StudentFee();
+//
+//                f.setStudentId(s.getId());
+//                f.setStudentName(s.getStudName());
+//
+//                f.setMonth("March");
+//                f.setYear(2026);
+//
+//                f.setTotalFee(1000.0);
+//                f.setPaidAmount(0.0);
+//                f.setPaymentDate(LocalDate.now());
+//
+//                repo.save(f);
+//            }
+//
+//            return repo.findAll();
+//        }
+//
+//        return fees;
+//    }
+//
+//    // ✅ GET PAID
+//    @GetMapping("/paid")
+//    public List<StudentFee> paid() {
+//        return repo.findByStatus("PAID");
+//    }
+//
+//    // ✅ GET PENDING
+//    @GetMapping("/pending")
+//    public List<StudentFee> pending() {
+//        return repo.findByStatus("PENDING");
+//    }
+//
+//    // ✅ SEARCH
+//    @GetMapping("/search/{name}")
+//    public List<StudentFee> search(@PathVariable String name) {
+//        return repo.findByStudentNameContainingIgnoreCase(name);
+//    }
+//
+//    // ✅ SUMMARY (🔥 FIXED KEYS)
+//    @GetMapping("/summary")
+//    public Object getSummary() {
+//
+//        List<StudentFee> all = repo.findAll();
+//
+//        int total = all.size();
+//
+//        long paid = all.stream()
+//                .filter(f -> "PAID".equals(f.getStatus()))
+//                .count();
+//
+//        long pending = all.stream()
+//                .filter(f -> "PENDING".equals(f.getStatus()))
+//                .count();
+//
+//        double totalCollection = all.stream()
+//                .mapToDouble(f -> f.getPaidAmount() == null ? 0 : f.getPaidAmount())
+//                .sum();
+//
+//        double totalPending = all.stream()
+//                .mapToDouble(f -> f.getPendingAmount() == null ? 0 : f.getPendingAmount())
+//                .sum();
+//
+//        return new Object() {
+//            public int totalStudents = total;
+//            public long paidStudents = paid;
+//            public long pendingStudents = pending;
+//            public double totalCollectionAmount = totalCollection;
+//            public double totalPendingAmount = totalPending;
+//        };
+//    }
+//
+//    // ✅ REMINDER FIX
+//    @PostMapping("/reminder/{studentId}")
+//    public String sendReminder(@PathVariable Long studentId) {
+//
+//        Student s = studentRepo.findById(studentId).orElse(null);
+//
+//        if (s == null) return "Student Not Found";
+//
+//        List<StudentFee> fees = repo.findByStudentIdOrderByIdDesc(studentId);
+//
+//        if (fees.isEmpty()) return "No Fee Record";
+//
+//        StudentFee f = fees.get(0);
+//
+//        if ("PAID".equals(f.getStatus())) return "Already Paid";
+//
+//        emailService.sendFeeReminder(
+//                s.getEmail(),
+//                s.getStudName(),
+//                f.getPendingAmount() == null ? 0 : f.getPendingAmount()
+//        );
+//
+//        return "Reminder Sent Successfully";
+//    }
+//}
+
+
+
+
 package com.example.stud_erp.controller;
 
+import com.example.stud_erp.entity.ReminderLog;
 import com.example.stud_erp.entity.Student;
 import com.example.stud_erp.entity.StudentFee;
+import com.example.stud_erp.payload.StudentFeeDTO;
+import com.example.stud_erp.repository.ReminderLogRepository;
 import com.example.stud_erp.repository.StudentFeeRepository;
 import com.example.stud_erp.repository.StudentRepository;
-import com.example.stud_erp.service.EmailService;
+import com.example.stud_erp.service.SmsService;
+import com.example.stud_erp.service.StudentFeeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import com.example.stud_erp.payload.SummaryDTO;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -81,139 +247,98 @@ import java.util.List;
 public class StudentFeeController {
 
     @Autowired
+    private StudentFeeService service;
+
+    @Autowired
     private StudentFeeRepository repo;
+
+    @Autowired
+    private SmsService smsService;
 
     @Autowired
     private StudentRepository studentRepo;
 
     @Autowired
-    private EmailService emailService;
+    private ReminderLogRepository logRepo;
 
-    // ✅ ADD FEE WITH DUES
+    // 🔥 ADD / UPDATE
     @PostMapping("/add")
-    public StudentFee addFee(@RequestBody StudentFee fee) {
-
-        List<StudentFee> old = repo.findByStudentIdOrderByIdDesc(fee.getStudentId());
-
-        if (!old.isEmpty()) {
-            StudentFee last = old.get(0);
-
-            if (last.getPendingAmount() != null && last.getPendingAmount() > 0) {
-                fee.setTotalFee(fee.getTotalFee() + last.getPendingAmount());
-            }
-        }
-
-        fee.setPaymentDate(LocalDate.now());
-
-        return repo.save(fee);
+    public StudentFeeDTO add(@RequestBody StudentFeeDTO dto) {
+        return service.addOrUpdateFee(dto);
     }
 
-    // ✅ GET ALL (🔥 AUTO CREATE FIX)
+    // 🔥 GET ALL
     @GetMapping("/all")
-    public List<StudentFee> all() {
+    public List<StudentFeeDTO> all() {
+        return service.getAllFees();
+    }
 
-        List<StudentFee> fees = repo.findAll();
+    // 🔥 HISTORY
+    @GetMapping("/history/{studentId}")
+    public List<StudentFeeDTO> history(@PathVariable String studentId) {
+        return service.getByStudent(studentId);
+    }
 
-        if (fees.isEmpty()) {
+    // 🔥 PAYMENT UPDATE
+    @PutMapping("/pay")
+    public StudentFeeDTO pay(@RequestBody StudentFeeDTO dto) {
+        return service.updatePayment(dto);
+    }
 
-            List<Student> students = studentRepo.findAll();
+    // 🔥 SUMMARY (ALL / CLASS BASED)
+    @GetMapping("/summary")
+    public SummaryDTO getSummary(
+            @RequestParam(required = false) Integer classId
+    ) {
+        return service.getSummary(classId);
+    }
 
-            for (Student s : students) {
+    @PostMapping("/send-reminder/{studentId}")
+    public String sendReminder(@PathVariable String studentId) {
 
-                StudentFee f = new StudentFee();
+        StudentFee fee = repo.findTopByStudentIdOrderByIdDesc(studentId);
 
-                f.setStudentId(s.getId());
-                f.setStudentName(s.getStudName());
+        if (fee == null) return "No Fee Found";
 
-                f.setMonth("March");
-                f.setYear(2026);
-
-                f.setTotalFee(1000.0);
-                f.setPaidAmount(0.0);
-                f.setPaymentDate(LocalDate.now());
-
-                repo.save(f);
-            }
-
-            return repo.findAll();
+        if (fee.getPendingAmount() == null || fee.getPendingAmount() <= 0) {
+            return "No pending fee";
         }
 
-        return fees;
+        Student student = studentRepo.findByStudentId(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        String mobile = student.getStudPhoneNumber();
+
+        if (mobile == null || mobile.isEmpty()) {
+            return "Mobile not found";
+        }
+
+        String message = "Dear Parent, ₹" + fee.getPendingAmount() +
+                " fee pending for " + fee.getStudentName();
+
+        // 🔥 LOG OBJECT
+        ReminderLog log = new ReminderLog();
+        log.setStudentId(studentId);
+        log.setStudentName(fee.getStudentName());
+        log.setMobile(mobile);
+        log.setAmount(fee.getPendingAmount());
+        log.setSentAt(LocalDateTime.now());
+
+        try {
+            smsService.sendSMS(mobile, message);
+            log.setStatus("SENT");
+        } catch (Exception e) {
+            log.setStatus("FAILED");
+        }
+
+        logRepo.save(log); // ✅ DB me save
+
+        return "Reminder Processed";
     }
 
-    // ✅ GET PAID
-    @GetMapping("/paid")
-    public List<StudentFee> paid() {
-        return repo.findByStatus("PAID");
+    @GetMapping("/reminder-history")
+    public List<ReminderLog> getLogs() {
+        return logRepo.findAll();
     }
 
-    // ✅ GET PENDING
-    @GetMapping("/pending")
-    public List<StudentFee> pending() {
-        return repo.findByStatus("PENDING");
-    }
-
-    // ✅ SEARCH
-    @GetMapping("/search/{name}")
-    public List<StudentFee> search(@PathVariable String name) {
-        return repo.findByStudentNameContainingIgnoreCase(name);
-    }
-
-    // ✅ SUMMARY (🔥 FIXED KEYS)
-    @GetMapping("/summary")
-    public Object getSummary() {
-
-        List<StudentFee> all = repo.findAll();
-
-        int total = all.size();
-
-        long paid = all.stream()
-                .filter(f -> "PAID".equals(f.getStatus()))
-                .count();
-
-        long pending = all.stream()
-                .filter(f -> "PENDING".equals(f.getStatus()))
-                .count();
-
-        double totalCollection = all.stream()
-                .mapToDouble(f -> f.getPaidAmount() == null ? 0 : f.getPaidAmount())
-                .sum();
-
-        double totalPending = all.stream()
-                .mapToDouble(f -> f.getPendingAmount() == null ? 0 : f.getPendingAmount())
-                .sum();
-
-        return new Object() {
-            public int totalStudents = total;
-            public long paidStudents = paid;
-            public long pendingStudents = pending;
-            public double totalCollectionAmount = totalCollection;
-            public double totalPendingAmount = totalPending;
-        };
-    }
-
-    // ✅ REMINDER FIX
-    @PostMapping("/reminder/{studentId}")
-    public String sendReminder(@PathVariable Long studentId) {
-
-        Student s = studentRepo.findById(studentId).orElse(null);
-
-        if (s == null) return "Student Not Found";
-
-        List<StudentFee> fees = repo.findByStudentIdOrderByIdDesc(studentId);
-
-        if (fees.isEmpty()) return "No Fee Record";
-
-        StudentFee f = fees.get(0);
-
-        if ("PAID".equals(f.getStatus())) return "Already Paid";
-
-        emailService.sendFeeReminder(
-                s.getEmail(),
-                s.getStudName(),
-                f.getPendingAmount() == null ? 0 : f.getPendingAmount()
-        );
-
-        return "Reminder Sent Successfully";
-    }
 }

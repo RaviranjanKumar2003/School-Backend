@@ -2,16 +2,9 @@ package com.example.stud_erp.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "attendance")
 public class Attendance {
@@ -20,14 +13,7 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "student_name")
-    private String studentName;
-
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "attendance_date")
-    private LocalDate attendanceDate;
+    private String status; // P / A
 
     @ManyToOne
     @JoinColumn(name = "class_session_id")
@@ -38,6 +24,28 @@ public class Attendance {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    private LocalDate date;
+    private int classNumber;
+
+// GETTERS & SETTERS
+
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public int getClassNumber() {
+        return classNumber;
+    }
+
+    public void setClassNumber(int classNumber) {
+        this.classNumber = classNumber;
+    }
+
     public Long getId() {
         return id;
     }
@@ -46,28 +54,12 @@ public class Attendance {
         this.id = id;
     }
 
-    public String getStudentName() {
-        return studentName;
-    }
-
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public LocalDate getAttendanceDate() {
-        return attendanceDate;
-    }
-
-    public void setAttendanceDate(LocalDate attendanceDate) {
-        this.attendanceDate = attendanceDate;
     }
 
     public ClassSession getClassSession() {

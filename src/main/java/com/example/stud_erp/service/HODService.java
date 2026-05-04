@@ -1,25 +1,15 @@
 package com.example.stud_erp.service;
 
-import com.example.stud_erp.entity.Department;
 import com.example.stud_erp.entity.HOD;
-import com.example.stud_erp.entity.HOD;
-import com.example.stud_erp.exception.OTPExpiredException;
-import com.example.stud_erp.exception.ResourceNotFoundException;
 import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ResetPasswordRequest;
 import com.example.stud_erp.repository.HODRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class HODService {
@@ -34,8 +24,6 @@ public class HODService {
         return hodRepository.save(hod);
     }
 
-
-
     public List<HOD> getAllHODs() {
         return hodRepository.findAll();
     }
@@ -49,8 +37,9 @@ public class HODService {
     }
 
     public HOD updateHOD(Long id, HOD hodDetails) {
+
         HOD hod = hodRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("HOD not found for this id :: " + id));
+                .orElseThrow(() -> new RuntimeException("HOD not found"));
 
         hod.setName(hodDetails.getName());
         hod.setDepartment(hodDetails.getDepartment());
@@ -68,92 +57,59 @@ public class HODService {
         return hodRepository.save(hod);
     }
 
-
     public HOD authenticateUser(LoginRequest loginRequest) {
+
         HOD user = hodRepository.findByUsername(loginRequest.getUsername());
+
         if (user == null || !loginRequest.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
+
         return user;
     }
 
-
     public void sendForgotPasswordEmail(String email) {
-        HOD user = hodRepository.findByEmail(email).getHod();
+
+        HOD user = hodRepository.findByEmail(email);
+
         if (user == null) {
-            throw new OTPExpiredException("User with email " + email + " not found");
+            throw new RuntimeException("User not found");
         }
 
         String otp = generateOTP();
         user.setOtp(otp);
+
         hodRepository.save(user);
 
         emailService.sendOtpEmail(user.getEmail(), otp);
     }
 
-
-
-    private String generateOTP() {
-        // Generate a random 6-digit OTP
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000);
-        return String.valueOf(otp);
-    }
-
     public void verifyOTP(String email, String otp) {
-        HOD user = hodRepository.findByEmail(email).getHod();
+
+        HOD user = hodRepository.findByEmail(email);
+
         if (user == null) {
-            throw new OTPExpiredException("User with email " + email + " not found");
+            throw new RuntimeException("User not found");
         }
 
-        if (!user.getOtp().equals(otp)) {
-            throw new OTPExpiredException("Invalid OTP");
+        if (!otp.equals(user.getOtp())) {
+            throw new RuntimeException("Invalid OTP");
         }
     }
 
     public void resetPassword(ResetPasswordRequest request) {
-        HOD hod = hodRepository.findByEmail(request.getEmail()).getHod();
+
+        HOD hod = hodRepository.findByEmail(request.getEmail());
+
         if (hod == null) {
-            throw new OTPExpiredException("User with email " + request.getEmail() + " not found");
+            throw new RuntimeException("User not found");
         }
 
-        // Set the new password (not encrypted)
         hod.setPassword(request.getNewPassword());
         hodRepository.save(hod);
     }
 
-
-//========================================================== IMAGE
-
-    @Service
-    public class ImageService {
-
-        private final String path = "uploads/hod-images/";
-
-        public String uploadImage(MultipartFile file) throws IOException {
-
-            String originalName = file.getOriginalFilename();
-
-            String randomId = UUID.randomUUID().toString();
-            String fileName = randomId.concat(
-                    originalName.substring(originalName.lastIndexOf("."))
-            );
-
-            File folder = new File(path);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            Files.copy(file.getInputStream(), Paths.get(path + File.separator + fileName));
-
-            return fileName;
-        }
-
-        public InputStream getResource(String fileName) throws FileNotFoundException {
-            return new FileInputStream(path + File.separator + fileName);
-        }
-
+    private String generateOTP() {
+        return String.valueOf(100000 + new Random().nextInt(900000));
     }
-
-
 }

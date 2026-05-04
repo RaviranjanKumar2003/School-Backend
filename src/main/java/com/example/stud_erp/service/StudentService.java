@@ -324,11 +324,14 @@
 package com.example.stud_erp.service;
 
 import com.example.stud_erp.entity.Student;
+import com.example.stud_erp.entity.StudentFee;
 import com.example.stud_erp.exception.CustomException;
 import com.example.stud_erp.exception.OTPExpiredException;
 import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ResetPasswordRequest;
 import com.example.stud_erp.payload.StudentDTO;
+import com.example.stud_erp.payload.StudentFeeDTO;
+import com.example.stud_erp.repository.StudentFeeRepository;
 import com.example.stud_erp.repository.StudentRepository;
 
 import jakarta.transaction.Transactional;
@@ -337,6 +340,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
@@ -352,6 +356,9 @@ public class StudentService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private StudentFeeRepository studentFeeRepository;
 
     // ===============================
     // GET ALL STUDENTS
@@ -393,6 +400,7 @@ public class StudentService {
 
         // ✅ FINAL FIX
         dto.setClassNumber(student.getClassNumber());
+        dto.setClassName(student.getClassName());
 
         dto.setStudRollNo(student.getStudRollNo());
         dto.setStudName(student.getStudName());
@@ -404,6 +412,25 @@ public class StudentService {
         dto.setStudCaste(student.getStudCaste());
         dto.setStudentAge(student.getStudentAge());
         dto.setImageUrl(student.getImageUrl());
+
+        // ================== 🔥 ADD THIS PART ==================
+
+        List<StudentFee> fees =
+                studentFeeRepository.findByStudentIdOrderByIdDesc(student.getStudentId());
+
+        StudentFee fee = fees.isEmpty() ? null : fees.get(0);
+
+        StudentFeeDTO feeDTO = null;
+
+        if (fee != null) {
+            feeDTO = new StudentFeeDTO();
+            feeDTO.setTotalFee(fee.getTotalFee());
+            feeDTO.setPaidAmount(fee.getPaidAmount());
+            feeDTO.setPendingAmount(fee.getPendingAmount());
+            feeDTO.setStatus(fee.getStatus());
+        }
+
+        dto.setFee(feeDTO);
 
         return dto;
     }
@@ -431,16 +458,18 @@ public class StudentService {
 
             student.setEmail(student.getEmail().trim().toLowerCase());
 
-            if (student.getClassNumber() <= 0) {
+            if (student.getClassNumber() == null || student.getClassNumber() <= 0) {
                 throw new CustomException("Valid class required");
             }
+
+            student.setClassName(student.getClassName());
 
             // ================= DUPLICATE EMAIL CHECK =================
             if (studentRepository.existsByEmail(student.getEmail())) {
                 throw new CustomException("Email already exists");
             }
 
-            // ================= 🔥 AUTO ROLL NUMBER =================
+            // ================= AUTO ROLL NUMBER =================
             Long lastRoll = studentRepository.findLastRollNumberByClass(student.getClassNumber());
             Long newRollNo = (lastRoll == null) ? 1 : lastRoll + 1;
             student.setStudRollNo(newRollNo);
@@ -450,30 +479,51 @@ public class StudentService {
                     student.getSchoolCode() + "-" +
                             Year.now().getValue() + "-" +
                             String.format("%04d", studentRepository.count() + 1);
+
             student.setStudentId(registrationNumber);
 
             // ================= USERNAME (unique) =================
             String baseUsername = student.getStudName().toLowerCase().replace(" ", "") + newRollNo;
             String username = baseUsername;
             int i = 1;
-            while(studentRepository.existsByUsername(username)) {
-                username = baseUsername + i; // append number if exists
+
+            while (studentRepository.existsByUsername(username)) {
+                username = baseUsername + i;
                 i++;
             }
+
             student.setUsername(username);
 
             // ================= PASSWORD =================
             String password = generateRandomPassword();
             student.setPassword(password);
 
-            // ================= SAVE =================
-            return studentRepository.save(student);
+            // ================= SAVE STUDENT =================
+            Student savedStudent = studentRepository.save(student);
+
+            // ================= 🔥 AUTO CREATE FEE =================
+            StudentFee fee = new StudentFee();
+
+            fee.setStudentId(savedStudent.getStudentId());
+            fee.setStudentName(savedStudent.getStudName());
+            fee.setClassNumber(savedStudent.getClassNumber());
+
+            fee.setMonth(LocalDate.now().getMonth().toString());
+            fee.setYear(LocalDate.now().getYear());
+
+            fee.setCreatedDate(LocalDate.now());   // ✅ new field
+
+            fee.setPaidAmount(0.0); // optional (safe default)
+
+            studentFeeRepository.save(fee);
+
+            return savedStudent;
 
         } catch (DataIntegrityViolationException ex) {
-            ex.printStackTrace(); // 🔥 DEBUG
+            ex.printStackTrace();
             throw new CustomException("Duplicate student data (email/username)");
         } catch (Exception e) {
-            e.printStackTrace(); // 🔥 VERY IMPORTANT
+            e.printStackTrace();
             throw new RuntimeException("Error while saving student: " + e.getMessage());
         }
     }

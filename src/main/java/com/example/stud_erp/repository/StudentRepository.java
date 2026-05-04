@@ -398,7 +398,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Optional<Student> findByEmail(String email);
 
-    Optional<Student> findByStudentId(String studentId);
 
     Optional<Student> findByStudName(String studName);
 
@@ -416,6 +415,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             String email,
             Long studRollNo
     );
+
 
     @Query("""
         SELECT new com.example.stud_erp.payload.StudentDTO(
@@ -457,5 +457,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
 
     Optional<Student> findByClassNumberAndStudRollNo(int classNumber, Long studRollNo);
+
+
+    Optional<Student> findByStudentId(String studentId);
 
 }

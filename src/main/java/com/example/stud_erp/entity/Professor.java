@@ -1,6 +1,8 @@
 package com.example.stud_erp.entity;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "professors")
@@ -15,8 +17,7 @@ public class Professor {
     private String name;
     private String email;
     private String phone;
-    private String departmentName;
-    private String subject;
+
     private String designation;
     private String qualification;
     private String experience;
@@ -26,21 +27,22 @@ public class Professor {
     private String password;
 
     private String imageUrl;
-
-    // OTP for forgot password
     private String otp;
 
-    // Relation with HOD
-    @ManyToOne
-    @JoinColumn(name = "hod_id")
-    private HOD hod;
+    // 🔥 REMOVE department completely
 
-    public Professor() {
-    }
+    // ONE TO MANY
+    @OneToMany(
+            mappedBy = "professor",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TeacherAssignment> assignments;
 
-    // =============================
-    // GETTERS AND SETTERS
-    // =============================
+    public Professor() {}
+
+// getters setters
+
 
     public Long getId() {
         return id;
@@ -88,22 +90,6 @@ public class Professor {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public String getDesignation() {
@@ -170,11 +156,11 @@ public class Professor {
         this.otp = otp;
     }
 
-    public HOD getHod() {
-        return hod;
+    public List<TeacherAssignment> getAssignments() {
+        return assignments;
     }
 
-    public void setHod(HOD hod) {
-        this.hod = hod;
+    public void setAssignments(List<TeacherAssignment> assignments) {
+        this.assignments = assignments;
     }
 }

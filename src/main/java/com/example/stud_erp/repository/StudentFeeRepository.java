@@ -24,16 +24,36 @@
 
 package com.example.stud_erp.repository;
 
+import com.example.stud_erp.entity.Student;
 import com.example.stud_erp.entity.StudentFee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface StudentFeeRepository extends JpaRepository<StudentFee, Long> {
 
     List<StudentFee> findByStatus(String status);
     List<StudentFee> findByStudentNameContainingIgnoreCase(String name);
 
-    List<StudentFee> findByStudentIdOrderByIdDesc(Long studentId);
-
     List<StudentFee> findByMonth(String month);
+
+    Optional<StudentFee> findByStudentIdAndMonthAndYear(
+            String studentId,
+            String month,
+            int year
+    );
+
+    List<StudentFee> findByStudentId(String studentId);
+
+    List<StudentFee> findByStudentIdOrderByIdDesc(String studentId);
+
+    List<StudentFee> findByMonthAndYear(String month, int year);
+
+    List<StudentFee> findByClassNumberAndMonthAndYear(Integer classNumber, String month, int year);
+
+    List<StudentFee> findByClassNumber(Integer classNumber);
+
+    StudentFee findTopByStudentIdOrderByIdDesc(String studentId);
+
+
 }

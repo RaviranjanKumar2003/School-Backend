@@ -938,7 +938,9 @@ public class Student {
     private String email;
 
     // ✅ CHANGE: year ➝ classNumber
-    private int classNumber;
+    private Integer classNumber;
+
+    private String className;
 
     private Long studRollNo;
     private String studName;
@@ -975,6 +977,15 @@ public class Student {
 
     // ================= GETTERS SETTERS =================
 
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -993,8 +1004,21 @@ public class Student {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public int getClassNumber() { return classNumber; }
-    public void setClassNumber(int classNumber) { this.classNumber = classNumber; }
+    public Integer getClassNumber() {
+        return classNumber;
+    }
+
+    public void setClassNumber(Integer classNumber) {
+        this.classNumber = classNumber;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     public Long getStudRollNo() { return studRollNo; }
     public void setStudRollNo(Long studRollNo) { this.studRollNo = studRollNo; }

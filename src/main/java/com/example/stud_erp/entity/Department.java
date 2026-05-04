@@ -25,4 +25,31 @@ public class Department {
     @OneToOne
     @JoinColumn(name = "hod_id")
     private HOD hod;
+
+// GETTERS & SETTERS
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public HOD getHod() {
+        return hod;
+    }
+
+    public void setHod(HOD hod) {
+        this.hod = hod;
+    }
 }

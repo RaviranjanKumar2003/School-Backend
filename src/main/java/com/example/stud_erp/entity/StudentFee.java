@@ -153,25 +153,187 @@
 
 
 
+//package com.example.stud_erp.entity;
+//
+//import jakarta.persistence.*;
+//import java.time.LocalDate;
+//
+//@Entity
+//@Table(name = "student_fees")
+//public class StudentFee {
+//
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+//
+//    private Long studentId;
+//    private String studentName;
+//    private String className;
+//
+//    private String month;
+//    private int year; // 🔥 NEW FIELD
+//
+//    private Double totalFee;
+//    private Double paidAmount;
+//    private Double pendingAmount;
+//
+//    private String status;
+//
+//    private LocalDate paymentDate;
+//    private String paymentMode;
+//    private String remark;
+//
+//    @PrePersist
+//    @PreUpdate
+//    public void calculateFee() {
+//        if (paidAmount == null) paidAmount = 0.0;
+//        if (totalFee == null) totalFee = 0.0;
+//
+//        pendingAmount = totalFee - paidAmount;
+//
+//        if (pendingAmount <= 0) {
+//            status = "PAID";
+//            pendingAmount = 0.0;
+//        } else {
+//            status = "PENDING";
+//        }
+//    }
+//
+//    // getters setters (same as before)
+//
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public Long getStudentId() {
+//        return studentId;
+//    }
+//
+//    public void setStudentId(Long studentId) {
+//        this.studentId = studentId;
+//    }
+//
+//    public String getStudentName() {
+//        return studentName;
+//    }
+//
+//    public void setStudentName(String studentName) {
+//        this.studentName = studentName;
+//    }
+//
+//    public String getClassName() {
+//        return className;
+//    }
+//
+//    public void setClassName(String className) {
+//        this.className = className;
+//    }
+//
+//    public String getMonth() {
+//        return month;
+//    }
+//
+//    public void setMonth(String month) {
+//        this.month = month;
+//    }
+//
+//    public int getYear() {
+//        return year;
+//    }
+//
+//    public void setYear(int year) {
+//        this.year = year;
+//    }
+//
+//    public Double getTotalFee() {
+//        return totalFee;
+//    }
+//
+//    public void setTotalFee(Double totalFee) {
+//        this.totalFee = totalFee;
+//    }
+//
+//    public Double getPaidAmount() {
+//        return paidAmount;
+//    }
+//
+//    public void setPaidAmount(Double paidAmount) {
+//        this.paidAmount = paidAmount;
+//    }
+//
+//    public Double getPendingAmount() {
+//        return pendingAmount;
+//    }
+//
+//    public void setPendingAmount(Double pendingAmount) {
+//        this.pendingAmount = pendingAmount;
+//    }
+//
+//    public String getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
+//
+//    public LocalDate getPaymentDate() {
+//        return paymentDate;
+//    }
+//
+//    public void setPaymentDate(LocalDate paymentDate) {
+//        this.paymentDate = paymentDate;
+//    }
+//
+//    public String getPaymentMode() {
+//        return paymentMode;
+//    }
+//
+//    public void setPaymentMode(String paymentMode) {
+//        this.paymentMode = paymentMode;
+//    }
+//
+//    public String getRemark() {
+//        return remark;
+//    }
+//
+//    public void setRemark(String remark) {
+//        this.remark = remark;
+//    }
+//}
+
+
+
 package com.example.stud_erp.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "student_fees")
+@Table(
+        name = "student_fees",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"studentId", "month", "year"})
+)
 public class StudentFee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long studentId;
+    private String studentId;
     private String studentName;
-    private String className;
+    private int classNumber;
 
     private String month;
-    private int year; // 🔥 NEW FIELD
+    private int year;
 
     private Double totalFee;
     private Double paidAmount;
@@ -179,102 +341,91 @@ public class StudentFee {
 
     private String status;
 
+    private LocalDate createdDate;
     private LocalDate paymentDate;
+
     private String paymentMode;
     private String remark;
 
+    // 🔥 RELATION
+    @OneToMany(
+            mappedBy = "studentFee",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JsonManagedReference
+    private List<FeeItem> feeItems = new ArrayList<>();
+
+    // 🔥 AUTO CALCULATION
     @PrePersist
     @PreUpdate
     public void calculateFee() {
+
+        totalFee = (feeItems == null) ? 0.0 :
+                feeItems.stream().mapToDouble(FeeItem::getAmount).sum();
+
         if (paidAmount == null) paidAmount = 0.0;
-        if (totalFee == null) totalFee = 0.0;
 
         pendingAmount = totalFee - paidAmount;
 
-        if (pendingAmount <= 0) {
+        if (totalFee == 0) {
+            status = "NOT_ASSIGNED";
+        } else if (pendingAmount == 0) {
             status = "PAID";
-            pendingAmount = 0.0;
         } else {
             status = "PENDING";
         }
     }
 
-    // getters setters (same as before)
+    // 🔥 SAFE SETTER
+    public void setFeeItems(List<FeeItem> feeItems) {
+        this.feeItems.clear();
 
-    public Long getId() {
-        return id;
+        if (feeItems != null) {
+            for (FeeItem item : feeItems) {
+                item.setStudentFee(this);
+                this.feeItems.add(item);
+            }
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // GETTERS & SETTERS
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getStudentId() {
-        return studentId;
-    }
+    public String getStudentId() { return studentId; }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
 
-    public String getStudentName() {
-        return studentName;
-    }
+    public int getClassNumber() { return classNumber; }
+    public void setClassNumber(int classNumber) { this.classNumber = classNumber; }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
+    public String getMonth() { return month; }
+    public void setMonth(String month) { this.month = month; }
 
-    public String getClassName() {
-        return className;
-    }
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
+    public Double getTotalFee() { return totalFee; }
+    public Double getPaidAmount() { return paidAmount; }
+    public void setPaidAmount(Double paidAmount) { this.paidAmount = paidAmount; }
 
-    public String getMonth() {
-        return month;
-    }
+    public Double getPendingAmount() { return pendingAmount; }
 
-    public void setMonth(String month) {
-        this.month = month;
-    }
+    public String getStatus() { return status; }
 
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public Double getTotalFee() {
-        return totalFee;
-    }
+    public LocalDate getCreatedDate() { return createdDate; }
+    public void setCreatedDate(LocalDate createdDate) { this.createdDate = createdDate; }
 
     public void setTotalFee(Double totalFee) {
         this.totalFee = totalFee;
     }
 
-    public Double getPaidAmount() {
-        return paidAmount;
-    }
-
-    public void setPaidAmount(Double paidAmount) {
-        this.paidAmount = paidAmount;
-    }
-
-    public Double getPendingAmount() {
-        return pendingAmount;
-    }
-
     public void setPendingAmount(Double pendingAmount) {
         this.pendingAmount = pendingAmount;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public void setStatus(String status) {
@@ -289,19 +440,11 @@ public class StudentFee {
         this.paymentDate = paymentDate;
     }
 
-    public String getPaymentMode() {
-        return paymentMode;
-    }
+    public String getPaymentMode() { return paymentMode; }
+    public void setPaymentMode(String paymentMode) { this.paymentMode = paymentMode; }
 
-    public void setPaymentMode(String paymentMode) {
-        this.paymentMode = paymentMode;
-    }
+    public String getRemark() { return remark; }
+    public void setRemark(String remark) { this.remark = remark; }
 
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
+    public List<FeeItem> getFeeItems() { return feeItems; }
 }
