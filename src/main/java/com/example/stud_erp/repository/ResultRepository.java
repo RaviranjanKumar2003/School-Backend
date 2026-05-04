@@ -12,4 +12,18 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
 
     // 🔥 MUST FOR RECHECK SYSTEM
     Optional<Result> findByStudentIdAndSubject(Long studentId, String subject);
+    List<Result> findByStudentIdAndPublishStatus(Long studentId, String publishStatus);
+    List<Result> findByExamId(Long examId);
+    Optional<Result> findByStudentIdAndExamId(Long studentId, Long examId);
+    Optional<Result> findByStudentIdAndSubjectAndExamId(
+            Long studentId,
+            String subject,
+            Long examId
+    );
+
+    List<Result> findByStudentIdAndExamIdAndPublishStatus(
+            Long studentId,
+            Long examId,
+            String publishStatus
+    );
 }

@@ -1,7 +1,13 @@
 package com.example.stud_erp.service;
 
+import com.example.stud_erp.entity.ExamSchedule;
 import com.example.stud_erp.entity.RecheckRequest;
+import com.example.stud_erp.entity.Result;
+import com.example.stud_erp.entity.Student;
+import com.example.stud_erp.repository.ExamScheduleRepository;
 import com.example.stud_erp.repository.RecheckRepository;
+import com.example.stud_erp.repository.ResultRepository;
+import com.example.stud_erp.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +19,50 @@ public class RecheckService {
     @Autowired
     private RecheckRepository recheckRepository;
 
-    // ✅ 1. CREATE REQUEST (MULTI SUBJECT FIXED 🔥)
-    public RecheckRequest createRequest(RecheckRequest request) {
+    @Autowired
+    private ResultRepository resultRepository;
 
-        // 🔥 check duplicate for each subject
-        for (String subject : request.getSubjects()) {
+    @Autowired
+    private StudentRepository studentRepository;
 
-            List<RecheckRequest> existing =
-                    recheckRepository.findByStudentIdAndSubjectsContaining(
-                            request.getStudentId(),
-                            subject
-                    );
+    @Autowired
+    private ExamScheduleRepository examScheduleRepository;
 
-            if (!existing.isEmpty()) {
-                throw new RuntimeException("Recheck already requested for subject: " + subject);
-            }
+    public RecheckRequest createRequest(RecheckRequest request){
+
+        String subject = request.getSubjects().get(0);
+
+        Student student = studentRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        ExamSchedule exam = examScheduleRepository.findById(request.getExamId())
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+
+        request.setStudentName(
+                student.getStudName() + " " + student.getStudLastName()
+        );
+
+        request.setStudentImage(student.getImageUrl());
+        request.setProfessorId(exam.getTeacherId());
+        request.setClassId(exam.getClassId());
+        request.setSubjectName(subject);
+
+        request.setTotalMarks(exam.getTotalMarks());
+        request.setExamType(exam.getExamType().name());
+
+        // 🔥 THIS WAS MISSING
+        Result result = resultRepository
+                .findByStudentIdAndSubjectAndExamId(
+                        request.getStudentId(),
+                        subject,
+                        request.getExamId()
+                )
+                .orElse(null);
+
+        if (result != null) {
+            request.setOldMarks(result.getMarks());
+        } else {
+            request.setOldMarks(0);
         }
 
         request.setStatus("PENDING");

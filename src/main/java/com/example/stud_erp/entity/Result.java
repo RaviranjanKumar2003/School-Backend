@@ -3,7 +3,12 @@ package com.example.stud_erp.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "results")
+@Table(
+        name = "results",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"studentId", "subject", "examId"} // 🔥 FIX
+        )
+)
 public class Result {
 
     @Id
@@ -12,6 +17,9 @@ public class Result {
 
     private Long studentId;
     private String subject;
+    private String publishStatus = "DRAFT"; // 🔥 NEW
+    private Long examId;
+    private Long classId;
 
     private int marks;
     private int totalMarks; // 🔥 NEW
@@ -21,10 +29,9 @@ public class Result {
     private String status;
     private Double percentage;
     private String grade;
-
     public Result() {}
 
-    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId) {
+    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId){
         this.studentId = studentId;
         this.subject = subject;
         this.marks = marks;
@@ -133,5 +140,29 @@ public class Result {
 
     public void setGrade(String grade) {
         this.grade = grade;
+    }
+
+    public String getPublishStatus() {
+        return publishStatus;
+    }
+
+    public void setPublishStatus(String publishStatus) {
+        this.publishStatus = publishStatus;
+    }
+
+    public Long getExamId() {
+        return examId;
+    }
+
+    public void setExamId(Long examId) {
+        this.examId = examId;
+    }
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
     }
 }

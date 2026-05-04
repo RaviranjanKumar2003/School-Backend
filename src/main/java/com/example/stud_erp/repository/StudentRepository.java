@@ -436,6 +436,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // ✅ ARCHIVED STUDENTS
     List<Student> findByIsDeletedTrue();
 
+    List<Student> findByClassNumber(Integer classNumber);
+
     // ❌ OLD LOGIC (keep but avoid using for roll generation)
     @Query("SELECT MAX(s.studRollNo) FROM Student s WHERE s.classNumber = :classNumber")
     Long findLastRollNumberByClass(@Param("classNumber") int classNumber);

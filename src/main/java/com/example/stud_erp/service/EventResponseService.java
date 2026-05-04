@@ -1,4 +1,4 @@
-g//package com.example.stud_erp.service;
+//package com.example.stud_erp.service;
 //
 //import com.example.stud_erp.payload.EventResponseDTO;
 //import com.example.stud_erp.entity.EventResponse;

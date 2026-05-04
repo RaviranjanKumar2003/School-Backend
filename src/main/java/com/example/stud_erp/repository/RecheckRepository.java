@@ -15,4 +15,10 @@ public interface RecheckRepository extends JpaRepository<RecheckRequest, Long> {
 
     // 🔥 MULTI SUBJECT SUPPORT (IMPORTANT)
     List<RecheckRequest> findByStudentIdAndSubjectsContaining(Long studentId, String subject);
+
+    List<RecheckRequest> findByStudentIdAndExamIdAndSubjectsContaining(
+            Long studentId,
+            Long examId,
+            String subject
+    );
 }
