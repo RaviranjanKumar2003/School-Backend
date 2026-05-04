@@ -503,8 +503,12 @@
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.Event;
+import com.example.stud_erp.entity.EventComment;
+import com.example.stud_erp.entity.EventReaction;
 import com.example.stud_erp.entity.EventResponse;
 import com.example.stud_erp.payload.EventResponseDTO;
+import com.example.stud_erp.service.EventCommentService;
+import com.example.stud_erp.service.EventReactionService;
 import com.example.stud_erp.service.EventResponseService;
 import com.example.stud_erp.service.EventService;
 
@@ -525,6 +529,12 @@ public class EventController {
 
     @Autowired
     private EventResponseService eventResponseService;
+
+    @Autowired
+    private EventReactionService reactionService;
+
+    @Autowired
+    private EventCommentService commentService;
 
     /* ================= EVENT CRUD ================= */
 
@@ -638,5 +648,52 @@ public class EventController {
         return ResponseEntity.ok(
                 eventResponseService.getResponseStats(eventId)
         );
+    }
+
+//  Student Like Comment Karege
+    @PostMapping("/react")
+      public ResponseEntity<String> react(@RequestBody EventReaction dto) {
+
+      reactionService.saveReaction(dto);
+
+      return ResponseEntity.ok("Saved");
+    }
+
+    @GetMapping("/reactions/{eventId}")
+    public ResponseEntity<List<EventReaction>> getReactions(
+            @PathVariable Long eventId) {
+
+        return ResponseEntity.ok(
+                reactionService.getByEvent(eventId)
+        );
+    }
+    @PostMapping("/comment")
+    public ResponseEntity<?> comment(@RequestBody EventComment dto) {
+        commentService.saveComment(dto);
+        return ResponseEntity.ok("Comment saved");
+    }
+
+    @GetMapping("/comments/{eventId}")
+    public ResponseEntity<?> getComments(@PathVariable Long eventId) {
+        return ResponseEntity.ok(commentService.getByEvent(eventId));
+    }
+
+    @DeleteMapping("/comment/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable Long id,
+            @RequestParam Long studentId) {
+
+        commentService.deleteComment(id, studentId);
+        return ResponseEntity.ok("Deleted");
+    }
+
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestParam Long studentId,
+            @RequestBody Map<String, String> body) {
+
+        commentService.updateComment(id, studentId, body.get("comment"));
+        return ResponseEntity.ok("Updated");
     }
 }

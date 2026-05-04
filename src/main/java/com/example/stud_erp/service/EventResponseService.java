@@ -1,60 +1,5 @@
-//package com.example.stud_erp.service;
-
-//package com.example.stud_erp.service;
-//
-//import com.example.stud_erp.payload.EventResponseDTO;
-//import com.example.stud_erp.entity.EventResponse;
-//import com.example.stud_erp.repository.EventResponseRepository;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//@Service
-//public class EventResponseService {
-//
-//    @Autowired
-//    private EventResponseRepository repository;
-//
-//    // 🔥 SAVE / UPDATE RESPONSE
-//    public void saveResponse(EventResponseDTO dto) {
-//
-//        // 🔥 check same teacher already responded
-//        Optional<EventResponse> existing =
-//                repository.findByEventIdAndTeacherId(dto.getEventId(), dto.getTeacherId());
-//
-//        EventResponse response;
-//
-//        if (existing.isPresent()) {
-//            // 🔁 UPDATE
-//            response = existing.get();
-//        } else {
-//            // 🆕 NEW
-//            response = new EventResponse();
-//            response.setEventId(dto.getEventId());
-//            response.setTeacherId(dto.getTeacherId());
-//
-//            // 🔥 TEMP NAME (later DB से ले सकते हो)
-//            response.setTeacherName("Teacher " + dto.getTeacherId());
-//        }
-//
-//        response.setStatus(dto.getStatus());
-//
-//        repository.save(response);
-//    }
-//
-//    // 🔥 GET ALL RESPONSES (ADMIN PANEL)
-//    public List<EventResponse> getAllResponses() {
-//        return repository.findAll();
-//    }
-//}
-
-
-
-
 package com.example.stud_erp.service;
+
 import com.example.stud_erp.payload.EventResponseDTO;
 import com.example.stud_erp.entity.EventResponse;
 import com.example.stud_erp.repository.EventResponseRepository;
@@ -70,7 +15,6 @@ public class EventResponseService {
     @Autowired
     private EventResponseRepository repository;
 
-    /* 🔥 SAVE / UPDATE */
     public void saveResponse(EventResponseDTO dto) {
 
         EventResponse response = repository
@@ -90,16 +34,13 @@ public class EventResponseService {
         }
 
         response.setStatus(dto.getStatus());
-
         repository.save(response);
     }
 
-    /* 🔥 ALL RESPONSES */
     public List<EventResponse> getAllResponses() {
         return repository.findAll();
     }
 
-    /* 🔥 EVENT WISE */
     public List<EventResponseDTO> getResponsesByEvent(Long eventId) {
 
         List<EventResponse> responses = repository.findByEventId(eventId);
@@ -119,7 +60,6 @@ public class EventResponseService {
         return list;
     }
 
-    /* 🔥 ANALYTICS */
     public Map<String, Long> getResponseStats(Long eventId) {
 
         List<EventResponse> responses = repository.findByEventId(eventId);

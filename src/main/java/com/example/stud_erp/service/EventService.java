@@ -547,8 +547,11 @@ public class EventService {
     /* ================= ROLE BASED ================= */
 
     public List<Event> getStudentEvents() {
+
         return eventRepository
-                .findByIsPublishedTrueAndTargetOrderByDateDesc("STUDENT");
+                .findByIsPublishedTrueAndTargetInOrderByDateDesc(
+                        Arrays.asList("STUDENTS", "ALL")
+                );
     }
 
     public List<Event> getPublicEventsByRole(String role) {

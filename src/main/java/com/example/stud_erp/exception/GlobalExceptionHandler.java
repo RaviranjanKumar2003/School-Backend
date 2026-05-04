@@ -3,8 +3,7 @@ package com.example.stud_erp.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -13,15 +12,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        String message = "An error occurred";
+
+        String message = "❌ Something went wrong";
 
         Throwable rootCause = ex.getRootCause();
-        if (rootCause instanceof SQLIntegrityConstraintViolationException) {
-            String rootMessage = rootCause.getMessage();
+
+        String rootMessage = (rootCause != null)
+                ? rootCause.getMessage()
+                : ex.getMessage();
+
+        if (rootMessage != null) {
+
             if (rootMessage.contains("username")) {
-                message = "Username is already taken";
-            } else if (rootMessage.contains("email")) {
-                message = "Email is already registered";
+                message = "❌ Username is already taken";
+            }
+            else if (rootMessage.contains("email")) {
+                message = "❌ Email is already registered";
+            }
+            else if (rootMessage.contains("Duplicate entry")) {
+                message = "❌ Marks already submitted for this subject";
             }
         }
 
@@ -30,8 +39,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OTPExpiredException.class)
     public ResponseEntity<String> handleOTPExpiredException(OTPExpiredException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("OTP has expired");
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("❌ OTP has expired");
+    }
+
+    // OPTIONAL (safe fallback)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleAll(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("❌ " + ex.getMessage());
     }
 }
-
-

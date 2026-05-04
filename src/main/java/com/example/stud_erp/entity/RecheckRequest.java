@@ -15,7 +15,10 @@ public class RecheckRequest {
     // 🔹 Student Info
     private Long studentId;
     private String studentName;
+    private String studentImage;
 
+    private Long classId;
+    private String subjectName;
     // 🔥 MULTIPLE SUBJECT SUPPORT
     @ElementCollection
     private List<String> subjects;
@@ -29,6 +32,11 @@ public class RecheckRequest {
 
     // 🔹 Teacher (who will recheck)
     private Long professorId;
+    private Long examId;
+    private String teacherRemark;
+    private int oldMarks;
+    private int totalMarks;
+    private String examType;
 
     // 🔹 Timestamps
     private LocalDateTime createdAt;
@@ -110,5 +118,77 @@ public class RecheckRequest {
 
     public void setProfessorId(Long professorId) {
         this.professorId = professorId;
+    }
+
+    public Long getExamId() {
+        return examId;
+    }
+
+    public void setExamId(Long examId) {
+        this.examId = examId;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getStudentImage() {
+        return studentImage;
+    }
+
+    public void setStudentImage(String studentImage) {
+        this.studentImage = studentImage;
+    }
+
+    public String getTeacherRemark() {
+        return teacherRemark;
+    }
+
+    public void setTeacherRemark(String teacherRemark) {
+        this.teacherRemark = teacherRemark;
+    }
+
+    public int getOldMarks() {
+        return oldMarks;
+    }
+
+    public void setOldMarks(int oldMarks) {
+        this.oldMarks = oldMarks;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+
+    public void setTotalMarks(int totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+    public String getExamType() {
+        return examType;
+    }
+
+    public void setExamType(String examType) {
+        this.examType = examType;
     }
 }

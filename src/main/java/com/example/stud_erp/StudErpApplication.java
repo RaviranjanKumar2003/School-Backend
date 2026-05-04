@@ -8,11 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableScheduling
-public class 	StudErpApplication {
+public class StudErpApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StudErpApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StudErpApplication.class, args);
+    }
 }
-
-	

@@ -85,48 +85,64 @@ public class RecheckController {
     }
 
     // ✅ 4. TEACHER VIEW APPROVED LIST
-    @GetMapping("/teacher")
-    public List<RecheckRequest> getApprovedRequests() {
+    @GetMapping("/teacher/{teacherId}")
+    public List<RecheckRequest> getTeacherRequests(@PathVariable Long teacherId) {
         return recheckService.getAllRequests()
                 .stream()
-                .filter(r -> "APPROVED".equals(r.getStatus()))
+                .filter(r -> "APPROVED".equals(r.getStatus())
+                        && r.getProfessorId().equals(teacherId))
                 .toList();
     }
 
-    // ✅ 5. TEACHER UPDATE MARKS (MULTI SUBJECT 🔥)
-    @PutMapping("/update/{id}")
-    public String updateAfterRecheck(@PathVariable Long id, @RequestBody Result body) {
+    @GetMapping("/admin")
+    public List<RecheckRequest> getAllForAdmin() {
+        return recheckService.getAllRequests();
+    }
 
-        // 🔍 get request
+
+    @PutMapping("/update/{id}")
+    public String updateAfterRecheck(
+            @PathVariable Long id,
+            @RequestParam String subject,
+            @RequestParam int newMarks
+    ) {
+
         RecheckRequest req = recheckService.getById(id);
 
-        int newMarks = body.getMarks();
+        resultService.updateMarks(req.getStudentId(), subject, newMarks);
 
-        // 🔥 loop all subjects
-        for (String subject : req.getSubjects()) {
-            resultService.updateMarks(req.getStudentId(), subject, newMarks);
-        }
-
-        // 🔥 mark completed
         req.setStatus("COMPLETED");
         recheckService.save(req);
 
-        // 🔔 Notify Student
-        NotificationDTO dto = new NotificationDTO();
-        dto.setTitle("Recheck Completed");
-        dto.setMessage("Your marks have been updated after recheck");
-        dto.setRecipientType("INDIVIDUAL");
-        dto.setRecipientId(req.getStudentId());
-        dto.setSender("TEACHER");
+        return "Recheck Completed ✅";
+    }
 
-        notificationService.sendNotification(dto);
+//    Recheck  copy
 
-        return "Recheck Process Completed ✅";
+    @GetMapping("/student/{studentId}")
+    public List<RecheckRequest> getStudentRequests(@PathVariable Long studentId) {
+        return recheckService.getStudentRequests(studentId);
     }
 
     // ✅ 6. ADMIN VIEW ALL
     @GetMapping("/all")
     public List<RecheckRequest> getAllRequests() {
         return recheckService.getAllRequests();
+    }
+
+
+    @PutMapping("/no-change/{id}")
+    public String noChange(
+            @PathVariable Long id,
+            @RequestParam String remark
+    ) {
+
+        RecheckRequest req = recheckService.getById(id);
+        req.setStatus("COMPLETED"); // ✅ status change
+        req.setTeacherRemark(remark); // ✅ reason save
+
+        recheckService.save(req);
+
+        return "No Change Saved ✅";
     }
 }
