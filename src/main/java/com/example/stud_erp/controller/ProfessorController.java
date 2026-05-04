@@ -1,6 +1,7 @@
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.Professor;
+import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ProfessorDTO;
 import com.example.stud_erp.service.ImageService;
 import com.example.stud_erp.service.ProfessorService;
@@ -8,8 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -18,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +33,14 @@ public class ProfessorController {
     private ImageService imageService;
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        Professor professor = professorService.authenticateUser(request);
+
+        return ResponseEntity.ok(professor);
+    }
 
     // ================= CREATE =================
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

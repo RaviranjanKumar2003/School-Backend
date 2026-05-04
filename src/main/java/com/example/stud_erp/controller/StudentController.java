@@ -487,31 +487,6 @@ public class StudentController {
 
 //=============================================== IMAGE =================================
 
-//    @PostMapping("/image/upload/{id}")
-//    public ResponseEntity<?> uploadStudentImage(
-//            @PathVariable Long id,
-//            @RequestParam("image") MultipartFile image
-//    ) {
-//        try {
-//
-//            Student student = studentService.getById(id)
-//                    .orElseThrow(() -> new RuntimeException("Student not found"));
-//
-//            if (student.getImageUrl() != null) {
-//                imageService.deleteImage(student.getImageUrl());
-//            }
-//
-//            String fileName = imageService.uploadImage(image);
-//            student.setImageUrl(fileName);
-//
-//            return ResponseEntity.ok(studentService.addStudent(student));
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body("Image upload failed");
-//        }
-//    }
-
-
     @PostMapping("/image/upload/{id}")
     public ResponseEntity<?> uploadStudentImage(
             @PathVariable Long id,
@@ -557,12 +532,7 @@ public class StudentController {
         StreamUtils.copy(is, response.getOutputStream());
     }
 
-
-
-
-    // ===============================================
-// ✅ NEW API: GET STUDENT BY CLASS + ROLL (FIX)
-// ===============================================
+// NEW API: GET STUDENT BY CLASS + ROLL (FIX)
     @GetMapping("/class/{classNumber}/roll/{rollNo}")
     public ResponseEntity<?> getStudentByClassAndRoll(
             @PathVariable int classNumber,
@@ -588,5 +558,3 @@ public class StudentController {
 }
 
 
-
-// latest error found

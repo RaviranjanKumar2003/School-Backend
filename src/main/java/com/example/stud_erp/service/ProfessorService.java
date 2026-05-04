@@ -1,6 +1,7 @@
 package com.example.stud_erp.service;
 
 import com.example.stud_erp.entity.Professor;
+import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ProfessorDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,4 +24,6 @@ public interface ProfessorService {
     void deleteProfessor(Long id);
 
     Professor saveProfessor(Professor professor);
+
+    Professor authenticateUser(LoginRequest request);
 }

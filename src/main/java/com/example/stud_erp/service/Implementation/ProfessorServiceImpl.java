@@ -2,6 +2,7 @@ package com.example.stud_erp.service.Implementation;
 
 import com.example.stud_erp.entity.Professor;
 import com.example.stud_erp.entity.TeacherAssignment;
+import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ProfessorDTO;
 import com.example.stud_erp.repository.ProfessorRepository;
 import com.example.stud_erp.service.ProfessorService;
@@ -118,6 +119,22 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Override
     public Professor saveProfessor(Professor professor) {
         return professorRepository.save(professor);
+    }
+
+    @Override
+    public Professor authenticateUser(LoginRequest request) {
+
+        Professor prof = professorRepository
+                .findByUsernameAndPassword(
+                        request.getUsername(),
+                        request.getPassword()
+                );
+
+        if (prof == null) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        return prof;
     }
 
 }

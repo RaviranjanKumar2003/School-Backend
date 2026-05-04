@@ -32,8 +32,11 @@ public class Professor {
     // 🔥 REMOVE department completely
 
     // ONE TO MANY
-    @OneToMany(mappedBy = "professor", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(
+            mappedBy = "professor",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<TeacherAssignment> assignments;
 
     public Professor() {}
