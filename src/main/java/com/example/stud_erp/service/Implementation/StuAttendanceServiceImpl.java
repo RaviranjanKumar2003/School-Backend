@@ -62,4 +62,10 @@ public class StuAttendanceServiceImpl implements StuAttendanceService {
                     return dto;
                 }).toList();
     }
+
+
+    @Override
+    public List<StuAttendance> getByDate(LocalDate date) {
+        return repo.findByDate(date);
+    }
 }
