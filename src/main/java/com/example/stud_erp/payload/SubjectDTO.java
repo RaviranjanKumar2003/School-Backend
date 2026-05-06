@@ -7,7 +7,18 @@ public class SubjectDTO {
     private Long classId;
     private Integer number; // ✅ ADD THIS
 
+    private String className;
+
     // GETTERS
+
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
     public Long getId() {
         return id;
