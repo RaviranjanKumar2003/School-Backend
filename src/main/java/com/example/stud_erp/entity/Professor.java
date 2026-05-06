@@ -29,6 +29,8 @@ public class Professor {
     private String imageUrl;
     private String otp;
 
+    private Long hodId;
+
     // 🔥 REMOVE department completely
 
     // ONE TO MANY
@@ -43,6 +45,14 @@ public class Professor {
 
 // getters setters
 
+
+    public Long getHodId() {
+        return hodId;
+    }
+
+    public void setHodId(Long hodId) {
+        this.hodId = hodId;
+    }
 
     public Long getId() {
         return id;

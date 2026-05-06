@@ -323,6 +323,7 @@
 
 package com.example.stud_erp.service;
 
+import com.example.stud_erp.entity.ClassEntity;
 import com.example.stud_erp.entity.Student;
 import com.example.stud_erp.entity.StudentFee;
 import com.example.stud_erp.exception.CustomException;
@@ -331,6 +332,7 @@ import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ResetPasswordRequest;
 import com.example.stud_erp.payload.StudentDTO;
 import com.example.stud_erp.payload.StudentFeeDTO;
+import com.example.stud_erp.repository.ClassRepository;
 import com.example.stud_erp.repository.StudentFeeRepository;
 import com.example.stud_erp.repository.StudentRepository;
 
@@ -359,6 +361,9 @@ public class StudentService {
 
     @Autowired
     private StudentFeeRepository studentFeeRepository;
+
+    @Autowired
+    private ClassRepository classRepository;
 
     // ===============================
     // GET ALL STUDENTS
@@ -404,6 +409,7 @@ public class StudentService {
 
         dto.setStudRollNo(student.getStudRollNo());
         dto.setStudName(student.getStudName());
+        dto.setClassName(student.getClassName());
         dto.setStudFatherName(student.getStudFatherName());
         dto.setStudLastName(student.getStudLastName());
         dto.setStudPhoneNumber(student.getStudPhoneNumber());
@@ -461,6 +467,14 @@ public class StudentService {
             if (student.getClassNumber() == null || student.getClassNumber() <= 0) {
                 throw new CustomException("Valid class required");
             }
+
+            // ✅ FETCH CLASS NAME FROM DB
+            ClassEntity cls = classRepository.findById(student.getClassNumber().longValue())
+                    .orElseThrow(() -> new CustomException("Class not found"));
+
+            student.setClassName(cls.getClassName());
+
+            student.setClassName(cls.getClassName());
 
             student.setClassName(student.getClassName());
 

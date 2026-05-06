@@ -58,6 +58,8 @@ public class ProfessorServiceImpl implements ProfessorService {
         professor.setExperience(dto.getExperience());
         professor.setJoiningDate(dto.getJoiningDate());
 
+        professor.setHodId(dto.getHodId());
+
         // username/password only for create
         if (professor.getId() == null) {
             String username = dto.getName().toLowerCase().replaceAll(" ", "");

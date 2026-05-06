@@ -55,6 +55,7 @@ public class ProfessorController {
             @RequestParam("experience") String experience,
             @RequestParam("joiningDate") String joiningDate,
             @RequestParam("assignments") String assignmentsJson,
+            @RequestParam("hodId") Long hodId,
 
             @RequestParam(value = "image", required = false) MultipartFile image
 
@@ -70,6 +71,8 @@ public class ProfessorController {
         dto.setQualification(qualification);
         dto.setExperience(experience);
         dto.setJoiningDate(joiningDate);
+
+        dto.setHodId(hodId);
 
         dto.setAssignments(
                 Arrays.asList(mapper.readValue(

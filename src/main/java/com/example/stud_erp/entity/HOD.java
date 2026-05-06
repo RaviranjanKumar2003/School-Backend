@@ -43,7 +43,10 @@ public class HOD {
  @Column(nullable = false)
  private String phone;
 
- private String coverImage;
+ @ElementCollection
+ @CollectionTable(name = "hod_cover_images", joinColumns = @JoinColumn(name = "hod_id"))
+ @Column(name = "image")
+ private List<String> coverImages;
 
  @ElementCollection
  @CollectionTable(name = "hod_subjects", joinColumns = @JoinColumn(name = "hod_id"))
@@ -64,16 +67,20 @@ public class HOD {
 
  @PrePersist
  protected void onCreate() {
+
   createdAt = LocalDateTime.now();
  }
 
  @PreUpdate
  protected void onUpdate() {
+
   updatedAt = LocalDateTime.now();
  }
 
-    public void setUpdatedAt(LocalDateTime now) {
-    }
+
+ public void setUpdatedAt(LocalDateTime updatedAt) {
+  this.updatedAt = updatedAt;
+ }
 
  public String getPhone() {
   return phone;
@@ -175,11 +182,11 @@ public class HOD {
   return updatedAt;
  }
 
- public String getCoverImage() {
-  return coverImage;
+ public List<String> getCoverImages() {
+  return coverImages;
  }
 
- public void setCoverImage(String coverImage) {
-  this.coverImage = coverImage;
+ public void setCoverImages(List<String> coverImages) {
+  this.coverImages = coverImages;
  }
 }

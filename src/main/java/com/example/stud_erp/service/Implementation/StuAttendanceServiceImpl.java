@@ -29,9 +29,11 @@ public class StuAttendanceServiceImpl implements StuAttendanceService {
         List<StuAttendance> records = list.stream().map(s -> {
 
             Student student = studentRepo.findById(s.getStudentId())
-                    .orElseThrow(() -> new RuntimeException("Student not found: " + s.getStudentId()));
+                    .orElseThrow(() ->
+                            new RuntimeException("Student not found: " + s.getStudentId()));
 
             StuAttendance a = new StuAttendance();
+
             a.setClassNumber(classNumber);
             a.setDate(date);
             a.setStudent(student);
@@ -47,36 +49,55 @@ public class StuAttendanceServiceImpl implements StuAttendanceService {
     }
 
     @Override
-    public List<StuAttendanceDTO> getByClassAndDate(Integer classNumber, LocalDate date) {
+    public List<StuAttendanceDTO> getByClassAndDate(
+            Integer classNumber,
+            LocalDate date
+    ) {
 
         return repo.findByClassNumberAndDate(classNumber, date)
                 .stream()
                 .map(a -> {
+
                     StuAttendanceDTO dto = new StuAttendanceDTO();
+
                     dto.setStudentId(a.getStudent().getId());
                     dto.setStudentName(a.getStudent().getStudName());
                     dto.setStudentLastName(a.getStudent().getStudLastName());
                     dto.setEmail(a.getStudent().getEmail());
                     dto.setStudRollNo(a.getStudent().getStudRollNo());
                     dto.setStatus(a.getStatus());
+
                     return dto;
+
                 }).toList();
     }
 
+    // STUDENT ATTENDANCE
     @Override
     public List<StuAttendanceDTO> getByStudent(Long id) {
 
         return repo.findByStudentId(id)
                 .stream()
                 .map(a -> {
+
                     StuAttendanceDTO dto = new StuAttendanceDTO();
 
                     dto.setStudentId(a.getStudent().getId());
                     dto.setStudentName(a.getStudent().getStudName());
                     dto.setStatus(a.getStatus());
-                    dto.setDate(a.getDate()); // 🔥 IMPORTANT
+
+                    // IMPORTANT
+                    dto.setDate(a.getDate());
 
                     return dto;
+
                 }).toList();
+    }
+
+    // DAILY SUMMARY
+    @Override
+    public List<StuAttendance> getByDate(LocalDate date) {
+
+        return repo.findByDate(date);
     }
 }
