@@ -122,14 +122,15 @@ public class ExamScheduleService {
         ExamSchedule saved = repo.save(req);
 
         // 🔥 AUTO STUDENT ASSIGN
-        String className = classRepo.findById(req.getClassId())
-                .get()
-                .getClassName();
 
-        Integer classNumber = Integer.parseInt(className);
+        Integer classNumber = classRepo.findById(req.getClassId())
+                .get()
+                .getId().intValue(); // id = 1,2,3,4
 
         List<Student> students =
                 studentRepo.findByClassNumber(classNumber);
+
+        System.out.println("Students found: " + students.size());
 
         for (Student s : students) {
             StudentExam se = new StudentExam();

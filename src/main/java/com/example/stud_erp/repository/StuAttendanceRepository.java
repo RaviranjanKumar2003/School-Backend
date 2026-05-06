@@ -10,5 +10,9 @@ public interface StuAttendanceRepository extends JpaRepository<StuAttendance, Lo
 
     List<StuAttendance> findByClassNumberAndDate(Integer classNumber, LocalDate date);
 
+    // STUDENT ATTENDANCE
+    List<StuAttendance> findByStudentId(Long studentId);
+
+    // DAILY SUMMARY
     List<StuAttendance> findByDate(LocalDate date);
 }

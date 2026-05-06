@@ -37,6 +37,13 @@ public class StuAttendanceController {
         return service.getByClassAndDate(classNumber, LocalDate.parse(date));
     }
 
+    // STUDENT ATTENDANCE
+    @GetMapping("/student/{id}")
+    public List<StuAttendanceDTO> getByStudent(@PathVariable Long id) {
+        return service.getByStudent(id);
+    }
+
+    // DAILY SUMMARY
     @GetMapping("/summary")
     public Map<String, Object> getStudentSummary(@RequestParam String date) {
 
@@ -60,14 +67,14 @@ public class StuAttendanceController {
         return map;
     }
 
-
-
+    // WEEKLY SUMMARY
     @GetMapping("/weekly-summary")
     public List<Map<String, Object>> getWeeklyStudentSummary() {
 
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (int i = 6; i >= 0; i--) {
+
             LocalDate date = LocalDate.now().minusDays(i);
 
             List<StuAttendance> list = service.getByDate(date);
@@ -77,6 +84,7 @@ public class StuAttendanceController {
                     .count();
 
             Map<String, Object> map = new HashMap<>();
+
             map.put("date", date.toString());
             map.put("present", present);
 
@@ -85,5 +93,4 @@ public class StuAttendanceController {
 
         return result;
     }
-
 }

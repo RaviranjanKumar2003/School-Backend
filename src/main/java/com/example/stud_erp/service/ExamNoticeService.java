@@ -24,7 +24,6 @@ public class ExamNoticeService {
     @Autowired
     private ClassRepository classRepo;
 
-
     public void createExamNotice(Long classId, String examType, String message) {
 
         List<Subject> subjects =
@@ -36,17 +35,30 @@ public class ExamNoticeService {
 
             List<Professor> teachers = professorRepository.findAll()
                     .stream()
-                    .filter(professor ->
-                            professor.getAssignments() != null &&
-                                    professor.getAssignments().stream()
-                                            .anyMatch(a ->
-                                                    a.getSubjectName() != null &&
-                                                            a.getSubjectName().trim().toLowerCase()
-                                                                    .equals(subjectName)
-                                            )
+                    .filter(p ->
+                            p.getAssignments() != null &&
+                                    p.getAssignments().stream().anyMatch(a ->
+
+                                            // SUBJECT MATCH
+                                            a.getSubjectName() != null &&
+                                                    a.getSubjectName().trim()
+                                                            .equalsIgnoreCase(subjectName.trim())
+
+                                                    // CLASS MATCH
+                                                    &&
+                                                    a.getClassName() != null &&
+                                                    a.getClassName().trim()
+                                                            .equalsIgnoreCase(
+                                                                    classRepo.findById(classId)
+                                                                            .get()
+                                                                            .getClassName()
+                                                                            .trim()
+                                                            )
+                                    )
                     )
                     .toList();
 
+            // DEBUG
             System.out.println("👉 Subject: " + subjectName);
 
             for (Professor teacher : teachers) {
@@ -66,7 +78,7 @@ public class ExamNoticeService {
         }
     }
 
-    // 🔥 teacher ke liye
+    // TEACHER NOTICES
     public List<ExamNoticeDTO> getTeacherNotices(Long teacherId) {
 
         List<ExamNotice> list = noticeRepo.findByTeacherId(teacherId);
@@ -81,7 +93,7 @@ public class ExamNoticeService {
             dto.setMessage(n.getMessage());
             dto.setCreatedAt(n.getCreatedAt().toString());
 
-            // 🔥 CLASS NAME
+            // CLASS NAME
             dto.setClassName("Unknown");
 
             if (n.getClassId() != null) {
@@ -94,6 +106,7 @@ public class ExamNoticeService {
         }).toList();
     }
 
+    // ALL NOTICES
     public List<ExamNoticeDTO> getAll() {
 
         List<ExamNotice> list = noticeRepo.findAll();
@@ -109,7 +122,7 @@ public class ExamNoticeService {
             dto.setStatus(n.getStatus());
             dto.setCreatedAt(n.getCreatedAt().toString());
 
-            // 🔥 CLASS NAME
+            // CLASS NAME
             dto.setClassName("Unknown");
 
             if (n.getClassId() != null) {
