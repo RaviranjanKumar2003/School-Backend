@@ -2,6 +2,8 @@ package com.example.stud_erp.payload;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class StuAttendanceDTO {
 
@@ -11,9 +13,18 @@ public class StuAttendanceDTO {
     private String email;           // ✅ ADD
     private String status;
     private Long studRollNo;
+    private LocalDate date;
 
 // GETTERS & SETTERS
 
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
     public String getStudentLastName() {
         return studentLastName;

@@ -62,4 +62,21 @@ public class StuAttendanceServiceImpl implements StuAttendanceService {
                     return dto;
                 }).toList();
     }
+
+    @Override
+    public List<StuAttendanceDTO> getByStudent(Long id) {
+
+        return repo.findByStudentId(id)
+                .stream()
+                .map(a -> {
+                    StuAttendanceDTO dto = new StuAttendanceDTO();
+
+                    dto.setStudentId(a.getStudent().getId());
+                    dto.setStudentName(a.getStudent().getStudName());
+                    dto.setStatus(a.getStatus());
+                    dto.setDate(a.getDate()); // 🔥 IMPORTANT
+
+                    return dto;
+                }).toList();
+    }
 }

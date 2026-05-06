@@ -37,17 +37,28 @@ public class ExamNoticeService {
             List<Professor> teachers = professorRepository.findAll()
                     .stream()
                     .filter(p ->
-                            p.getSubject() != null &&
-                                    p.getSubject().trim().toLowerCase()
-                                            .equals(subjectName.trim().toLowerCase())
+                            p.getAssignments() != null &&
+                                    p.getAssignments().stream().anyMatch(a ->
+
+                                            // ✅ subject match
+                                            a.getSubjectName() != null &&
+                                                    a.getSubjectName().trim()
+                                                            .equalsIgnoreCase(subjectName.trim())
+
+                                                    // ✅ class match
+                                                    &&
+
+                                                    a.getClassName() != null &&
+                                                    a.getClassName().trim()
+                                                            .equalsIgnoreCase(
+                                                                    classRepo.findById(classId)
+                                                                            .get()
+                                                                            .getClassName()
+                                                                            .trim()
+                                                            )
+                                    )
                     )
                     .toList();
-
-            System.out.println("👉 Subject from DB: " + subjectName);
-
-            for (Professor p : professorRepository.findAll()) {
-                System.out.println("👉 Teacher Subject: " + p.getSubject());
-            }
 
             for (Professor teacher : teachers) {
 

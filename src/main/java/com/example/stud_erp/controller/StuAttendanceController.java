@@ -32,4 +32,9 @@ public class StuAttendanceController {
     ) {
         return service.getByClassAndDate(classNumber, LocalDate.parse(date));
     }
+
+    @GetMapping("/student/{id}")
+    public List<StuAttendanceDTO> getByStudent(@PathVariable Long id) {
+        return service.getByStudent(id);
+    }
 }

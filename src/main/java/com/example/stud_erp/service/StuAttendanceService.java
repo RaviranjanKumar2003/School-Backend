@@ -10,4 +10,7 @@ public interface StuAttendanceService {
     String save(Integer classNumber, LocalDate date, List<StuAttendanceDTO> list);
 
     List<StuAttendanceDTO> getByClassAndDate(Integer classNumber, LocalDate date);
+
+    // 🔥 ADD THIS
+    List<StuAttendanceDTO> getByStudent(Long id);
 }

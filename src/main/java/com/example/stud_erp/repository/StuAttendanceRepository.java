@@ -9,4 +9,5 @@ import java.util.List;
 public interface StuAttendanceRepository extends JpaRepository<StuAttendance, Long> {
 
     List<StuAttendance> findByClassNumberAndDate(Integer classNumber, LocalDate date);
+    List<StuAttendance> findByStudentId(Long studentId);
 }
