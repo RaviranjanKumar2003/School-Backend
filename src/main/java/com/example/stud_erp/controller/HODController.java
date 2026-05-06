@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -256,9 +257,9 @@ public class HODController {
     }
 
 
-    @PostMapping("/cover/upload/{hodId}")
-    public ResponseEntity<HOD> uploadCoverImage(
-            @RequestParam("image") MultipartFile image,
+    @PostMapping("/cover/upload-multiple/{hodId}")
+    public ResponseEntity<HOD> uploadMultipleCoverImages(
+            @RequestParam("images") List<MultipartFile> images,
             @PathVariable Long hodId
     ) throws IOException {
 
@@ -268,44 +269,57 @@ public class HODController {
             throw new RuntimeException("HOD not found");
         }
 
-        // old cover delete
-        if (hod.getCoverImage() != null) {
-            imageService.deleteImage(hod.getCoverImage());
+        List<String> imageUrls = new ArrayList<>();
+
+        for (MultipartFile image : images) {
+            String fileName = imageService.uploadImage(image);
+            imageUrls.add(fileName);
         }
 
-        String fileName = imageService.uploadImage(image);
-        hod.setCoverImage(fileName);
+        hod.setCoverImages(imageUrls);
 
         return ResponseEntity.ok(hodService.saveHOD(hod));
     }
 
-
-    @GetMapping("/cover/get/{hodId}")
-    public void downloadCoverImage(
+    @GetMapping("/cover/get-file/{hodId}/{fileName}")
+    public void getCoverImage(
             @PathVariable Long hodId,
+            @PathVariable String fileName,
             HttpServletResponse response
     ) throws IOException {
 
         HOD hod = hodService.getHODById(hodId);
 
-        if (hod == null || hod.getCoverImage() == null) {
+        if (hod == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("Cover image not found");
+            response.getWriter().write("HOD not found");
             return;
         }
 
-        String imageName = Paths.get(hod.getCoverImage()).getFileName().toString();
+        // FIX: null-safe check
+        List<String> images = hod.getCoverImages();
 
-        try (InputStream resource = imageService.getResource(imageName)) {
-
-            String contentType = URLConnection.guessContentTypeFromName(imageName);
-
-            response.setContentType(
-                    contentType != null ? contentType : "application/octet-stream"
-            );
-
-            StreamUtils.copy(resource, response.getOutputStream());
+        if (images == null || !images.contains(fileName)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Image not assigned to this HOD");
+            return;
         }
+
+        InputStream resource = imageService.getResource(fileName);
+
+        if (resource == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().write("File not found");
+            return;
+        }
+
+        String contentType = URLConnection.guessContentTypeFromName(fileName);
+
+        response.setContentType(
+                contentType != null ? contentType : "application/octet-stream"
+        );
+
+        StreamUtils.copy(resource, response.getOutputStream());
     }
 
 

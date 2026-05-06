@@ -32,22 +32,22 @@ public class ExamNoticeService {
 
         for (Subject sub : subjects) {
 
-            String subjectName = sub.getSubjectName().trim();
+            String subjectName = sub.getSubjectName().trim().toLowerCase();
 
             List<Professor> teachers = professorRepository.findAll()
                     .stream()
-                    .filter(p ->
-                            p.getSubject() != null &&
-                                    p.getSubject().trim().toLowerCase()
-                                            .equals(subjectName.trim().toLowerCase())
+                    .filter(professor ->
+                            professor.getAssignments() != null &&
+                                    professor.getAssignments().stream()
+                                            .anyMatch(a ->
+                                                    a.getSubjectName() != null &&
+                                                            a.getSubjectName().trim().toLowerCase()
+                                                                    .equals(subjectName)
+                                            )
                     )
                     .toList();
 
-            System.out.println("👉 Subject from DB: " + subjectName);
-
-            for (Professor p : professorRepository.findAll()) {
-                System.out.println("👉 Teacher Subject: " + p.getSubject());
-            }
+            System.out.println("👉 Subject: " + subjectName);
 
             for (Professor teacher : teachers) {
 
@@ -55,12 +55,10 @@ public class ExamNoticeService {
 
                 notice.setClassId(classId);
                 notice.setExamType(examType);
-                notice.setSubjectName(subjectName);
+                notice.setSubjectName(sub.getSubjectName());
                 notice.setTeacherId(teacher.getId());
 
-                // ✅ ADMIN MESSAGE USE
                 notice.setMessage(message);
-
                 notice.setStatus("CREATED");
 
                 noticeRepo.save(notice);

@@ -18,6 +18,8 @@ public class ProfessorDTO {
 
     private String schoolCode;
 
+    private Long hodId;
+
     private List<AssignmentDTO> assignments;
 
     // INNER DTO
@@ -44,6 +46,14 @@ public class ProfessorDTO {
 
 // GETTERS & SETTERS
 
+
+    public Long getHodId() {
+        return hodId;
+    }
+
+    public void setHodId(Long hodId) {
+        this.hodId = hodId;
+    }
 
     public String getSchoolCode() {
         return schoolCode;
