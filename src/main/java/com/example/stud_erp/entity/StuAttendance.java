@@ -7,6 +7,11 @@ import java.time.LocalDate;
 
 @Entity
 @Data
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"student_id", "classNumber", "date"}
+        )
+)
 public class StuAttendance {
 
     @Id
@@ -22,6 +27,14 @@ public class StuAttendance {
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
+
+    // ================= NEW FIELDS 🔥 =================
+
+    private Long takenById;        // HOD ya Teacher ID
+
+    private String takenByName;   // Name store kar lo (fast access)
+
+    private String takenByRole;   // "HOD" / "TEACHER"
 
 // GETTERS & SETTERS
 
@@ -64,5 +77,29 @@ public class StuAttendance {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    public Long getTakenById() {
+        return takenById;
+    }
+
+    public void setTakenById(Long takenById) {
+        this.takenById = takenById;
+    }
+
+    public String getTakenByName() {
+        return takenByName;
+    }
+
+    public void setTakenByName(String takenByName) {
+        this.takenByName = takenByName;
+    }
+
+    public String getTakenByRole() {
+        return takenByRole;
+    }
+
+    public void setTakenByRole(String takenByRole) {
+        this.takenByRole = takenByRole;
     }
 }

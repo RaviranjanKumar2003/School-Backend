@@ -31,6 +31,9 @@ public class HOD {
  @Column(nullable = false)
  private String department;
 
+ @Column(nullable = false)
+ private String schoolName;
+
  @Column(unique = true, nullable = false)
  private String username;
 
@@ -77,6 +80,17 @@ public class HOD {
   updatedAt = LocalDateTime.now();
  }
 
+
+// GETTERS & SETTERS
+
+
+ public String getSchoolName() {
+  return schoolName;
+ }
+
+ public void setSchoolName(String schoolName) {
+  this.schoolName = schoolName;
+ }
 
  public void setUpdatedAt(LocalDateTime updatedAt) {
   this.updatedAt = updatedAt;

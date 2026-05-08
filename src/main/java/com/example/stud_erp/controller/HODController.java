@@ -45,6 +45,7 @@ public class HODController {
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("name") String name,
             @RequestParam("department") String department,
+            @RequestParam("schoolName") String schoolName,
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("email") String email,
@@ -55,6 +56,7 @@ public class HODController {
 
             hod.setName(name);
             hod.setDepartment(department);
+            hod.setSchoolName(schoolName);
             hod.setUsername(username);
             hod.setPassword(password);
             hod.setEmail(email);
@@ -89,6 +91,7 @@ public class HODController {
             @RequestParam(value = "file", required = false) MultipartFile multipartFile,
             @RequestParam("name") String name,
             @RequestParam("department") String department,
+            @RequestParam("schoolName") String schoolName,
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("email") String email,
@@ -104,6 +107,7 @@ public class HODController {
 
             existingHOD.setName(name);
             existingHOD.setDepartment(department);
+            existingHOD.setSchoolName(schoolName);
             existingHOD.setUsername(username);
             existingHOD.setPassword(password);
             existingHOD.setEmail(email);

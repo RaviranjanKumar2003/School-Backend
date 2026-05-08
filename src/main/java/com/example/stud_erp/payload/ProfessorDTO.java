@@ -25,7 +25,16 @@ public class ProfessorDTO {
     // INNER DTO
     public static class AssignmentDTO {
         private String className;
+        private Long classId;
         private String subjectName;
+
+        public Long getClassId() {
+            return classId;
+        }
+
+        public void setClassId(Long classId) {
+            this.classId = classId;
+        }
 
         public String getClassName() {
             return className;

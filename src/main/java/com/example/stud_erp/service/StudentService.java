@@ -570,6 +570,14 @@ public class StudentService {
             // ✅ FIX
             student.setClassNumber(updatedStudent.getClassNumber());
 
+            // ✅ FETCH CLASS NAME FROM DB
+            ClassEntity cls = classRepository
+                    .findById(updatedStudent.getClassNumber().longValue())
+                    .orElseThrow(() -> new CustomException("Class not found"));
+
+            // ✅ SET CLASS NAME
+            student.setClassName(cls.getClassName());
+
             student.setStudCategory(updatedStudent.getStudCategory());
             student.setStudCaste(updatedStudent.getStudCaste());
             student.setStudentAge(updatedStudent.getStudentAge());

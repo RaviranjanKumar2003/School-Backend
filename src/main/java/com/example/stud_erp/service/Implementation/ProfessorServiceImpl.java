@@ -86,6 +86,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 
                 TeacherAssignment ta = new TeacherAssignment();
                 ta.setClassName(a.getClassName());
+                ta.setClassId(a.getClassId());
                 ta.setSubjectName(a.getSubjectName());
                 ta.setProfessor(professor);
 

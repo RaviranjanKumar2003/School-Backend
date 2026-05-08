@@ -43,6 +43,7 @@ public class HODService {
 
         hod.setName(hodDetails.getName());
         hod.setDepartment(hodDetails.getDepartment());
+        hod.setSchoolName(hodDetails.getSchoolName());
         hod.setUsername(hodDetails.getUsername());
         hod.setPassword(hodDetails.getPassword());
         hod.setEmail(hodDetails.getEmail());
