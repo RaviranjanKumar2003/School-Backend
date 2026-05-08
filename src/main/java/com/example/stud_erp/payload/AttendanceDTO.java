@@ -1,47 +1,65 @@
 package com.example.stud_erp.payload;
 
-import lombok.Data;
-
-@Data
 public class AttendanceDTO {
 
+    // =====================================
+    // STUDENT ID
+    // =====================================
     private Long studentId;
+
+    // =====================================
+    // STUDENT NAME
+    // =====================================
     private String studentName;
-    private String status; // P / A
+
+    // =====================================
+    // STUDENT ROLL NUMBER
+    // =====================================
     private Long studRollNo;
 
+    // =====================================
+    // ATTENDANCE STATUS (FIXED: Enum to String)
+    // =====================================
+    private String status;
 
-// GETTERS & SETTERS
-
-
-    public Long getStudRollNo() {
-        return studRollNo;
-    }
-
-    public void setStudRollNo(Long studRollNo) {
-        this.studRollNo = studRollNo;
-    }
+    // =====================================
+    // GETTERS
+    // =====================================
 
     public Long getStudentId() {
         return studentId;
-    }
-
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
     }
 
     public String getStudentName() {
         return studentName;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
+    public Long getStudRollNo() {
+        return studRollNo;
     }
 
+    // ✅ FIX: String return karega
     public String getStatus() {
         return status;
     }
 
+    // =====================================
+    // SETTERS
+    // =====================================
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public void setStudRollNo(Long studRollNo) {
+        this.studRollNo = studRollNo;
+    }
+
+    // ✅ FIX: String accept karega
     public void setStatus(String status) {
         this.status = status;
     }

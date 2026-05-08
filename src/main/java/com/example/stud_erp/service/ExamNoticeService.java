@@ -38,6 +38,7 @@ public class ExamNoticeService {
                     .filter(p ->
                             p.getAssignments() != null &&
                                     p.getAssignments().stream().anyMatch(a ->
+<<<<<<< HEAD
 
                                             // SUBJECT MATCH
                                             a.getSubjectName() != null &&
@@ -54,12 +55,20 @@ public class ExamNoticeService {
                                                                             .getClassName()
                                                                             .trim()
                                                             )
+=======
+                                            a.getSubjectName() != null &&
+                                                    a.getSubjectName().trim().equalsIgnoreCase(subjectName.trim())
+>>>>>>> 5bf6a9a (work done)
                                     )
                     )
                     .toList();
 
+<<<<<<< HEAD
             // DEBUG
             System.out.println("👉 Subject: " + subjectName);
+=======
+
+>>>>>>> 5bf6a9a (work done)
 
             for (Professor teacher : teachers) {
 

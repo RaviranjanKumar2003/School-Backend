@@ -28,10 +28,10 @@ public class ClassSessionController {
         return service.getAllSessions();
     }
 
-    // 🔥 GET BY CLASS
-    @GetMapping("/class/{classNumber}")
-    public List<ClassSession> getByClass(@PathVariable Integer classNumber) {
-        return service.getByClass(classNumber);
+    // 🔥 GET BY CLASS NAME ✅ UPDATED
+    @GetMapping("/class/{className}")
+    public List<ClassSession> getByClass(@PathVariable String className) {
+        return service.getByClass(className);
     }
 
     // 🔥 DELETE
