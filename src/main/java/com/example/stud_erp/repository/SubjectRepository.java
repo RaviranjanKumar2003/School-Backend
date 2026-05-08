@@ -8,4 +8,5 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     List<Subject> findByClassEntityId(Long classId);
+    List<Subject> findByClassEntity_ClassName(String className);
 }

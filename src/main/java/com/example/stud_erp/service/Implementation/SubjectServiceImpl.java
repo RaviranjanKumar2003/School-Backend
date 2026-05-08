@@ -60,4 +60,23 @@ public class SubjectServiceImpl implements SubjectService {
     public void deleteSubject(Long subjectId) {
         subjectRepo.deleteById(subjectId);
     }
+
+    @Override
+    public List<SubjectDTO> getByClassName(String className) {
+
+        return subjectRepo
+                .findByClassEntity_ClassName(className)
+                .stream()
+                .map(sub -> {
+
+                    SubjectDTO dto = new SubjectDTO();
+
+                    dto.setId(sub.getId());
+                    dto.setSubjectName(sub.getSubjectName());
+                    dto.setClassId(sub.getClassEntity().getId());
+
+                    return dto;
+                })
+                .toList();
+    }
 }

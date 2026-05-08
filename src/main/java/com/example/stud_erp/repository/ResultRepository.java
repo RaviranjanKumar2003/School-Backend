@@ -2,6 +2,7 @@ package com.example.stud_erp.repository;
 
 import com.example.stud_erp.entity.Result;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +27,22 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             Long examId,
             String publishStatus
     );
+
+    @Query("""
+    SELECT r.examType
+    FROM Result r
+    WHERE r.studentId = :studentId
+    AND r.publishStatus = 'PUBLISHED'
+    GROUP BY r.examType
+    ORDER BY MAX(r.id) DESC
+    LIMIT 1
+    """)
+    String findLatestExamType(Long studentId);
+
+    List<Result> findByStudentIdAndExamTypeAndPublishStatus(
+            Long studentId,
+            String examType,
+            String publishStatus
+    );
+
 }

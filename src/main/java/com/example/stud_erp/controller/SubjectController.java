@@ -33,4 +33,11 @@ public class SubjectController {
     public void delete(@PathVariable Long id) {
         subjectService.deleteSubject(id);
     }
+
+    @GetMapping("/class-name/{className}")
+    public List<SubjectDTO> getByClassName(
+            @PathVariable String className
+    ) {
+        return subjectService.getByClassName(className);
+    }
 }

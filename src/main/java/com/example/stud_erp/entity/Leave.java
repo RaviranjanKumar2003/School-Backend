@@ -17,6 +17,9 @@ public class Leave {
     private LocalDate toDate;
 
     private String sendTo; // HOD / TEACHER
+    private Long teacherId;
+
+    private Boolean sendToAll = false;
 
     private String status = "PENDING"; // PENDING, APPROVED, REJECTED
 
@@ -26,6 +29,22 @@ public class Leave {
 
     // getters setters
 
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public Boolean getSendToAll() {
+        return sendToAll;
+    }
+
+    public void setSendToAll(Boolean sendToAll) {
+        this.sendToAll = sendToAll;
+    }
 
     public Long getId() {
         return id;

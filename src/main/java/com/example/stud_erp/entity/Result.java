@@ -19,6 +19,7 @@ public class Result {
     private String subject;
     private String publishStatus = "DRAFT"; // 🔥 NEW
     private Long examId;
+    private String examType;
     private Long classId;
 
     private int marks;
@@ -31,12 +32,28 @@ public class Result {
     private String grade;
     public Result() {}
 
-    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId){
+    public Result(
+            Long studentId,
+            String subject,
+            int marks,
+            int totalMarks,
+            Long professorId,
+            String examType
+    ) {
         this.studentId = studentId;
         this.subject = subject;
         this.marks = marks;
         this.totalMarks = totalMarks;
         this.professorId = professorId;
+        this.examType = examType;
+    }
+
+    public String getExamType() {
+        return examType;
+    }
+
+    public void setExamType(String examType) {
+        this.examType = examType;
     }
 
     // 🔹 AUTO CALCULATION

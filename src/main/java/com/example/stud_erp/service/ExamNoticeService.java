@@ -58,9 +58,6 @@ public class ExamNoticeService {
                     )
                     .toList();
 
-            // DEBUG
-            System.out.println("👉 Subject: " + subjectName);
-
             for (Professor teacher : teachers) {
 
                 ExamNotice notice = new ExamNotice();

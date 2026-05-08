@@ -47,4 +47,11 @@ public class LeaveController {
         leaveService.rejectLeave(id);
         return "Rejected";
     }
+
+    @GetMapping("/teacher/{teacherId}")
+    public List<Leave> getTeacherLeaves(
+            @PathVariable Long teacherId
+    ) {
+        return leaveService.getTeacherLeaves(teacherId);
+    }
 }

@@ -202,4 +202,12 @@ public class ProfessorController {
             StreamUtils.copy(inputStream, response.getOutputStream());
         }
     }
+
+    @GetMapping("/class/{className}")
+    public List<Professor> getTeachersByClass(
+            @PathVariable String className
+    ) {
+        return professorService
+                .getTeachersByClass(className);
+    }
 }

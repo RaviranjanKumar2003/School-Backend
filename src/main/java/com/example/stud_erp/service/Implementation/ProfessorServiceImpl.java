@@ -139,4 +139,12 @@ public class ProfessorServiceImpl implements ProfessorService {
         return prof;
     }
 
+    @Override
+    public List<Professor> getTeachersByClass(
+            String className
+    ) {
+        return professorRepository
+                .findTeachersByClassName(className);
+    }
+
 }

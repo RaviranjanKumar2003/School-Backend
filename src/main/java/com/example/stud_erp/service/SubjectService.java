@@ -11,4 +11,5 @@ public interface SubjectService {
     List<SubjectDTO> getSubjectsByClass(Long classId);
 
     void deleteSubject(Long subjectId);
+    List<SubjectDTO> getByClassName(String className);
 }

@@ -26,4 +26,6 @@ public interface ProfessorService {
     Professor saveProfessor(Professor professor);
 
     Professor authenticateUser(LoginRequest request);
+
+    List<Professor> getTeachersByClass(String className);
 }

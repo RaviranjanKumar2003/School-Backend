@@ -118,4 +118,12 @@ public class ResultController {
     ) {
         return resultService.getResultByClassAndType(classId, examType);
     }
+
+    @GetMapping("/latest-summary/{studentId}")
+    public List<Result> latestSummary(
+            @PathVariable Long studentId
+    ) {
+        return resultService
+                .getLatestPublishedResult(studentId);
+    }
 }

@@ -57,4 +57,17 @@ public class LeaveService {
         l.setStatus("REJECTED");
         leaveRepository.save(l);
     }
+
+    public List<Leave> getTeacherLeaves(Long teacherId) {
+
+        List<Leave> directLeaves =
+                leaveRepository.findByTeacherId(teacherId);
+
+        List<Leave> allTeacherLeaves =
+                leaveRepository.findBySendToAll(true);
+
+        directLeaves.addAll(allTeacherLeaves);
+
+        return directLeaves;
+    }
 }

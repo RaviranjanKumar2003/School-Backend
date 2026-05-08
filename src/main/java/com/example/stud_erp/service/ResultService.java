@@ -64,7 +64,7 @@ public class ResultService {
 
         r.setExamId(se.getExamScheduleId());
         r.setClassId(exam.getClassId());
-
+        r.setExamType(exam.getExamType().name());
         int totalMarks = exam.getTotalMarks();
         r.setTotalMarks(totalMarks);
 
@@ -439,5 +439,23 @@ public class ResultService {
         }
 
         return finalList;
+    }
+
+
+    public List<Result> getLatestPublishedResult(Long studentId) {
+
+        String latestType =
+                resultRepository.findLatestExamType(studentId);
+
+        if (latestType == null) {
+            return new ArrayList<>();
+        }
+
+        return resultRepository
+                .findByStudentIdAndExamTypeAndPublishStatus(
+                        studentId,
+                        latestType,
+                        "PUBLISHED"
+                );
     }
 }

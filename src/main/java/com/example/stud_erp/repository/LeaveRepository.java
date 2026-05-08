@@ -10,4 +10,6 @@ public interface LeaveRepository extends JpaRepository<Leave, Long> {
     List<Leave> findByStudentId(Long studentId);
 
     List<Leave> findBySendTo(String sendTo); // HOD / TEACHER ke liye
+    List<Leave> findByTeacherId(Long teacherId);
+    List<Leave> findBySendToAll(Boolean sendToAll);
 }
