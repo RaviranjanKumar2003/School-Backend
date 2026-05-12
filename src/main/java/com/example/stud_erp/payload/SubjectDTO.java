@@ -5,20 +5,12 @@ public class SubjectDTO {
     private Long id;
     private String subjectName;
     private Long classId;
-    private Integer number; // ✅ ADD THIS
+    private Long schoolId;   // ⭐ IMPORTANT
+    private Integer number;
 
     private String className;
 
     // GETTERS
-
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
 
     public Long getId() {
         return id;
@@ -32,8 +24,16 @@ public class SubjectDTO {
         return classId;
     }
 
-    public Integer getNumber() { // ✅ ADD
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public Integer getNumber() {
         return number;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     // SETTERS
@@ -50,7 +50,15 @@ public class SubjectDTO {
         this.classId = classId;
     }
 
-    public void setNumber(Integer number) { // ✅ ADD
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 }

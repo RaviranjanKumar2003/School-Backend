@@ -1,108 +1,110 @@
 package com.example.stud_erp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "hods", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(
+        name = "hods",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        }
+)
 public class HOD {
 
+ // ================= ID =================
  @Id
  @GeneratedValue(strategy = GenerationType.IDENTITY)
  private Long id;
 
+ // ================= BASIC INFO =================
  @Column(nullable = false)
  private String name;
 
- @Column(length = 255)
  private String imageUrl;
 
  @Column(nullable = false)
  private String department;
 
- @Column(nullable = false)
- private String schoolName;
-
- @Column(unique = true, nullable = false)
+ @Column(nullable = false, unique = true)
  private String username;
 
  @Column(nullable = false)
  private String password;
 
- @Column(unique = true, nullable = false)
+ @Column(nullable = false, unique = true)
  private String email;
 
  @Column(nullable = false)
  private String phone;
 
+ // ================= COVER IMAGES =================
  @ElementCollection
- @CollectionTable(name = "hod_cover_images", joinColumns = @JoinColumn(name = "hod_id"))
+ @CollectionTable(
+         name = "hod_cover_images",
+         joinColumns = @JoinColumn(name = "hod_id")
+ )
  @Column(name = "image")
  private List<String> coverImages;
 
+ // ================= SUBJECTS =================
  @ElementCollection
- @CollectionTable(name = "hod_subjects", joinColumns = @JoinColumn(name = "hod_id"))
+ @CollectionTable(
+         name = "hod_subjects",
+         joinColumns = @JoinColumn(name = "hod_id")
+ )
  @Column(name = "subject")
  private List<String> subjects;
 
- @Column
+ // ================= OTP =================
  private String otp;
 
- @Column
  private LocalDateTime otpExpiry;
 
- @Column(nullable = false, updatable = false)
+ // ================= AUDIT =================
  private LocalDateTime createdAt;
 
- @Column
  private LocalDateTime updatedAt;
 
+ // ================= SCHOOL =================
+ @ManyToOne(fetch = FetchType.LAZY)
+
+ @JoinColumn(
+         name = "school_id",
+         nullable = false
+ )
+
+ @JsonIgnoreProperties({
+         "schoolAdmin",
+         "hods",
+         "hibernateLazyInitializer",
+         "handler"
+ })
+
+ private School school;
+
+ // ================= LIFECYCLE =================
  @PrePersist
- protected void onCreate() {
+ public void onCreate() {
 
   createdAt = LocalDateTime.now();
- }
-
- @PreUpdate
- protected void onUpdate() {
 
   updatedAt = LocalDateTime.now();
  }
 
+ @PreUpdate
+ public void onUpdate() {
 
-// GETTERS & SETTERS
-
-
- public String getSchoolName() {
-  return schoolName;
+  updatedAt = LocalDateTime.now();
  }
 
- public void setSchoolName(String schoolName) {
-  this.schoolName = schoolName;
- }
-
- public void setUpdatedAt(LocalDateTime updatedAt) {
-  this.updatedAt = updatedAt;
- }
-
- public String getPhone() {
-  return phone;
- }
-
- public void setPhone(String phone) {
-  this.phone = phone;
- }
+ // ================= GETTERS & SETTERS =================
 
  public Long getId() {
   return id;
@@ -160,6 +162,22 @@ public class HOD {
   this.email = email;
  }
 
+ public String getPhone() {
+  return phone;
+ }
+
+ public void setPhone(String phone) {
+  this.phone = phone;
+ }
+
+ public List<String> getCoverImages() {
+  return coverImages;
+ }
+
+ public void setCoverImages(List<String> coverImages) {
+  this.coverImages = coverImages;
+ }
+
  public List<String> getSubjects() {
   return subjects;
  }
@@ -196,11 +214,15 @@ public class HOD {
   return updatedAt;
  }
 
- public List<String> getCoverImages() {
-  return coverImages;
+ public void setUpdatedAt(LocalDateTime updatedAt) {
+  this.updatedAt = updatedAt;
  }
 
- public void setCoverImages(List<String> coverImages) {
-  this.coverImages = coverImages;
+ public School getSchool() {
+  return school;
+ }
+
+ public void setSchool(School school) {
+  this.school = school;
  }
 }
