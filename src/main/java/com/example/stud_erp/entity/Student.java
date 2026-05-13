@@ -33,7 +33,7 @@ public class Student {
     private String password;
     private String email;
 
-    private Integer classNumber;
+    private Long classNumber;
     private String className;
 
     private Long studRollNo;
@@ -140,11 +140,11 @@ public class Student {
         this.email = email;
     }
 
-    public Integer getClassNumber() {
+    public Long getClassNumber() {
         return classNumber;
     }
 
-    public void setClassNumber(Integer classNumber) {
+    public void setClassNumber(Long classNumber) {
         this.classNumber = classNumber;
     }
 

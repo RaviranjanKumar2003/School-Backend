@@ -6,16 +6,19 @@ import com.example.stud_erp.payload.StuAttendanceDTO;
 import com.example.stud_erp.repository.StudentRepository;
 import com.example.stud_erp.repository.StuAttendanceRepository;
 import com.example.stud_erp.service.StuAttendanceService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
-public class StuAttendanceServiceImpl implements StuAttendanceService {
+public class StuAttendanceServiceImpl
+        implements StuAttendanceService {
 
     @Autowired
     private StuAttendanceRepository repo;
@@ -23,49 +26,227 @@ public class StuAttendanceServiceImpl implements StuAttendanceService {
     @Autowired
     private StudentRepository studentRepo;
 
+    // ================= SAVE =================
     @Override
-    public String save(Integer classNumber, LocalDate date, List<StuAttendanceDTO> list) {
+    public String save(
+            Long schoolId,
+            Long classId,
+            LocalDate date,
+            Long takenById,
+            String takenByName,
+            String takenByRole,
+            List<StuAttendanceDTO> list
+    ) {
 
-        List<StuAttendance> records = list.stream().map(s -> {
+        // 🔥 ROLE VALIDATION
+        if (
+                !takenByRole.equalsIgnoreCase("HOD")
+                        &&
+                        !takenByRole.equalsIgnoreCase("Teacher")
+                        &&
+                        !takenByRole.equalsIgnoreCase("SchoolAdmin")
+        ) {
 
-            Student student = studentRepo.findById(s.getStudentId())
-                    .orElseThrow(() -> new RuntimeException("Student not found: " + s.getStudentId()));
+            throw new RuntimeException(
+                    "Invalid role. Allowed: HOD, Teacher, SchoolAdmin"
+            );
+        }
 
-            StuAttendance a = new StuAttendance();
-            a.setClassNumber(classNumber);
-            a.setDate(date);
-            a.setStudent(student);
-            a.setStatus(s.getStatus());
+        for (StuAttendanceDTO dto : list) {
 
-            return a;
+            Student student =
+                    studentRepo.findById(dto.getStudentId())
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Student not found"
+                                    )
+                            );
 
-        }).toList();
+            // ================= SAME SCHOOL =================
+            if (
+                    !student.getSchoolId()
+                            .equals(schoolId)
+            ) {
 
-        repo.saveAll(records);
+                throw new RuntimeException(
+                        "Student belongs to another school"
+                );
+            }
 
-        return "Saved Successfully";
+            // ================= SAME CLASS =================
+            if (
+                    !student.getClassNumber()
+                            .equals(classId)
+            ) {
+
+                throw new RuntimeException(
+                        "Student belongs to another class"
+                );
+            }
+
+            // ================= CHECK EXISTING =================
+            Optional<StuAttendance> existingOpt =
+                    repo.findByStudent_IdAndDateAndClassId(
+                            student.getId(),
+                            date,
+                            classId
+                    );
+
+            // ================= UPDATE =================
+            if (existingOpt.isPresent()) {
+
+                StuAttendance existing =
+                        existingOpt.get();
+
+                existing.setStatus(dto.getStatus());
+
+                existing.setTakenById(takenById);
+
+                existing.setTakenByName(takenByName);
+
+                existing.setTakenByRole(takenByRole);
+
+                repo.save(existing);
+
+            }
+
+            // ================= INSERT =================
+            else {
+
+                StuAttendance attendance =
+                        new StuAttendance();
+
+                attendance.setSchoolId(
+                        student.getSchoolId()
+                );
+
+                attendance.setSchoolName(
+                        student.getSchoolName()
+                );
+
+                attendance.setClassId(
+                        student.getClassNumber()
+                );
+
+                attendance.setClassName(
+                        student.getClassName()
+                );
+
+                attendance.setDate(date);
+
+                attendance.setStudent(student);
+
+                attendance.setStatus(dto.getStatus());
+
+                // ================= TAKEN BY =================
+                attendance.setTakenById(
+                        takenById
+                );
+
+                attendance.setTakenByName(
+                        takenByName
+                );
+
+                attendance.setTakenByRole(
+                        takenByRole
+                );
+
+                repo.save(attendance);
+            }
+        }
+
+        return "Attendance Saved Successfully";
     }
 
+    // ================= GET =================
     @Override
-    public List<StuAttendanceDTO> getByClassAndDate(Integer classNumber, LocalDate date) {
+    public List<StuAttendanceDTO> getByClassAndDate(
+            Long schoolId,
+            Long classId, LocalDate date
+    ) {
 
-        return repo.findByClassNumberAndDate(classNumber, date)
+        return repo
+                .findBySchoolIdAndClassIdAndDate(
+                        schoolId,
+                        classId,
+                        date
+                )
                 .stream()
                 .map(a -> {
-                    StuAttendanceDTO dto = new StuAttendanceDTO();
-                    dto.setStudentId(a.getStudent().getId());
-                    dto.setStudentName(a.getStudent().getStudName());
-                    dto.setStudentLastName(a.getStudent().getStudLastName());
-                    dto.setEmail(a.getStudent().getEmail());
-                    dto.setStudRollNo(a.getStudent().getStudRollNo());
-                    dto.setStatus(a.getStatus());
+
+                    StuAttendanceDTO dto =
+                            new StuAttendanceDTO();
+
+                    dto.setStudentId(
+                            a.getStudent().getId()
+                    );
+
+                    dto.setStudentName(
+                            a.getStudent().getStudName()
+                    );
+
+                    dto.setStudentLastName(
+                            a.getStudent().getStudLastName()
+                    );
+
+                    dto.setEmail(
+                            a.getStudent().getEmail()
+                    );
+
+                    dto.setStudRollNo(
+                            a.getStudent().getStudRollNo()
+                    );
+
+                    dto.setStatus(
+                            a.getStatus()
+                    );
+
+                    // ================= SCHOOL =================
+                    dto.setSchoolId(
+                            a.getSchoolId()
+                    );
+
+                    dto.setSchoolName(
+                            a.getSchoolName()
+                    );
+
+                    // ================= CLASS =================
+                    dto.setClassId(
+                            a.getClassId()
+                    );
+
+                    dto.setClassName(
+                            a.getClassName()
+                    );
+
+                    // ================= TAKEN BY =================
+                    dto.setTakenById(
+                            a.getTakenById()
+                    );
+
+                    dto.setTakenByName(
+                            a.getTakenByName()
+                    );
+
+                    dto.setTakenByRole(
+                            a.getTakenByRole()
+                    );
+
                     return dto;
+
                 }).toList();
     }
 
-
+    // ================= DAILY =================
     @Override
-    public List<StuAttendance> getByDate(LocalDate date) {
-        return repo.findByDate(date);
+    public List<StuAttendance> getByDate(
+            Long schoolId,
+            LocalDate date
+    ) {
+
+        return repo.findBySchoolIdAndDate(
+                schoolId,
+                date
+        );
     }
 }

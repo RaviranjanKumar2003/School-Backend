@@ -23,31 +23,16 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     boolean existsByStudentId(String studentId);
 
-    boolean existsBySchoolIdAndClassNumberAndStudRollNoAndIsDeletedFalse(
-            Long schoolId, Integer classNumber, Long rollNo
-    );
-
-    List<Student> findBySchoolIdAndIsDeletedFalse(Long schoolId);
-
-    List<Student> findBySchoolIdAndClassNumberAndIsDeletedFalse(Long schoolId, Integer classNumber);
-
     Optional<Student> findByStudentId(String studentId);
 
-    //========================================================================
-
-
-    Optional<Student> findByUsernameAndPassword(String username, String password);
-
-
+    Optional<Student> findByUsernameAndPassword(
+            String username,
+            String password
+    );
 
     Optional<Student> findByStudName(String studName);
 
-
     boolean existsByStudRollNo(Long studRollNo);
-
-
-
-
 
     boolean existsByStudentIdOrUsernameOrEmailOrStudRollNo(
             String studentId,
@@ -56,6 +41,71 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             Long studRollNo
     );
 
+    // =========================================================
+    // SCHOOL WISE
+    // =========================================================
+
+    List<Student> findBySchoolIdAndIsDeletedFalse(Long schoolId);
+
+    List<Student> findBySchoolIdAndClassNumberAndIsDeletedFalse(
+            Long schoolId,
+            Long classNumber
+    );
+
+    Long countBySchoolIdAndIsDeletedFalse(Long schoolId);
+
+    // =========================================================
+    // ACTIVE / ARCHIVE
+    // =========================================================
+
+    List<Student> findByIsDeletedFalse();
+
+    List<Student> findByIsDeletedTrue();
+
+    List<Student> findByClassNumberAndIsDeletedFalse(
+            Long classNumber
+    );
+
+
+    List<Student> findByClassNumber(Long classNumber);
+
+    List<Student> findBySchoolIdAndIsDeletedTrue(Long schoolId);
+
+    // =========================================================
+    // ROLL NUMBER
+    // =========================================================
+
+    @Query("""
+        SELECT s.studRollNo
+        FROM Student s
+        WHERE s.classNumber = :classNumber
+        AND s.isDeleted = false
+        ORDER BY s.studRollNo ASC
+    """)
+    List<Long> findActiveRollsByClass(
+            @Param("classNumber") Long classNumber
+    );
+
+    boolean existsByClassNumberAndStudRollNoAndIsDeletedFalse(
+            Long classNumber,
+            Long studRollNo
+    );
+
+    Optional<Student> findByClassNumberAndStudRollNo(
+            Long classNumber,
+            Long studRollNo
+    );
+
+    List<Student> findByClassNameIgnoreCase(String className);
+
+    @Query("SELECT MAX(s.id) FROM Student s")
+    Long findMaxId();
+
+    Long countByClassNumber(Long classNumber);
+
+    // =========================================================
+    // DTO
+    // =========================================================
 
     @Query("""
         SELECT new com.example.stud_erp.payload.StudentDTO(
@@ -65,46 +115,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         FROM Student s
         WHERE s.id = :id
     """)
-    Optional<StudentDTO> findStudentUsernameAndEmailById(Long id);
-
-    // ✅ ACTIVE STUDENTS
-    List<Student> findByIsDeletedFalse();
-
-    // ✅ CLASS FILTER
-    List<Student> findByClassNumberAndIsDeletedFalse(int classNumber);
-
-    // ✅ ARCHIVED STUDENTS
-    List<Student> findByIsDeletedTrue();
-
-    List<Student> findByClassNumber(Integer classNumber);
-
-    // ❌ OLD LOGIC (keep but avoid using for roll generation)
-    @Query("SELECT MAX(s.studRollNo) FROM Student s WHERE s.classNumber = :classNumber")
-    Long findLastRollNumberByClass(@Param("classNumber") int classNumber);
-
-
-    // ============================================================
-    // 🔥 NEW METHODS (IMPORTANT - DO NOT REMOVE)
-    // ============================================================
-
-    // ✅ GET ALL ACTIVE ROLLS (FOR GAP LOGIC)
-    @Query("SELECT s.studRollNo FROM Student s WHERE s.classNumber = :classNumber AND s.isDeleted = false ORDER BY s.studRollNo ASC")
-    List<Long> findActiveRollsByClass(@Param("classNumber") int classNumber);
-
-
-    // ✅ CHECK ROLL EXISTS IN SAME CLASS (FOR RESTORE)
-    boolean existsByClassNumberAndStudRollNoAndIsDeletedFalse(int classNumber, Long studRollNo);
-
-
-    Optional<Student> findByClassNumberAndStudRollNo(int classNumber, Long studRollNo);
-
-
-    List<Student> findByClassNameIgnoreCase(String className);
-
-
-    @Query("SELECT MAX(s.id) FROM Student s")
-    Long findMaxId();
-
-    Long countByClassNumber(Integer classNumber);
+    Optional<StudentDTO> findStudentUsernameAndEmailById(
+            Long id
+    );
 
 }

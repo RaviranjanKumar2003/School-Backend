@@ -14,9 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -29,6 +34,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private ImageService imageService;
+
 
     // ================= CREATE =================
     @Override
@@ -64,7 +70,7 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= CLASS FETCH =================
         ClassEntity cls = classRepository
-                .findById(student.getClassNumber().longValue())
+                .findById(student.getClassNumber())
                 .orElseThrow(() ->
                         new RuntimeException("Class not found")
                 );
@@ -130,23 +136,88 @@ public class StudentServiceImpl implements StudentService {
 
     // ================= UPDATE =================
     @Override
-    public Student updateStudent(Long id, Student updated) {
+    public Student updateStudent(
 
-        Student st = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+            Long id,
 
-        st.setStudName(updated.getStudName());
-        st.setEmail(updated.getEmail());
-        st.setStudPhoneNumber(updated.getStudPhoneNumber());
+            Student updatedStudent,
 
-        st.setClassNumber(updated.getClassNumber());
+            MultipartFile image
 
-        ClassEntity cls = classRepository.findById(updated.getClassNumber().longValue())
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+    ) throws IOException {
 
-        st.setClassName(cls.getClassName());
+        Student student =
+                studentRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Student not found"
+                                )
+                        );
 
-        return studentRepository.save(st);
+        // ================= UPDATE FIELDS =================
+
+        student.setStudName(
+                updatedStudent.getStudName()
+        );
+
+        student.setStudLastName(
+                updatedStudent.getStudLastName()
+        );
+
+        student.setEmail(
+                updatedStudent.getEmail()
+        );
+
+        student.setStudPhoneNumber(
+                updatedStudent.getStudPhoneNumber()
+        );
+
+        student.setClassNumber(
+                updatedStudent.getClassNumber()
+        );
+
+        student.setStudRollNo(
+                updatedStudent.getStudRollNo()
+        );
+
+        // ================= IMAGE =================
+
+        if (
+                image != null &&
+                        !image.isEmpty()
+        ) {
+
+            String fileName =
+                    UUID.randomUUID()
+                            + "_"
+                            + image.getOriginalFilename();
+
+            Path uploadPath =
+                    Paths.get(
+                            "uploads/students"
+                    );
+
+            if (
+                    !Files.exists(uploadPath)
+            ) {
+
+                Files.createDirectories(
+                        uploadPath
+                );
+            }
+
+            Files.copy(
+                    image.getInputStream(),
+
+                    uploadPath.resolve(fileName),
+
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            student.setImageUrl(fileName);
+        }
+
+        return studentRepository.save(student);
     }
 
     // ================= DELETE =================
@@ -174,7 +245,7 @@ public class StudentServiceImpl implements StudentService {
 
     // ================= CLASS WISE =================
     @Override
-    public List<StudentDTO> getStudentsByClass(Long schoolId, int classNumber) {
+    public List<StudentDTO> getStudentsByClass(Long schoolId, Long classNumber) {
 
         return studentRepository
                 .findBySchoolIdAndClassNumberAndIsDeletedFalse(schoolId, classNumber)
@@ -258,5 +329,62 @@ public class StudentServiceImpl implements StudentService {
         response.setSchoolCode(student.getSchoolCode());
 
         return response;
+    }
+
+    // ================= TOTAL STUDENTS =================
+    @Override
+    public Long getTotalStudents(Long schoolId) {
+
+        return studentRepository
+                .countBySchoolIdAndIsDeletedFalse(schoolId);
+    }
+
+
+    @Override
+    public Student getById(Long id) {
+
+        return studentRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Student not found"
+                        )
+                );
+    }
+
+
+    @Override
+    public List<StudentDTO> getDeletedStudents(Long schoolId) {
+
+        return studentRepository.findBySchoolIdAndIsDeletedTrue(schoolId)
+                .stream()
+                .map(s -> {
+                    StudentDTO dto = new StudentDTO();
+                    dto.setId(s.getId());
+                    dto.setStudName(s.getStudName());
+                    dto.setEmail(s.getEmail());
+                    dto.setStudPhoneNumber(s.getStudPhoneNumber());
+                    dto.setStudRollNo(s.getStudRollNo());
+                    dto.setClassNumber(s.getClassNumber());
+                    dto.setImageUrl(s.getImageUrl());
+                    return dto;
+                })
+                .toList();
+    }
+
+
+    @Override
+    public void restoreStudent(Long id) {
+
+        Student s = studentRepository.findById(id)
+                .orElseThrow();
+
+        s.setDeleted(false);
+
+        studentRepository.save(s);
+    }
+
+    @Override
+    public void permanentDelete(Long id) {
+        studentRepository.deleteById(id);
     }
 }

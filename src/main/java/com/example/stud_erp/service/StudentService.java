@@ -19,7 +19,11 @@ public interface StudentService {
     ) throws IOException;
 
     // ================= UPDATE =================
-    Student updateStudent(Long id, Student student);
+    Student updateStudent(
+            Long id,
+            Student student,
+            MultipartFile image
+    ) throws IOException;
 
     // ================= DELETE =================
     void deleteStudent(Long id);
@@ -27,11 +31,26 @@ public interface StudentService {
     // ================= GET =================
     List<StudentDTO> getAllStudents(Long schoolId);
 
-    List<StudentDTO> getStudentsByClass(Long schoolId, int classNumber);
+    List<StudentDTO> getStudentsByClass(
+            Long schoolId,
+            Long classNumber
+    );
 
     Optional<Student> getStudentById(Long id);
 
     Optional<Student> getByStudentId(String studentId);
 
+    public List<StudentDTO> getDeletedStudents(Long schoolId);
+
+    void restoreStudent(Long id);
+
+    void permanentDelete(Long id);
+
+    // ================= COUNT =================
+    Long getTotalStudents(Long schoolId);
+
+    // ================= LOGIN =================
     LoginResponse authenticateUser(LoginRequest request);
+
+    Student getById(Long id);
 }
