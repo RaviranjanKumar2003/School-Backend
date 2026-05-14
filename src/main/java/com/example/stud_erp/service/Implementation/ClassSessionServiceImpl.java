@@ -27,10 +27,10 @@ public class ClassSessionServiceImpl implements ClassSessionService {
         return repo.findAll();
     }
 
-    // 🔥 GET BY CLASS
+    // 🔥 GET BY CLASS NAME ✅ UPDATED
     @Override
-    public List<ClassSession> getByClass(Integer classNumber) {
-        return repo.findByClassNumber(classNumber);
+    public List<ClassSession> getByClass(String className) {
+        return repo.findByClassName(className);
     }
 
     // 🔥 DELETE

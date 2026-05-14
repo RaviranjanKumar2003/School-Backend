@@ -9,11 +9,12 @@ import java.util.Optional;
 
 public interface ClassSessionRepository extends JpaRepository<ClassSession, Long> {
 
-    Optional<ClassSession> findByClassNumberAndDateAndSubject(
-            Integer classNumber,
-            LocalDate date,
-            String subject
+    List<ClassSession> findByClassName(String className);
+
+    Optional<ClassSession> findByClassNameAndAttendanceDate(
+            String className,
+            LocalDate attendanceDate
     );
 
-    List<ClassSession> findByClassNumber(Integer classNumber);
+    List<ClassSession> findByAttendanceDate(LocalDate attendanceDate);
 }

@@ -88,6 +88,9 @@ public class ExamNoticeService {
 
                 noticeRepo.save(notice);
             }
+            // DEBUG
+            System.out.println("👉 Subject: " + subjectName);
+
 
             for (Professor teacher : teachers) {
 

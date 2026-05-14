@@ -123,7 +123,7 @@ public class ExamScheduleService {
 
         // 🔥 AUTO STUDENT ASSIGN
 
-        Integer classNumber = classRepo.findById(req.getClassId())
+        Long classNumber = (long) classRepo.findById(req.getClassId())
                 .get()
                 .getId().intValue(); // id = 1,2,3,4
 

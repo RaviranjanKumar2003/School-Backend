@@ -12,8 +12,8 @@ public interface ClassSessionService {
     // 🔥 GET ALL
     List<ClassSession> getAllSessions();
 
-    // 🔥 GET BY CLASS
-    List<ClassSession> getByClass(Integer classNumber);
+    // 🔥 GET BY CLASS NAME ✅ UPDATED
+    List<ClassSession> getByClass(String className);
 
     // 🔥 DELETE
     void deleteSession(Long id);

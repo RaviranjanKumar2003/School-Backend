@@ -1,22 +1,20 @@
-package com.example.stud_erp.entity;
+package com.example.stud_erp.payload;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "teacher_attendance")
-public class TeacherAttendance {
+public class TeacherAttendanceDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long schoolId;   // 🔥 IMPORTANT (missing earlier)
-
-    @Column(name = "teacher_id")
     private Long teacherId;
 
-    private String status; // P / A
+    private Long schoolId;
+
+    private String teacherName;
+
+    private String email;
+
+    private String status;
 
     private LocalDate date;
 
@@ -25,7 +23,6 @@ public class TeacherAttendance {
     private String createdByRole;
 
     private String createdByName;
-
 
 // GETTERS & SETTERS
 
@@ -36,6 +33,14 @@ public class TeacherAttendance {
 
     public void setCreatedByName(String createdByName) {
         this.createdByName = createdByName;
+    }
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
     }
 
     public Long getCreatedBy() {
@@ -62,20 +67,28 @@ public class TeacherAttendance {
         this.id = id;
     }
 
-    public Long getSchoolId() {
-        return schoolId;
-    }
-
-    public void setSchoolId(Long schoolId) {
-        this.schoolId = schoolId;
-    }
-
     public Long getTeacherId() {
         return teacherId;
     }
 
     public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getStatus() {
