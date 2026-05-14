@@ -6,6 +6,13 @@ import com.example.stud_erp.payload.LoginResponse;
 import com.example.stud_erp.payload.StudentDTO;
 import com.example.stud_erp.service.StudentService;
 
+import com.example.stud_erp.service.ImageService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.util.StreamUtils;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +39,9 @@ import java.util.List;
 )
 
 public class StudentController {
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private StudentService studentService;
@@ -149,5 +159,82 @@ public class StudentController {
                 studentService.authenticateUser(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    // ================= IMAGE GET =================
+    @GetMapping("/image/get/{id}")
+    public void getStudentImage(
+            @PathVariable Long id,
+            HttpServletResponse response
+    ) throws Exception {
+
+        Student student = studentService
+                .getStudentById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Student not found")
+                );
+
+        if (student.getImageUrl() == null) {
+
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            response.getWriter().write("Image not found");
+
+            return;
+        }
+
+        String imageName = Paths
+                .get(student.getImageUrl())
+                .getFileName()
+                .toString();
+
+        try (
+                InputStream inputStream =
+                        imageService.getResource(imageName)
+        ) {
+
+            String contentType =
+                    URLConnection.guessContentTypeFromName(imageName);
+
+            response.setContentType(
+                    contentType != null
+                            ? contentType
+                            : "application/octet-stream"
+            );
+
+            StreamUtils.copy(
+                    inputStream,
+                    response.getOutputStream()
+            );
+        }
+    }
+
+
+    // ================= IMAGE UPLOAD =================
+    @PostMapping(
+            value = "/image/upload/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public Student uploadStudentImage(
+
+            @PathVariable Long id,
+
+            @RequestPart("image")
+            MultipartFile image
+
+    ) throws Exception {
+
+        Student student = studentService
+                .getStudentById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Student not found")
+                );
+
+        String imageUrl =
+                imageService.uploadImage(image);
+
+        student.setImageUrl(imageUrl);
+
+        return studentService.updateStudent(id, student);
     }
 }

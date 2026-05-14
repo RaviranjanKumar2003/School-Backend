@@ -142,9 +142,6 @@ public class ExamScheduleService {
     }
 
 
-
-
-
     public List<StudentExamDTO> getStudentExams(Long studentId) {
 
         List<StudentExam> list =

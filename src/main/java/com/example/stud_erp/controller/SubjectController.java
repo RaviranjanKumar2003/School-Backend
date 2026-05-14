@@ -17,8 +17,19 @@ public class SubjectController {
     private SubjectService subjectService;
 
     // ================= ADD SUBJECT =================
-    @PostMapping
-    public SubjectDTO addSubject(@RequestBody SubjectDTO dto) {
+    @PostMapping("/{schoolId}/{classId}")
+    public SubjectDTO addSubject(
+            @PathVariable Long schoolId,
+            @PathVariable Long classId,
+            @RequestParam String subjectName
+    ) {
+
+        SubjectDTO dto = new SubjectDTO();
+
+        dto.setSchoolId(schoolId); // ⭐ IMPORTANT
+        dto.setClassId(classId);
+        dto.setSubjectName(subjectName);
+
         return subjectService.addSubject(dto);
     }
 
