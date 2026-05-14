@@ -128,7 +128,7 @@ public class ExamScheduleService {
                 .getId().intValue(); // id = 1,2,3,4
 
         List<Student> students =
-                studentRepo.findByClassNumber(classNumber);
+                studentRepo.findByClassEntity_IdAndIsDeletedFalse(classNumber);
 
         System.out.println("Students found: " + students.size());
 
@@ -435,13 +435,13 @@ public class ExamScheduleService {
 
             studentRepo.findById(se.getStudentId())
                     .ifPresent(s -> {
-                        dto.setStudentName(s.getStudName());
+                        dto.setStudentName(s.getFullName());
 
-                        dto.setImageUrl("http://localhost:8080/uploads/" + s.getImageUrl());
+                        dto.setImageUrl("http://localhost:8080/uploads/" + s.getProfileImage());
 
                         dto.setStudentId(se.getStudentId()); // 🔥 THIS WAS MISSING
 
-                        System.out.println(s.getImageUrl());
+                        System.out.println(s.getProfileImage());
                     });
 
             dto.setSubjectName(latestExam.getSubjectName());
@@ -485,7 +485,7 @@ public class ExamScheduleService {
 
             studentRepo.findById(se.getStudentId())
                     .ifPresent(s -> {
-                        dto.setStudentName(s.getStudName());
+                        dto.setStudentName(s.getFullName());
                         dto.setStudentId(s.getId());
                     });
 

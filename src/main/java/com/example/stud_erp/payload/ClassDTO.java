@@ -11,8 +11,18 @@ public class ClassDTO {
 
     private List<SubjectDTO> subjects;
 
+    private List<ClassSectionDto> sections;
+
 // GETTERS & SETTERS
 
+
+    public List<ClassSectionDto> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<ClassSectionDto> sections) {
+        this.sections = sections;
+    }
 
     public Integer getClassNumber() {
         return classNumber;

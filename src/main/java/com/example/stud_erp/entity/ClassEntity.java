@@ -21,8 +21,23 @@ public class ClassEntity {
     @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> subjects;
 
+    @OneToMany(
+            mappedBy = "classEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ClassSectionEntity> sections;
+
 // GETTERS & SETTERS
 
+
+    public List<ClassSectionEntity> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<ClassSectionEntity> sections) {
+        this.sections = sections;
+    }
 
     public Integer getClassNumber() {
         return classNumber;

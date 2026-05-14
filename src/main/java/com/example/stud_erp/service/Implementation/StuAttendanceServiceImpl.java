@@ -1,8 +1,10 @@
 package com.example.stud_erp.service.Implementation;
 
+import com.example.stud_erp.entity.ClassEntity;
 import com.example.stud_erp.entity.Student;
 import com.example.stud_erp.entity.StuAttendance;
 import com.example.stud_erp.payload.StuAttendanceDTO;
+import com.example.stud_erp.repository.ClassRepository;
 import com.example.stud_erp.repository.StudentRepository;
 import com.example.stud_erp.repository.StuAttendanceRepository;
 import com.example.stud_erp.service.StuAttendanceService;
@@ -17,8 +19,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class StuAttendanceServiceImpl
-        implements StuAttendanceService {
+public class StuAttendanceServiceImpl implements StuAttendanceService {
 
     @Autowired
     private StuAttendanceRepository repo;
@@ -26,9 +27,13 @@ public class StuAttendanceServiceImpl
     @Autowired
     private StudentRepository studentRepo;
 
+    @Autowired
+    private ClassRepository classRepo;
+
     // ================= SAVE =================
     @Override
     public String save(
+
             Long schoolId,
             Long classId,
             LocalDate date,
@@ -36,55 +41,38 @@ public class StuAttendanceServiceImpl
             String takenByName,
             String takenByRole,
             List<StuAttendanceDTO> list
+
     ) {
 
-        // 🔥 ROLE VALIDATION
+        // ================= ROLE VALIDATION =================
         if (
-                !takenByRole.equalsIgnoreCase("HOD")
-                        &&
-                        !takenByRole.equalsIgnoreCase("Teacher")
-                        &&
+                !takenByRole.equalsIgnoreCase("HOD") &&
+                        !takenByRole.equalsIgnoreCase("Teacher") &&
                         !takenByRole.equalsIgnoreCase("SchoolAdmin")
         ) {
-
-            throw new RuntimeException(
-                    "Invalid role. Allowed: HOD, Teacher, SchoolAdmin"
-            );
+            throw new RuntimeException("Invalid role. Allowed: HOD, Teacher, SchoolAdmin");
         }
+
+        // ================= CLASS FETCH =================
+        ClassEntity classEntity = classRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
         for (StuAttendanceDTO dto : list) {
 
-            Student student =
-                    studentRepo.findById(dto.getStudentId())
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "Student not found"
-                                    )
-                            );
+            Student student = studentRepo.findById(dto.getStudentId())
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
 
             // ================= SAME SCHOOL =================
-            if (
-                    !student.getSchoolId()
-                            .equals(schoolId)
-            ) {
-
-                throw new RuntimeException(
-                        "Student belongs to another school"
-                );
+            if (!student.getSchool().getId().equals(schoolId)) {
+                throw new RuntimeException("Student belongs to another school");
             }
 
             // ================= SAME CLASS =================
-            if (
-                    !student.getClassNumber()
-                            .equals(classId)
-            ) {
-
-                throw new RuntimeException(
-                        "Student belongs to another class"
-                );
+            if (!student.getClassName().equalsIgnoreCase(classEntity.getClassName())) {
+                throw new RuntimeException("Student belongs to another class");
             }
 
-            // ================= CHECK EXISTING =================
+            // ================= EXISTING CHECK =================
             Optional<StuAttendance> existingOpt =
                     repo.findByStudent_IdAndDateAndClassId(
                             student.getId(),
@@ -95,42 +83,27 @@ public class StuAttendanceServiceImpl
             // ================= UPDATE =================
             if (existingOpt.isPresent()) {
 
-                StuAttendance existing =
-                        existingOpt.get();
+                StuAttendance existing = existingOpt.get();
 
                 existing.setStatus(dto.getStatus());
-
                 existing.setTakenById(takenById);
-
                 existing.setTakenByName(takenByName);
-
                 existing.setTakenByRole(takenByRole);
 
                 repo.save(existing);
-
             }
 
             // ================= INSERT =================
             else {
 
-                StuAttendance attendance =
-                        new StuAttendance();
+                StuAttendance attendance = new StuAttendance();
 
-                attendance.setSchoolId(
-                        student.getSchoolId()
-                );
+                attendance.setSchoolId(student.getSchool().getId());
+                attendance.setSchoolName(student.getSchool().getSchoolName());
 
-                attendance.setSchoolName(
-                        student.getSchoolName()
-                );
-
-                attendance.setClassId(
-                        student.getClassNumber()
-                );
-
-                attendance.setClassName(
-                        student.getClassName()
-                );
+                // ✅ FIXED
+                attendance.setClassId(classId);
+                attendance.setClassName(classEntity.getClassName());
 
                 attendance.setDate(date);
 
@@ -139,17 +112,9 @@ public class StuAttendanceServiceImpl
                 attendance.setStatus(dto.getStatus());
 
                 // ================= TAKEN BY =================
-                attendance.setTakenById(
-                        takenById
-                );
-
-                attendance.setTakenByName(
-                        takenByName
-                );
-
-                attendance.setTakenByRole(
-                        takenByRole
-                );
+                attendance.setTakenById(takenById);
+                attendance.setTakenByName(takenByName);
+                attendance.setTakenByRole(takenByRole);
 
                 repo.save(attendance);
             }
@@ -158,15 +123,15 @@ public class StuAttendanceServiceImpl
         return "Attendance Saved Successfully";
     }
 
-    // ================= GET =================
+    // ================= GET BY CLASS & DATE =================
     @Override
     public List<StuAttendanceDTO> getByClassAndDate(
             Long schoolId,
-            Long classId, LocalDate date
+            Long classId,
+            LocalDate date
     ) {
 
-        return repo
-                .findBySchoolIdAndClassIdAndDate(
+        return repo.findBySchoolIdAndClassIdAndDate(
                         schoolId,
                         classId,
                         date
@@ -174,70 +139,38 @@ public class StuAttendanceServiceImpl
                 .stream()
                 .map(a -> {
 
-                    StuAttendanceDTO dto =
-                            new StuAttendanceDTO();
+                    StuAttendanceDTO dto = new StuAttendanceDTO();
 
-                    dto.setStudentId(
-                            a.getStudent().getId()
-                    );
+                    dto.setStudentId(a.getStudent().getId());
 
-                    dto.setStudentName(
-                            a.getStudent().getStudName()
-                    );
+                    // ✅ FULL NAME USED
+                    dto.setStudentName(a.getStudent().getFullName());
 
-                    dto.setStudentLastName(
-                            a.getStudent().getStudLastName()
-                    );
+                    dto.setEmail(a.getStudent().getEmail());
 
-                    dto.setEmail(
-                            a.getStudent().getEmail()
-                    );
+                    dto.setStudRollNo(a.getStudent().getStudRollNo());
 
-                    dto.setStudRollNo(
-                            a.getStudent().getStudRollNo()
-                    );
-
-                    dto.setStatus(
-                            a.getStatus()
-                    );
+                    dto.setStatus(a.getStatus());
 
                     // ================= SCHOOL =================
-                    dto.setSchoolId(
-                            a.getSchoolId()
-                    );
-
-                    dto.setSchoolName(
-                            a.getSchoolName()
-                    );
+                    dto.setSchoolId(a.getSchoolId());
+                    dto.setSchoolName(a.getSchoolName());
 
                     // ================= CLASS =================
-                    dto.setClassId(
-                            a.getClassId()
-                    );
-
-                    dto.setClassName(
-                            a.getClassName()
-                    );
+                    dto.setClassId(a.getClassId());
+                    dto.setClassName(a.getClassName());
 
                     // ================= TAKEN BY =================
-                    dto.setTakenById(
-                            a.getTakenById()
-                    );
-
-                    dto.setTakenByName(
-                            a.getTakenByName()
-                    );
-
-                    dto.setTakenByRole(
-                            a.getTakenByRole()
-                    );
+                    dto.setTakenById(a.getTakenById());
+                    dto.setTakenByName(a.getTakenByName());
+                    dto.setTakenByRole(a.getTakenByRole());
 
                     return dto;
-
-                }).toList();
+                })
+                .toList();
     }
 
-    // ================= DAILY =================
+    // ================= GET BY DATE =================
     @Override
     public List<StuAttendance> getByDate(
             Long schoolId,
