@@ -38,9 +38,38 @@ public class ExamSchedule {
     private String status = "ACTIVE"; // ACTIVE / CANCELLED
 
     private String cancelReason; // 🔥 NEW
+    private Long schoolId;
+
+    private String schoolCode;
+
+    private String createdBy;
 
     // getters setters
 
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
 
     public Long getId() {
         return id;
