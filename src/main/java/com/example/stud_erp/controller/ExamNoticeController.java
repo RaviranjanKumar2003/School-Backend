@@ -24,7 +24,10 @@ public class ExamNoticeController {
         service.createExamNotice(
                 req.getClassId(),
                 req.getExamType(),
-                req.getMessage() // 🔥 IMPORTANT
+                req.getMessage(),
+                req.getSchoolId(),
+                req.getSchoolCode(),
+                req.getCreatedBy()
         );
 
         return "Exam Notice Created ✅";
@@ -40,6 +43,13 @@ public class ExamNoticeController {
     @GetMapping("/all")
     public List<ExamNoticeDTO> getAll() {
         return service.getAll();
+    }
+
+    @GetMapping("/school/{schoolId}")
+    public List<ExamNoticeDTO> getBySchool(
+            @PathVariable Long schoolId
+    ) {
+        return service.getBySchool(schoolId);
     }
 
     // DELETE

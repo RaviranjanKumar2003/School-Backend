@@ -25,6 +25,10 @@ public class ExamNotice {
 
     private Long classId;
 
+    private Long schoolId;
+
+    private String schoolCode;
+
     private String examType; // FINAL / PRACTICAL
 
     private String subjectName;
@@ -36,8 +40,47 @@ public class ExamNotice {
     private String status; // CREATED
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    private String createdBy;
+
+    private Boolean teacherAssigned = true;
 
     // ===== GETTERS & SETTERS =====
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Boolean getTeacherAssigned() {
+        return teacherAssigned;
+    }
+
+    public void setTeacherAssigned(Boolean teacherAssigned) {
+        this.teacherAssigned = teacherAssigned;
+    }
+
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public Long getId() { return id; }
 
