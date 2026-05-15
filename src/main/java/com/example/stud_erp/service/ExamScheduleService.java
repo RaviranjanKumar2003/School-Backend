@@ -123,14 +123,14 @@ public class ExamScheduleService {
 
         // 🔥 AUTO STUDENT ASSIGN
 
-        Long classNumber = (long) classRepo.findById(req.getClassId())
-                .get()
-                .getId().intValue(); // id = 1,2,3,4
+        ClassEntity cls = classRepo.findById(req.getClassId())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
         List<Student> students =
-                studentRepo.findByClassEntity_IdAndIsDeletedFalse(classNumber);
-
-        System.out.println("Students found: " + students.size());
+                studentRepo.findBySchoolIdAndClassName(
+                        req.getSchoolId(),
+                        cls.getClassName()
+                );
 
         for (Student s : students) {
             StudentExam se = new StudentExam();
@@ -140,9 +140,6 @@ public class ExamScheduleService {
             studentExamRepo.save(se);
         }
     }
-
-
-
 
 
     public List<StudentExamDTO> getStudentExams(Long studentId) {
@@ -301,10 +298,13 @@ public class ExamScheduleService {
     public List<ExamSchedule> getTeacher(Long teacherId) {
         return repo.findByTeacherId(teacherId);
     }
-   // ALL TEACHER VIEW
-   public List<ExamScheduleDTO> getAllExams() {
 
-       List<ExamSchedule> list = repo.findAll();
+
+
+   // ALL TEACHER VIEW
+   public List<ExamScheduleDTO> getAllExams(Long schoolId) {
+
+       List<ExamSchedule> list = repo.findBySchoolId(schoolId);
 
        return list.stream().map(e -> {
 
