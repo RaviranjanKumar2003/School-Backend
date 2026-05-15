@@ -6,9 +6,31 @@ public class ClassDTO {
 
     private Long id;
     private String className;
+    private Integer classNumber;
     private Long schoolId;   // ⭐ IMPORTANT
 
     private List<SubjectDTO> subjects;
+
+    private List<ClassSectionDto> sections;
+
+// GETTERS & SETTERS
+
+
+    public List<ClassSectionDto> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<ClassSectionDto> sections) {
+        this.sections = sections;
+    }
+
+    public Integer getClassNumber() {
+        return classNumber;
+    }
+
+    public void setClassNumber(Integer classNumber) {
+        this.classNumber = classNumber;
+    }
 
     public Long getId() {
         return id;

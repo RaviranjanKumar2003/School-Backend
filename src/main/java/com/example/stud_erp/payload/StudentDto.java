@@ -1,36 +1,19 @@
-//package com.example.stud_erp.entity;
-//
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-//import jakarta.persistence.*;
+//package com.example.stud_erp.payload;
 //
 //import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.util.Set;
 //
-//@Entity
-//@Table(
-//        name = "students",
-//        uniqueConstraints = {
-//                @UniqueConstraint(columnNames = "studentId"),
-//                @UniqueConstraint(columnNames = "username"),
-//                @UniqueConstraint(columnNames = "email")
-//        }
-//)
-//public class Student {
+//public class StudentDTO {
 //
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    private Long id;
 //
-//    // ================= SCHOOL INFO =================
+//    // ================= SCHOOL =================
 //    private Long schoolId;
 //    private String schoolCode;
 //    private String schoolName;
 //
-//    // ================= STUDENT INFO =================
+//    // ================= STUDENT =================
 //    private String studentId;
 //    private String username;
-//    private String password;
 //    private String email;
 //
 //    private Long classNumber;
@@ -49,90 +32,211 @@
 //
 //    private String imageUrl;
 //
-//    private boolean isDeleted = false;
+//    // optional
+//    private StudentFeeDTO fee;
 //
-//    private String otp;
-//    private LocalDateTime otpExpiry;
 //
-//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private Set<Attendance> attendance;
 //
-//    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
+// // GETTERS & SETTERS
 //
-//    @PrePersist
-//    void onCreate() {
 //
-//        createdAt = LocalDateTime.now();
+//    public Long getId() {
+//        return id;
 //    }
 //
-//    @PreUpdate
-//    void onUpdate() {
-//
-//        updatedAt = LocalDateTime.now();
+//    public void setId(Long id) {
+//        this.id = id;
 //    }
 //
+//    public Long getSchoolId() {
+//        return schoolId;
+//    }
 //
+//    public void setSchoolId(Long schoolId) {
+//        this.schoolId = schoolId;
+//    }
 //
-//// GETTERS & SETTERS
+//    public String getSchoolCode() {
+//        return schoolCode;
+//    }
 //
+//    public void setSchoolCode(String schoolCode) {
+//        this.schoolCode = schoolCode;
+//    }
+//
+//    public String getSchoolName() {
+//        return schoolName;
+//    }
+//
+//    public void setSchoolName(String schoolName) {
+//        this.schoolName = schoolName;
+//    }
+//
+//    public String getStudentId() {
+//        return studentId;
+//    }
+//
+//    public void setStudentId(String studentId) {
+//        this.studentId = studentId;
+//    }
+//
+//    public String getUsername() {
+//        return username;
+//    }
+//
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
+//
+//    public Long getClassNumber() {
+//        return classNumber;
+//    }
+//
+//    public void setClassNumber(Long classNumber) {
+//        this.classNumber = classNumber;
+//    }
+//
+//    public String getClassName() {
+//        return className;
+//    }
+//
+//    public void setClassName(String className) {
+//        this.className = className;
+//    }
+//
+//    public Long getStudRollNo() {
+//        return studRollNo;
+//    }
+//
+//    public void setStudRollNo(Long studRollNo) {
+//        this.studRollNo = studRollNo;
+//    }
+//
+//    public String getStudName() {
+//        return studName;
+//    }
+//
+//    public void setStudName(String studName) {
+//        this.studName = studName;
+//    }
+//
+//    public String getStudFatherName() {
+//        return studFatherName;
+//    }
+//
+//    public void setStudFatherName(String studFatherName) {
+//        this.studFatherName = studFatherName;
+//    }
+//
+//    public String getStudLastName() {
+//        return studLastName;
+//    }
+//
+//    public void setStudLastName(String studLastName) {
+//        this.studLastName = studLastName;
+//    }
+//
+//    public String getStudPhoneNumber() {
+//        return studPhoneNumber;
+//    }
+//
+//    public void setStudPhoneNumber(String studPhoneNumber) {
+//        this.studPhoneNumber = studPhoneNumber;
+//    }
+//
+//    public LocalDate getStudentDob() {
+//        return studentDob;
+//    }
+//
+//    public void setStudentDob(LocalDate studentDob) {
+//        this.studentDob = studentDob;
+//    }
+//
+//    public String getStudCategory() {
+//        return studCategory;
+//    }
+//
+//    public void setStudCategory(String studCategory) {
+//        this.studCategory = studCategory;
+//    }
+//
+//    public String getStudCaste() {
+//        return studCaste;
+//    }
+//
+//    public void setStudCaste(String studCaste) {
+//        this.studCaste = studCaste;
+//    }
+//
+//    public int getStudentAge() {
+//        return studentAge;
+//    }
+//
+//    public void setStudentAge(int studentAge) {
+//        this.studentAge = studentAge;
+//    }
+//
+//    public String getImageUrl() {
+//        return imageUrl;
+//    }
+//
+//    public void setImageUrl(String imageUrl) {
+//        this.imageUrl = imageUrl;
+//    }
+//
+//    public StudentFeeDTO getFee() {
+//        return fee;
+//    }
+//
+//    public void setFee(StudentFeeDTO fee) {
+//        this.fee = fee;
+//    }
 //}
 
 
-//================================================================================== NEW
 
-package com.example.stud_erp.entity;
+//===================================================================================== NEW
+
+package com.example.stud_erp.payload;
 
 import com.example.stud_erp.enums.StudentStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.util.Set;
 
-@Entity
-@Table(
-        name = "students",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "studentId"),
-                @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email"),
-                @UniqueConstraint(columnNames = "admissionNumber")
-        }
-)
-public class Student {
+public class StudentDto {
 
     // ================= PRIMARY KEY =================
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // ================= LOGIN INFO =================
 
-    @Column(nullable = false, unique = true)
     private String studentId;
 
-    @Column(nullable = false, unique = true)
     private String username;
 
-    @JsonIgnore
     private String password;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
     // ================= ADMISSION INFO =================
 
     private LocalDate admissionDate;
 
-    @Enumerated(EnumType.STRING)
-    private StudentStatus status = StudentStatus.ACTIVE;
+    private StudentStatus status;
 
     // ================= ACADEMIC INFO =================
+
+    private Long classId;
 
     private String className;
 
@@ -142,31 +246,19 @@ public class Student {
 
     // ================= PERSONAL INFO =================
 
-    @Column(nullable = false)
     private String studfirstName;
 
     private String studlastName;
 
-    @Transient
-    public String getFullName() {
-
-        if (studlastName == null || studlastName.isBlank()) {
-            return studfirstName;
-        }
-
-        return studfirstName + " " + studlastName;
-    }
-
-    @Transient
-    private Integer studentAge;
-
-
+    private String fullName;
 
     private String studFatherName;
 
     private String gender;
 
     private LocalDate studentDob;
+
+    private Integer studentAge;
 
     private String bloodGroup;
 
@@ -194,7 +286,6 @@ public class Student {
 
     // ================= ADDRESS =================
 
-    @Column(length = 1000)
     private String address;
 
     private String city;
@@ -209,11 +300,11 @@ public class Student {
 
     private Double monthlyFee;
 
-    private boolean discountedStudent = false;
+    private boolean discountedStudent;
 
     // ================= TRANSPORT =================
 
-    private boolean transportRequired = false;
+    private boolean transportRequired;
 
     private String pickupPoint;
 
@@ -221,23 +312,19 @@ public class Student {
 
     // ================= PARENT ACCOUNT =================
 
-    private boolean createParentAccount = false;
+    private boolean createParentAccount;
 
     // ================= IMAGE =================
 
     private String profileImage;
 
-    // ================= OTP =================
+    // ================= QR CODE =================
 
-    @JsonIgnore
-    private String otp;
-
-    @JsonIgnore
-    private LocalDateTime otpExpiry;
+    private String qrCodeUrl;
 
     // ================= SYSTEM =================
 
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     private Long createdBy;
 
@@ -247,117 +334,23 @@ public class Student {
 
     private LocalDateTime updatedAt;
 
-    private String qrCodeUrl;
+    // ================= SCHOOL =================
 
-    // ================= RELATIONS =================
+    private Long schoolId;
 
-    @ManyToOne
-    @JoinColumn(name = "school_id")
-    private School school;
-
-    @OneToMany(
-            mappedBy = "student",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    @JsonIgnore
-    private Set<Attendance> attendance;
-
-    // ================= AUTO TIMESTAMP =================
-
-    @PrePersist
-    void onCreate() {
-
-        createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    void onUpdate() {
-
-        updatedAt = LocalDateTime.now();
-    }
-
-    // ================= CALCULATED AGE =================
-
-    @Transient
-    public int getStudentAge() {
-
-        if (studentDob == null) {
-            return 0;
-        }
-
-        return Period.between(studentDob, LocalDate.now()).getYears();
-    }
-
-    //=============== Extra
-
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private ClassEntity classEntity;
+    private String schoolName;
 
 
 
 // ================= GETTERS & SETTERS =================
 
 
-    public void setStudentAge(Integer studentAge) {
-        this.studentAge = studentAge;
+    public Long getClassId() {
+        return classId;
     }
 
-    public ClassEntity getClassEntity() {
-        return classEntity;
-    }
-
-    public void setClassEntity(ClassEntity classEntity) {
-        this.classEntity = classEntity;
-    }
-
-    public String getQrCodeUrl() {
-        return qrCodeUrl;
-    }
-
-    public void setQrCodeUrl(String qrCodeUrl) {
-        this.qrCodeUrl = qrCodeUrl;
-    }
-
-    public String getStudfirstName() {
-        return studfirstName;
-    }
-
-    public void setStudfirstName(String studfirstName) {
-        this.studfirstName = studfirstName;
-    }
-
-    public String getStudlastName() {
-        return studlastName;
-    }
-
-    public void setStudlastName(String studlastName) {
-        this.studlastName = studlastName;
-    }
-
-    public String getAssignedBusRoute() {
-        return assignedBusRoute;
-    }
-
-    public void setAssignedBusRoute(String assignedBusRoute) {
-        this.assignedBusRoute = assignedBusRoute;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public School getSchool() {
-        return school;
-    }
-
-    public void setSchool(School school) {
-        this.school = school;
+    public void setClassId(Long classId) {
+        this.classId = classId;
     }
 
     public Long getId() {
@@ -440,6 +433,30 @@ public class Student {
         this.studRollNo = studRollNo;
     }
 
+    public String getStudfirstName() {
+        return studfirstName;
+    }
+
+    public void setStudfirstName(String studfirstName) {
+        this.studfirstName = studfirstName;
+    }
+
+    public String getStudlastName() {
+        return studlastName;
+    }
+
+    public void setStudlastName(String studlastName) {
+        this.studlastName = studlastName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public String getStudFatherName() {
         return studFatherName;
     }
@@ -462,6 +479,14 @@ public class Student {
 
     public void setStudentDob(LocalDate studentDob) {
         this.studentDob = studentDob;
+    }
+
+    public Integer getStudentAge() {
+        return studentAge;
+    }
+
+    public void setStudentAge(Integer studentAge) {
+        this.studentAge = studentAge;
     }
 
     public String getBloodGroup() {
@@ -624,6 +649,14 @@ public class Student {
         this.pickupPoint = pickupPoint;
     }
 
+    public String getAssignedBusRoute() {
+        return assignedBusRoute;
+    }
+
+    public void setAssignedBusRoute(String assignedBusRoute) {
+        this.assignedBusRoute = assignedBusRoute;
+    }
+
     public boolean isCreateParentAccount() {
         return createParentAccount;
     }
@@ -640,20 +673,12 @@ public class Student {
         this.profileImage = profileImage;
     }
 
-    public String getOtp() {
-        return otp;
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
     }
 
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
-
-    public LocalDateTime getOtpExpiry() {
-        return otpExpiry;
-    }
-
-    public void setOtpExpiry(LocalDateTime otpExpiry) {
-        this.otpExpiry = otpExpiry;
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
     }
 
     public boolean isDeleted() {
@@ -684,16 +709,31 @@ public class Student {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Set<Attendance> getAttendance() {
-        return attendance;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public void setAttendance(Set<Attendance> attendance) {
-        this.attendance = attendance;
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
     }
 }
-

@@ -30,7 +30,11 @@ public class ClassServiceImpl implements ClassService {
         ClassEntity cls = new ClassEntity();
 
         cls.setClassName(dto.getClassName());
-        cls.setSchoolId(schoolId); // ⭐ IMPORTANT FIX
+
+        // ⭐ IMPORTANT
+        cls.setClassNumber(dto.getClassNumber());
+
+        cls.setSchoolId(schoolId);
 
         ClassEntity saved = classRepo.save(cls);
 
@@ -144,22 +148,39 @@ public class ClassServiceImpl implements ClassService {
         ClassDTO dto = new ClassDTO();
 
         dto.setId(cls.getId());
+
         dto.setClassName(cls.getClassName());
-        dto.setSchoolId(cls.getSchoolId()); // ⭐ IMPORTANT
+
+        // ⭐ IMPORTANT FIX
+        dto.setClassNumber(
+                cls.getClassNumber()
+        );
+
+        dto.setSchoolId(cls.getSchoolId());
 
         if (cls.getSubjects() != null) {
 
             List<SubjectDTO> subjectList = cls.getSubjects()
                     .stream()
                     .map(sub -> {
+
                         SubjectDTO s = new SubjectDTO();
+
                         s.setId(sub.getId());
-                        s.setSubjectName(sub.getSubjectName());
+
+                        s.setSubjectName(
+                                sub.getSubjectName()
+                        );
+
                         s.setClassId(cls.getId());
-                        s.setNumber(sub.getNumber());
+
+                        s.setNumber(
+                                sub.getNumber()
+                        );
+
                         return s;
-                    })
-                    .collect(Collectors.toList());
+
+                    }).collect(Collectors.toList());
 
             dto.setSubjects(subjectList);
         }

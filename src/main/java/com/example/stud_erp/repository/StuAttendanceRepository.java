@@ -9,18 +9,33 @@ import java.util.Optional;
 
 public interface StuAttendanceRepository extends JpaRepository<StuAttendance, Long> {
 
-    List<StuAttendance> findByClassNumberAndDate(Integer classNumber, LocalDate date);
 
-    // STUDENT ATTENDANCE
-    List<StuAttendance> findByStudentId(Long studentId);
+    // ================= CLASS + DATE =================
+    List<StuAttendance> findBySchoolIdAndClassIdAndDate(
+            Long schoolId,
+            Long classId,
+            LocalDate date
+    );
 
-    // DAILY SUMMARY
-    List<StuAttendance> findByDate(LocalDate date);
+    // ================= STUDENT =================
+    List<StuAttendance> findByStudent_Id(Long studentId);
 
-    // 🔥 FIXED
-    Optional<StuAttendance> findByStudent_IdAndDateAndClassNumber(
+    // ================= DATE =================
+    List<StuAttendance> findBySchoolIdAndDate(
+            Long schoolId,
+            LocalDate date
+    );
+
+    // ================= DUPLICATE CHECK =================
+    Optional<StuAttendance>
+    findByStudent_IdAndDateAndClassId(
             Long studentId,
             LocalDate date,
-            Integer classNumber
+            Long classId
     );
+
+    // ================= WEEKLY =================
+    List<StuAttendance> findBySchoolId(Long schoolId);
+
+
 }
