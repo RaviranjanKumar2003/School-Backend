@@ -107,9 +107,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Long countByClassNumber(Integer classNumber);
 
-    List<Student> findBySchoolIdAndClassNumber(
+    List<Student> findBySchoolIdAndClassName(
             Long schoolId,
-            Integer classNumber
+            String className
     );
 
 }

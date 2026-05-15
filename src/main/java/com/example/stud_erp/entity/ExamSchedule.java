@@ -42,8 +42,18 @@ public class ExamSchedule {
 
     private String schoolCode;
 
+    private String createdBy;
+
     // getters setters
 
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Long getSchoolId() {
         return schoolId;
