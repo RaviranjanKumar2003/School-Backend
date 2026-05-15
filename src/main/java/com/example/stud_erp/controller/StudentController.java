@@ -356,6 +356,13 @@ import com.example.stud_erp.payload.LoginResponse;
 import com.example.stud_erp.payload.StudentDto;
 import com.example.stud_erp.service.StudentService;
 
+import com.example.stud_erp.service.ImageService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.util.StreamUtils;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -388,6 +395,9 @@ import java.util.List;
 )
 
 public class StudentController {
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private StudentService studentService;

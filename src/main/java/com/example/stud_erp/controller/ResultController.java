@@ -29,8 +29,6 @@ public class ResultController {
     @Autowired
     private ResultService resultService;
 
-
-
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Result r) {
         try {
