@@ -9,18 +9,8 @@ public class ExamNoticeDTO {
     private String status;
 
     private String createdAt;
-    private Boolean teacherAssigned;
 
     // getters setters
-
-
-    public Boolean getTeacherAssigned() {
-        return teacherAssigned;
-    }
-
-    public void setTeacherAssigned(Boolean teacherAssigned) {
-        this.teacherAssigned = teacherAssigned;
-    }
 
     public Long getId() {
         return id;

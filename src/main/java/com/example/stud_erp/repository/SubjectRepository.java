@@ -11,8 +11,4 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     // ⭐ SCHOOL SAFE QUERY
     List<Subject> findBySchoolId(Long schoolId);
-    List<Subject> findByClassEntityIdAndSchoolId(
-            Long classId,
-            Long schoolId
-    );
 }
