@@ -68,11 +68,9 @@ public class ExamScheduleController {
     }
 
     // All teacher
-    @GetMapping("/{schoolId}")
-    public List<ExamScheduleDTO> getAll(
-            @PathVariable Long schoolId
-    ) {
-        return service.getAllExams(schoolId);
+    @GetMapping
+    public List<ExamScheduleDTO> getAll() {
+        return service.getAllExams();
     }
 
 //    teacher Attendance exam ke din Banayga

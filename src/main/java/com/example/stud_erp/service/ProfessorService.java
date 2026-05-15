@@ -26,7 +26,10 @@ public interface ProfessorService {
 
     // ================= FILTER APIs =================
     List<Professor> getBySchoolId(Long schoolId);
+
     List<Professor> getBySchoolIdAndHodId(Long schoolId, Long hodId);
+
     List<ProfessorDTO> getBySchoolIdAndHodIdDTO(Long schoolId, Long hodId);
+
     Professor updateProfessorBasic(Long id, ProfessorDTO dto, MultipartFile image) throws Exception;
 }

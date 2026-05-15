@@ -49,7 +49,7 @@ public class Department {
         return hod;
     }
 
-    public void setHod(HOD hod){
+    public void setHod(HOD hod) {
         this.hod = hod;
     }
 }

@@ -24,22 +24,16 @@ public class ExamNoticeService {
     @Autowired
     private ClassRepository classRepo;
 
-    public void createExamNotice(Long classId, String examType, String message, Long schoolId,String schoolCode,String createdBy) {
+    public void createExamNotice(Long classId, String examType, String message) {
 
         List<Subject> subjects =
-                subjectRepository
-                        .findByClassEntityIdAndSchoolId(
-                                classId,
-                                schoolId
-                        );
+                subjectRepository.findByClassEntityId(classId);
 
         for (Subject sub : subjects) {
 
             String subjectName = sub.getSubjectName().trim().toLowerCase();
 
-            List<Professor> teachers =
-                    professorRepository
-                            .findBySchool_Id(schoolId)
+            List<Professor> teachers = professorRepository.findAll()
                     .stream()
                     .filter(p ->
                             p.getAssignments() != null &&
@@ -64,30 +58,8 @@ public class ExamNoticeService {
                     )
                     .toList();
 
-
-            if (teachers.isEmpty()) {
-
-                ExamNotice notice = new ExamNotice();
-
-                notice.setClassId(classId);
-                notice.setExamType(examType);
-
-                notice.setSubjectName(sub.getSubjectName());
-
-                notice.setSchoolId(schoolId);
-
-                notice.setSchoolCode(schoolCode);
-
-                notice.setMessage(message);
-
-                notice.setStatus("CREATED");
-
-                notice.setCreatedBy(createdBy);
-
-                notice.setTeacherAssigned(false);
-
-                noticeRepo.save(notice);
-            }
+            // DEBUG
+            System.out.println("👉 Subject: " + subjectName);
 
             for (Professor teacher : teachers) {
 
@@ -97,14 +69,9 @@ public class ExamNoticeService {
                 notice.setExamType(examType);
                 notice.setSubjectName(sub.getSubjectName());
                 notice.setTeacherId(teacher.getId());
-                notice.setSchoolId(schoolId);
-                notice.setSchoolCode(schoolCode);
 
                 notice.setMessage(message);
                 notice.setStatus("CREATED");
-                notice.setCreatedBy(createdBy);
-
-                notice.setTeacherAssigned(true);
 
                 noticeRepo.save(notice);
             }
@@ -125,9 +92,6 @@ public class ExamNoticeService {
             dto.setExamType(n.getExamType());
             dto.setMessage(n.getMessage());
             dto.setCreatedAt(n.getCreatedAt().toString());
-            dto.setTeacherAssigned(
-                    n.getTeacherAssigned()
-            );
 
             // CLASS NAME
             dto.setClassName("Unknown");
@@ -157,9 +121,6 @@ public class ExamNoticeService {
             dto.setMessage(n.getMessage());
             dto.setStatus(n.getStatus());
             dto.setCreatedAt(n.getCreatedAt().toString());
-            dto.setTeacherAssigned(
-                    n.getTeacherAssigned()
-            );
 
             // CLASS NAME
             dto.setClassName("Unknown");
@@ -173,46 +134,6 @@ public class ExamNoticeService {
 
         }).toList();
     }
-
-
-    // ✅ SCHOOL WISE NOTICES
-    public List<ExamNoticeDTO> getBySchool(Long schoolId) {
-
-        List<ExamNotice> list =
-                noticeRepo.findBySchoolId(schoolId);
-
-        return list.stream().map(n -> {
-
-            ExamNoticeDTO dto =
-                    new ExamNoticeDTO();
-
-            dto.setId(n.getId());
-            dto.setExamType(n.getExamType());
-            dto.setSubjectName(n.getSubjectName());
-            dto.setMessage(n.getMessage());
-            dto.setStatus(n.getStatus());
-            dto.setCreatedAt(n.getCreatedAt().toString());
-            dto.setTeacherAssigned(
-                    n.getTeacherAssigned()
-            );
-
-            // CLASS NAME
-            dto.setClassName("Unknown");
-
-            if (n.getClassId() != null) {
-
-                classRepo.findById(n.getClassId())
-                        .ifPresent(c ->
-                                dto.setClassName(
-                                        c.getClassName()
-                                ));
-            }
-
-            return dto;
-
-        }).toList();
-    }
-
 
     public void delete(Long id) {
         noticeRepo.deleteById(id);

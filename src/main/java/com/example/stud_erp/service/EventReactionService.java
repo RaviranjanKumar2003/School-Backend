@@ -30,7 +30,7 @@ public class EventReactionService {
         repository.save(reaction);
     }
     /* 🔥 GET ALL REACTIONS BY EVENT */
-    public List<EventReaction> getByEvent(Long eventId){
+    public List<EventReaction> getByEvent(Long eventId) {
         return repository.findByEventId(eventId);
     }
 
@@ -40,11 +40,14 @@ public class EventReactionService {
         List<EventReaction> list = repository.findByEventId(eventId);
 
         Map<String, Long> map = new HashMap<>();
+
         for (EventReaction r : list) {
             String key = r.getType();
             map.put(key, map.getOrDefault(key, 0L) + 1);
         }
+
         map.put("TOTAL", (long) list.size());
+
         return map;
     }
 }
