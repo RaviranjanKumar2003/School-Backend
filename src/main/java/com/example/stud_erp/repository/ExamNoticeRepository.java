@@ -8,5 +8,5 @@ import java.util.List;
 public interface ExamNoticeRepository extends JpaRepository<ExamNotice, Long> {
 
     List<ExamNotice> findByTeacherId(Long teacherId);
-    List<ExamNotice> findBySchoolId(Long schoolId);
+
 }

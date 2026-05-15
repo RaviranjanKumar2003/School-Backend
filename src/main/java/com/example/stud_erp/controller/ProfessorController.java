@@ -38,34 +38,8 @@ public class ProfessorController {
     // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
         Professor professor = professorService.authenticateUser(request);
-
-        ProfessorDTO dto = new ProfessorDTO();
-
-        dto.setId(professor.getId());
-        dto.setName(professor.getName());
-
-        dto.setSchoolId(professor.getSchool().getId());
-
-        dto.setHodId(professor.getHod().getId());
-
-        dto.setAssignments(
-                professor.getAssignments().stream().map(a -> {
-
-                    ProfessorDTO.AssignmentDTO ad =
-                            new ProfessorDTO.AssignmentDTO();
-
-                    ad.setClassId(a.getClassId());
-                    ad.setClassName(a.getClassName());
-                    ad.setSubjectName(a.getSubjectName());
-
-                    return ad;
-
-                }).toList()
-        );
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(professor);
     }
 
     // ================= CREATE =================
