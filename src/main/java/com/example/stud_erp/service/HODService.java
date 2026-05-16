@@ -36,5 +36,4 @@ public interface HODService {
 
     List<HOD> getHODsBySchool(Long schoolId);
 
-    HOD uploadCoverImages(Long hodId, List<MultipartFile> images) throws IOException;
 }

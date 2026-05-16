@@ -29,6 +29,8 @@ public class SchoolAdmin {
 
     private String phone;
 
+    private String imageUrl;
+
     // ================= SCHOOL =================
     @OneToOne
 
@@ -61,7 +63,16 @@ public class SchoolAdmin {
         updatedAt = LocalDateTime.now();
     }
 
-    // ================= GETTERS & SETTERS =================
+// ================= GETTERS & SETTERS =================
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public Long getId() {
         return id;

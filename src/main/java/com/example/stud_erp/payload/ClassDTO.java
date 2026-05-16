@@ -6,7 +6,6 @@ public class ClassDTO {
 
     private Long id;
     private String className;
-    private Integer classNumber;
     private Long schoolId;   // ⭐ IMPORTANT
 
     private List<SubjectDTO> subjects;
@@ -24,13 +23,6 @@ public class ClassDTO {
         this.sections = sections;
     }
 
-    public Integer getClassNumber() {
-        return classNumber;
-    }
-
-    public void setClassNumber(Integer classNumber) {
-        this.classNumber = classNumber;
-    }
 
     public Long getId() {
         return id;

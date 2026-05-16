@@ -79,7 +79,25 @@ public class School {
         updatedAt = LocalDateTime.now();
     }
 
-    // ================= GETTERS & SETTERS =================
+    // ================= COVER IMAGES =================
+    @ElementCollection
+    @CollectionTable(
+            name = "school_cover_images",
+            joinColumns = @JoinColumn(name = "school_id")
+    )
+    @Column(name = "image")
+    private List<String> coverImages;
+
+// ================= GETTERS & SETTERS =================
+
+
+    public List<String> getCoverImages() {
+        return coverImages;
+    }
+
+    public void setCoverImages(List<String> coverImages) {
+        this.coverImages = coverImages;
+    }
 
     public Long getId() {
         return id;

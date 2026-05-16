@@ -5,9 +5,13 @@ import com.example.stud_erp.entity.SchoolAdmin;
 import com.example.stud_erp.payload.SchoolAdminDto;
 import com.example.stud_erp.payload.SchoolDto;
 import com.example.stud_erp.repository.SchoolRepository;
+import com.example.stud_erp.service.ImageService;
 import com.example.stud_erp.service.SchoolService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +20,9 @@ import java.util.stream.Collectors;
 public class SchoolServiceImpl implements SchoolService {
 
     private final SchoolRepository schoolRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     public SchoolServiceImpl(SchoolRepository schoolRepository) {
         this.schoolRepository = schoolRepository;
@@ -204,5 +211,40 @@ public class SchoolServiceImpl implements SchoolService {
         }
 
         return dto;
+    }
+
+
+//============================================================================= COVER IMAGE
+
+    @Override
+    public School uploadCoverImages(
+            Long schoolId,
+            List<MultipartFile> images
+    ) throws IOException {
+
+        School school = schoolRepository.findById(schoolId)
+                .orElseThrow(() ->
+                        new RuntimeException("School not found"));
+
+        List<String> coverImages = school.getCoverImages();
+
+        if (coverImages == null) {
+            coverImages = new ArrayList<>();
+        }
+
+        for (MultipartFile file : images) {
+
+            if (file != null && !file.isEmpty()) {
+
+                String fileName =
+                        imageService.uploadImage(file);
+
+                coverImages.add(fileName);
+            }
+        }
+
+        school.setCoverImages(coverImages);
+
+        return schoolRepository.save(school);
     }
 }

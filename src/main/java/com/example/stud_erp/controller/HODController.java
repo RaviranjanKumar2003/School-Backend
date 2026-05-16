@@ -381,46 +381,4 @@ public class HODController {
         }
     }
 
-//======================================================================================= COVER IMAGE
-    @PostMapping("/cover/upload-multiple/{hodId}")
-    public ResponseEntity<?> uploadMultipleCoverImages(
-
-            @PathVariable Long hodId,
-
-            @RequestParam("images") List<MultipartFile> images
-
-    ) {
-
-        try {
-
-            HOD updated = hodService.uploadCoverImages(hodId, images);
-
-            return ResponseEntity.ok(updated);
-
-        } catch (Exception e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
-    }
-
-
-    @GetMapping("/cover/get-file/{hodId}/{fileName}")
-    public void getCoverImage(
-            @PathVariable Long hodId,
-            @PathVariable String fileName,
-            HttpServletResponse response
-    ) throws IOException {
-
-        InputStream resource = imageService.getResource(fileName);
-
-        String contentType = URLConnection.guessContentTypeFromName(fileName);
-
-        response.setContentType(
-                contentType != null ? contentType : "application/octet-stream"
-        );
-
-        StreamUtils.copy(resource, response.getOutputStream());
-    }
 }

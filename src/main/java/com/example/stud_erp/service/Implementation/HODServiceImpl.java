@@ -266,42 +266,5 @@ public class HODServiceImpl implements HODService {
         return hodRepository.findBySchoolId(schoolId);
     }
 
-//============================================================================= COVER IMAGE
 
-    @Override
-    public HOD uploadCoverImages(
-            Long hodId,
-            List<MultipartFile> images
-    ) throws IOException {
-
-        // 1. HOD fetch karo
-        HOD hod = hodRepository.findById(hodId)
-                .orElseThrow(() ->
-                        new RuntimeException("HOD not found")
-                );
-
-        // 2. existing images list lo
-        List<String> coverImages = hod.getCoverImages();
-
-        if (coverImages == null) {
-            coverImages = new ArrayList<>();
-        }
-
-        // 3. har image upload karo
-        for (MultipartFile file : images) {
-
-            if (file != null && !file.isEmpty()) {
-
-                String fileName = imageService.uploadImage(file);
-
-                coverImages.add(fileName);
-            }
-        }
-
-        // 4. update entity
-        hod.setCoverImages(coverImages);
-
-        // 5. save
-        return hodRepository.save(hod);
-    }
 }

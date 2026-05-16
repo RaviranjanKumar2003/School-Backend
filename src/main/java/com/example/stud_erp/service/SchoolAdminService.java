@@ -15,4 +15,6 @@ public interface SchoolAdminService {
 
 
     LoginResponse login(String username, String password);
+
+    SchoolAdmin saveSchoolAdmin(SchoolAdmin admin);
 }

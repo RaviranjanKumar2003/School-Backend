@@ -3,20 +3,23 @@ package com.example.stud_erp.service.Implementation;
 import com.example.stud_erp.entity.SchoolAdmin;
 import com.example.stud_erp.payload.LoginResponse;
 import com.example.stud_erp.repository.SchoolAdminRepository;
+import com.example.stud_erp.service.ImageService;
 import com.example.stud_erp.service.SchoolAdminService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SchoolAdminServiceImpl
-        implements SchoolAdminService {
+public class SchoolAdminServiceImpl implements SchoolAdminService {
 
     private final SchoolAdminRepository repo;
 
+    private final ImageService imageService;
+
     public SchoolAdminServiceImpl(
-            SchoolAdminRepository repo
+            SchoolAdminRepository repo, ImageService imageService
     ) {
 
         this.repo = repo;
+        this.imageService = imageService;
     }
 
     // ================= CREATE =================
@@ -43,6 +46,8 @@ public class SchoolAdminServiceImpl
                                 ));
 
         existing.setName(admin.getName());
+
+        existing.setImageUrl(admin.getImageUrl());
 
         existing.setUsername(admin.getUsername());
 
@@ -128,5 +133,11 @@ public class SchoolAdminServiceImpl
         }
 
         return res;
+    }
+
+    @Override
+    public SchoolAdmin saveSchoolAdmin(SchoolAdmin admin) {
+
+        return repo.save(admin);
     }
 }

@@ -13,8 +13,6 @@ public class ClassEntity {
 
     private String className;
 
-    private Integer classNumber;
-
     // ⭐ IMPORTANT: SCHOOL LINK
     private Long schoolId;
 
@@ -37,14 +35,6 @@ public class ClassEntity {
 
     public void setSections(List<ClassSectionEntity> sections) {
         this.sections = sections;
-    }
-
-    public Integer getClassNumber() {
-        return classNumber;
-    }
-
-    public void setClassNumber(Integer classNumber) {
-        this.classNumber = classNumber;
     }
 
     public Long getId() {

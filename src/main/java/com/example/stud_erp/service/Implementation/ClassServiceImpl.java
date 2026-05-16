@@ -31,9 +31,6 @@ public class ClassServiceImpl implements ClassService {
 
         cls.setClassName(dto.getClassName());
 
-        // ⭐ IMPORTANT
-        cls.setClassNumber(dto.getClassNumber());
-
         cls.setSchoolId(schoolId);
 
         ClassEntity saved = classRepo.save(cls);
@@ -150,11 +147,6 @@ public class ClassServiceImpl implements ClassService {
         dto.setId(cls.getId());
 
         dto.setClassName(cls.getClassName());
-
-        // ⭐ IMPORTANT FIX
-        dto.setClassNumber(
-                cls.getClassNumber()
-        );
 
         dto.setSchoolId(cls.getSchoolId());
 

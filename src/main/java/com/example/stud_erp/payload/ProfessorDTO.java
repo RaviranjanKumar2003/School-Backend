@@ -18,9 +18,8 @@ public class ProfessorDTO {
     private String username;
     private String password;
 
-    // 🔥 FIXED
     private Long schoolId;
-    private Long hodId;
+    private Long schoolAdminId;
 
     private List<AssignmentDTO> assignments;
 
@@ -94,8 +93,13 @@ public class ProfessorDTO {
     public Long getSchoolId() { return schoolId; }
     public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
 
-    public Long getHodId() { return hodId; }
-    public void setHodId(Long hodId) { this.hodId = hodId; }
+    public Long getSchoolAdminId() {
+        return schoolAdminId;
+    }
+
+    public void setSchoolAdminId(Long schoolAdminId) {
+        this.schoolAdminId = schoolAdminId;
+    }
 
     public List<AssignmentDTO> getAssignments() { return assignments; }
     public void setAssignments(List<AssignmentDTO> assignments) { this.assignments = assignments; }

@@ -44,15 +44,6 @@ public class HOD {
  @Column(nullable = false)
  private String phone;
 
- // ================= COVER IMAGES =================
- @ElementCollection
- @CollectionTable(
-         name = "hod_cover_images",
-         joinColumns = @JoinColumn(name = "hod_id")
- )
- @Column(name = "image")
- private List<String> coverImages;
-
  // ================= SUBJECTS =================
  @ElementCollection
  @CollectionTable(
@@ -168,14 +159,6 @@ public class HOD {
 
  public void setPhone(String phone) {
   this.phone = phone;
- }
-
- public List<String> getCoverImages() {
-  return coverImages;
- }
-
- public void setCoverImages(List<String> coverImages) {
-  this.coverImages = coverImages;
  }
 
  public List<String> getSubjects() {

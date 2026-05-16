@@ -18,6 +18,8 @@ public class SchoolAdminDto {
 
     private String phone;
 
+    private String imageUrl;
+
     // ================= SCHOOL INFO =================
     private Long schoolId;
 
@@ -27,6 +29,14 @@ public class SchoolAdminDto {
 
     // ================= DEFAULT CONSTRUCTOR =================
     public SchoolAdminDto() {
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     // ================= GET ID =================
