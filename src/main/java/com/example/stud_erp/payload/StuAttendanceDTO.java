@@ -69,81 +69,125 @@ package com.example.stud_erp.payload;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class StuAttendanceDTO {
 
-    // ================= STUDENT =================
+    // =====================================================
+    // ATTENDANCE
+    // =====================================================
+
+    private Long attendanceId;
+
+    private LocalDate attendanceDate;
+
+    // P / A / L
+    private String status;
+
+    // =====================================================
+    // SCHOOL
+    // =====================================================
+
+    private Long schoolId;
+
+    private String schoolName;
+
+    // =====================================================
+    // CLASS
+    // =====================================================
+
+    private Long classId;
+
+    private String className;
+
+    // =====================================================
+    // SECTION
+    // =====================================================
+
+    private String section;
+
+    // =====================================================
+    // QR ATTENDANCE
+    // =====================================================
+
+    private Boolean qrScanned;
+
+    private LocalDate qrScanDate;
+
+    // =====================================================
+    // STUDENT
+    // =====================================================
+
     private Long studentId;
+
+    // Unique Student ID
+    private String studentIdNumber;
 
     private String studentName;
 
     private String studentLastName;
 
+    private String fullName;
+
     private String email;
+
+    private String phoneNumber;
 
     private Long studRollNo;
 
-    // ================= ATTENDANCE =================
-    private String status;
+    private String gender;
 
-    // ================= SCHOOL =================
-    private Long schoolId;
+    private String profileImage;
 
-    private String schoolName;
+    private String qrCodeUrl;
 
-    // ================= CLASS =================
-    private Long classId;
+    // =====================================================
+    // CREATED BY
+    // =====================================================
 
-    private String className;
-
-    // ================= TAKEN BY =================
     private Long takenById;
 
     private String takenByName;
 
     private String takenByRole;
 
-// GETTERS & SETTERS
+    // =====================================================
+    // UPDATED BY
+    // =====================================================
 
+    private Long updatedById;
 
-    public Long getStudentId() {
-        return studentId;
+    private String updatedByName;
+
+    private String updatedByRole;
+
+    // =====================================================
+    // TIMESTAMP
+    // =====================================================
+
+    private LocalDate createdDate;
+
+    private LocalDate updatedDate;
+
+    // =====================================================
+    // GETTERS & SETTERS
+    // =====================================================
+
+    public Long getAttendanceId() {
+        return attendanceId;
     }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
+    public void setAttendanceId(Long attendanceId) {
+        this.attendanceId = attendanceId;
     }
 
-    public String getStudentName() {
-        return studentName;
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
-    public String getStudentLastName() {
-        return studentLastName;
-    }
-
-    public void setStudentLastName(String studentLastName) {
-        this.studentLastName = studentLastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getStudRollNo() {
-        return studRollNo;
-    }
-
-    public void setStudRollNo(Long studRollNo) {
-        this.studRollNo = studRollNo;
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
     }
 
     public String getStatus() {
@@ -186,6 +230,118 @@ public class StuAttendanceDTO {
         this.className = className;
     }
 
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public Boolean getQrScanned() {
+        return qrScanned;
+    }
+
+    public void setQrScanned(Boolean qrScanned) {
+        this.qrScanned = qrScanned;
+    }
+
+    public LocalDate getQrScanDate() {
+        return qrScanDate;
+    }
+
+    public void setQrScanDate(LocalDate qrScanDate) {
+        this.qrScanDate = qrScanDate;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getStudentIdNumber() {
+        return studentIdNumber;
+    }
+
+    public void setStudentIdNumber(String studentIdNumber) {
+        this.studentIdNumber = studentIdNumber;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getStudentLastName() {
+        return studentLastName;
+    }
+
+    public void setStudentLastName(String studentLastName) {
+        this.studentLastName = studentLastName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Long getStudRollNo() {
+        return studRollNo;
+    }
+
+    public void setStudRollNo(Long studRollNo) {
+        this.studRollNo = studRollNo;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
+    }
+
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
+    }
+
     public Long getTakenById() {
         return takenById;
     }
@@ -208,5 +364,45 @@ public class StuAttendanceDTO {
 
     public void setTakenByRole(String takenByRole) {
         this.takenByRole = takenByRole;
+    }
+
+    public Long getUpdatedById() {
+        return updatedById;
+    }
+
+    public void setUpdatedById(Long updatedById) {
+        this.updatedById = updatedById;
+    }
+
+    public String getUpdatedByName() {
+        return updatedByName;
+    }
+
+    public void setUpdatedByName(String updatedByName) {
+        this.updatedByName = updatedByName;
+    }
+
+    public String getUpdatedByRole() {
+        return updatedByRole;
+    }
+
+    public void setUpdatedByRole(String updatedByRole) {
+        this.updatedByRole = updatedByRole;
+    }
+
+    public LocalDate getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalDate getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDate updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }

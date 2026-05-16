@@ -173,6 +173,10 @@ public class SchoolServiceImpl implements SchoolService {
         dto.setEmail(school.getEmail());
         dto.setPhone(school.getPhone());
 
+        dto.setCoverImages(
+                school.getCoverImages()
+        );
+
         // ================= SCHOOL ADMINS =================
 
         List<SchoolAdminDto> adminDtos = new ArrayList<>();

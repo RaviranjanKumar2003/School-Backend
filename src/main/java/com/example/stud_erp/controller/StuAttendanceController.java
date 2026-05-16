@@ -1,94 +1,3 @@
-//package com.example.stud_erp.controller;
-//
-//import com.example.stud_erp.entity.StuAttendance;
-//import com.example.stud_erp.payload.StuAttendanceDTO;
-//import com.example.stud_erp.service.StuAttendanceService;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.time.LocalDate;
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//
-//@RestController
-//@RequestMapping("/api/stu-attendance")
-//@CrossOrigin("*")
-//public class StuAttendanceController {
-//
-//    @Autowired
-//    private StuAttendanceService service;
-//
-//    @PostMapping("/save")
-//    public String save(
-//            @RequestParam Integer classNumber,
-//            @RequestParam String date,
-//            @RequestBody List<StuAttendanceDTO> list
-//    ) {
-//        return service.save(classNumber, LocalDate.parse(date), list);
-//    }
-//
-//    @GetMapping
-//    public List<StuAttendanceDTO> get(
-//            @RequestParam Integer classNumber,
-//            @RequestParam String date
-//    ) {
-//        return service.getByClassAndDate(classNumber, LocalDate.parse(date));
-//    }
-//
-//    @GetMapping("/summary")
-//    public Map<String, Object> getStudentSummary(@RequestParam String date) {
-//
-//        LocalDate localDate = LocalDate.parse(date);
-//
-//        List<StuAttendance> list = service.getByDate(localDate);
-//
-//        long total = list.size();
-//
-//        long present = list.stream()
-//                .filter(a -> "P".equalsIgnoreCase(a.getStatus()))
-//                .count();
-//
-//        long absent = total - present;
-//
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("total", total);
-//        map.put("present", present);
-//        map.put("absent", absent);
-//
-//        return map;
-//    }
-//
-//
-//
-//    @GetMapping("/weekly-summary")
-//    public List<Map<String, Object>> getWeeklyStudentSummary() {
-//
-//        List<Map<String, Object>> result = new ArrayList<>();
-//
-//        for (int i = 6; i >= 0; i--) {
-//            LocalDate date = LocalDate.now().minusDays(i);
-//
-//            List<StuAttendance> list = service.getByDate(date);
-//
-//            long present = list.stream()
-//                    .filter(a -> "P".equalsIgnoreCase(a.getStatus()))
-//                    .count();
-//
-//            Map<String, Object> map = new HashMap<>();
-//            map.put("date", date.toString());
-//            map.put("present", present);
-//
-//            result.add(map);
-//        }
-//
-//        return result;
-//    }
-//
-//}
-
-
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.StuAttendance;
@@ -99,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/stu-attendance")
@@ -109,7 +19,10 @@ public class StuAttendanceController {
     @Autowired
     private StuAttendanceService service;
 
-    // ================= SAVE =================
+    // =========================================================
+    // SAVE MANUAL ATTENDANCE
+    // =========================================================
+
     @PostMapping("/save")
     public String save(
 
@@ -117,7 +30,9 @@ public class StuAttendanceController {
 
             @RequestParam Long classId,
 
-            @RequestParam String date,
+            @RequestParam String section,
+
+            @RequestParam String attendanceDate,
 
             @RequestParam Long takenById,
 
@@ -129,121 +44,416 @@ public class StuAttendanceController {
     ) {
 
         return service.save(
+
                 schoolId,
+
                 classId,
-                LocalDate.parse(date),
+
+                section,
+
+                LocalDate.parse(attendanceDate),
+
                 takenById,
+
                 takenByName,
+
                 takenByRole,
+
                 list
         );
     }
 
-    // ================= GET =================
+    // =========================================================
+    // QR SCAN ATTENDANCE
+    // =========================================================
+
+    @PostMapping("/scan-qr")
+    public String scanQrAttendance(
+
+            @RequestParam String studentId,
+
+            @RequestParam Long schoolId,
+
+            @RequestParam Long takenById,
+
+            @RequestParam String takenByName,
+
+            @RequestParam String takenByRole
+    ) {
+
+        return service.markAttendanceByQr(
+
+                studentId,
+
+                schoolId,
+
+                takenById,
+
+                takenByName,
+
+                takenByRole
+        );
+    }
+
+    // =========================================================
+    // GET CLASS + SECTION ATTENDANCE
+    // =========================================================
+
     @GetMapping
-    public List<StuAttendanceDTO> get(
+    public List<StuAttendanceDTO> getAttendance(
 
             @RequestParam Long schoolId,
 
             @RequestParam Long classId,
 
-            @RequestParam String date
+            @RequestParam String section,
+
+            @RequestParam String attendanceDate
     ) {
 
         return service.getByClassAndDate(
+
                 schoolId,
+
                 classId,
-                LocalDate.parse(date)
+
+                section,
+
+                LocalDate.parse(attendanceDate)
         );
     }
 
-    // ================= DAILY SUMMARY =================
-    @GetMapping("/summary/{schoolId}")
-    public Map<String, Object> getStudentSummary(
+    // =========================================================
+    // GET ATTENDANCE BY ID
+    // =========================================================
 
-            @PathVariable Long schoolId,
+    @GetMapping("/{attendanceId}")
+    public StuAttendanceDTO getAttendanceById(
 
-            @RequestParam String date
+            @PathVariable Long attendanceId
     ) {
 
-        LocalDate localDate =
-                LocalDate.parse(date);
-
-        List<StuAttendance> list =
-                service.getByDate(
-                        schoolId,
-                        localDate
-                );
-
-        long total = list.size();
-
-        long present = list.stream()
-                .filter(a ->
-                        "P".equalsIgnoreCase(
-                                a.getStatus()
-                        )
-                )
-                .count();
-
-        long absent = total - present;
-
-        Map<String, Object> map =
-                new HashMap<>();
-
-        map.put("total", total);
-
-        map.put("present", present);
-
-        map.put("absent", absent);
-
-        return map;
+        return service.getAttendanceById(
+                attendanceId
+        );
     }
 
-    // ================= WEEKLY SUMMARY =================
-    @GetMapping("/weekly-summary/{schoolId}")
-    public List<Map<String, Object>>
-    getWeeklyStudentSummary(
+    // =========================================================
+    // GET DAILY ATTENDANCE
+    // =========================================================
+
+    @GetMapping("/daily")
+    public List<StuAttendance> getDailyAttendance(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getByDate(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // GET SECTION ATTENDANCE
+    // =========================================================
+
+    @GetMapping("/section")
+    public List<StuAttendanceDTO> getSectionAttendance(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String section,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getSectionAttendance(
+
+                schoolId,
+
+                section,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // GET PRESENT STUDENTS
+    // =========================================================
+
+    @GetMapping("/present")
+    public List<StuAttendanceDTO> getPresentStudents(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getPresentStudents(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // GET ABSENT STUDENTS
+    // =========================================================
+
+    @GetMapping("/absent")
+    public List<StuAttendanceDTO> getAbsentStudents(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getAbsentStudents(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // UPDATE ATTENDANCE
+    // =========================================================
+
+    @PutMapping("/update/{attendanceId}")
+    public String updateAttendance(
+
+            @PathVariable Long attendanceId,
+
+            @RequestParam String status,
+
+            @RequestParam Long updatedById,
+
+            @RequestParam String updatedByName,
+
+            @RequestParam String updatedByRole
+    ) {
+
+        return service.updateAttendance(
+
+                attendanceId,
+
+                status,
+
+                updatedById,
+
+                updatedByName,
+
+                updatedByRole
+        );
+    }
+
+    // =========================================================
+    // DELETE SINGLE ATTENDANCE
+    // =========================================================
+
+    @DeleteMapping("/delete/{attendanceId}")
+    public String deleteAttendance(
+
+            @PathVariable Long attendanceId
+    ) {
+
+        return service.deleteAttendance(
+                attendanceId
+        );
+    }
+
+    // =========================================================
+    // DELETE DATE ATTENDANCE
+    // =========================================================
+
+    @DeleteMapping("/delete-by-date")
+    public String deleteAttendanceByDate(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.deleteAttendanceByDate(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // TODAY SUMMARY
+    // =========================================================
+
+    @GetMapping("/today-summary/{schoolId}")
+    public Map<String, Object> getTodaySummary(
 
             @PathVariable Long schoolId
     ) {
 
-        List<Map<String, Object>> result =
-                new ArrayList<>();
-
-        for (int i = 6; i >= 0; i--) {
-
-            LocalDate date =
-                    LocalDate.now().minusDays(i);
-
-            List<StuAttendance> list =
-                    service.getByDate(
-                            schoolId,
-                            date
-                    );
-
-            long present = list.stream()
-                    .filter(a ->
-                            "P".equalsIgnoreCase(
-                                    a.getStatus()
-                            )
-                    )
-                    .count();
-
-            long absent = list.size() - present;
-
-            Map<String, Object> map =
-                    new HashMap<>();
-
-            map.put("date", date.toString());
-
-            map.put("present", present);
-
-            map.put("absent", absent);
-
-            result.add(map);
-        }
-
-        return result;
+        return service.getTodaySummary(
+                schoolId
+        );
     }
 
+    // =========================================================
+    // DATE SUMMARY
+    // =========================================================
+
+    @GetMapping("/summary/{schoolId}")
+    public Map<String, Object> getSummaryByDate(
+
+            @PathVariable Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getSummaryByDate(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // WEEKLY SUMMARY
+    // =========================================================
+
+    @GetMapping("/weekly-summary/{schoolId}")
+    public List<Map<String, Object>> getWeeklySummary(
+
+            @PathVariable Long schoolId
+    ) {
+
+        return service.getWeeklySummary(
+                schoolId
+        );
+    }
+
+    // =========================================================
+    // MONTHLY SUMMARY
+    // =========================================================
+
+    @GetMapping("/monthly-summary/{schoolId}")
+    public List<Map<String, Object>> getMonthlySummary(
+
+            @PathVariable Long schoolId
+    ) {
+
+        return service.getMonthlySummary(
+                schoolId
+        );
+    }
+
+    // =========================================================
+    // PRESENT COUNT
+    // =========================================================
+
+    @GetMapping("/present-count")
+    public long getPresentCount(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getPresentCount(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // ABSENT COUNT
+    // =========================================================
+
+    @GetMapping("/absent-count")
+    public long getAbsentCount(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getAbsentCount(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // CHECK ATTENDANCE MARKED
+    // =========================================================
+
+    @GetMapping("/is-marked")
+    public boolean isAttendanceMarked(
+
+            @RequestParam Long studentId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.isAttendanceMarked(
+
+                studentId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =========================================================
+    // STUDENT ATTENDANCE HISTORY
+    // =========================================================
+
+    @GetMapping("/student/{studentId}")
+    public List<StuAttendanceDTO> getStudentAttendance(
+
+            @PathVariable Long studentId
+    ) {
+
+        return service.getStudentAttendance(
+                studentId
+        );
+    }
+
+    // =========================================================
+    // CLASS ATTENDANCE COUNT
+    // =========================================================
+
+    @GetMapping("/class-count")
+    public long getClassAttendanceCount(
+
+            @RequestParam Long schoolId,
+
+            @RequestParam Long classId,
+
+            @RequestParam String section,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getClassAttendanceCount(
+
+                schoolId,
+
+                classId,
+
+                section,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
 }

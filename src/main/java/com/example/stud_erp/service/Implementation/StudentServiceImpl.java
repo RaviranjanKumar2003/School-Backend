@@ -470,11 +470,21 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= SCHOOL =================
 
+        if (dto.getSchoolId() == null) {
+            throw new RuntimeException("School ID is required");
+        }
+
         School school = schoolRepository.findById(dto.getSchoolId())
                 .orElseThrow(() ->
-                        new RuntimeException("School not found")
+                        new RuntimeException(
+                                "School not found with ID : "
+                                        + dto.getSchoolId()
+                        )
                 );
 
+        System.out.println("DTO SCHOOL ID : " + dto.getSchoolId());
+
+        System.out.println("DTO CLASS ID : " + dto.getClassId());
         // ================= CLASS =================
 
         ClassEntity cls = classRepository.findById(
@@ -575,15 +585,21 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= AUTO STUDENT ID =================
 
-        Long total =
-                studentRepository.countBySchoolIdAndIsDeletedFalse(
-                        dto.getSchoolId()
-                ) + 1;
+        String studentId;
 
-        String studentId =
-                "STU"
-                        + Year.now().getValue()
-                        + String.format("%04d", total);
+        do {
+
+            long random =
+                    (long)(Math.random() * 9000) + 1000;
+
+            studentId =
+                    "STU"
+                            + Year.now().getValue()
+                            + random;
+
+        } while (
+                studentRepository.findByStudentId(studentId).isPresent()
+        );
 
         // ================= USERNAME =================
 
@@ -645,7 +661,19 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= QR CODE =================
 
-        String qrData = studentId;
+        String qrData =
+                "{"
+                        + "\"studentId\":\"" + student.getStudentId() + "\","
+                        + "\"name\":\"" + student.getFullName() + "\","
+                        + "\"fatherName\":\"" + student.getStudFatherName() + "\","
+                        + "\"class\":\"" + student.getClassName() + "\","
+                        + "\"section\":\"" + student.getSection() + "\","
+                        + "\"rollNo\":\"" + student.getStudRollNo() + "\","
+                        + "\"phone\":\"" + student.getStudPhoneNumber() + "\","
+                        + "\"email\":\"" + student.getEmail() + "\","
+                        + "\"school\":\"" + school.getSchoolName() + "\","
+                        + "\"address\":\"" + student.getAddress() + "\""
+                        + "}";
 
         String qrPath =
                 "uploads/qrcodes/"

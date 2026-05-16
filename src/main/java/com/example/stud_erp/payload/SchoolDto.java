@@ -23,11 +23,24 @@ public class SchoolDto {
     // ================= SCHOOL ADMIN =================
     private SchoolAdminDto schoolAdmin;
 
+    private List<String> coverImages;
+
     // ================= HODS =================
     private List<HODDto> hods;
 
+
+
+
     // ================= DEFAULT CONSTRUCTOR =================
     public SchoolDto() {
+    }
+
+    public List<String> getCoverImages() {
+        return coverImages;
+    }
+
+    public void setCoverImages(List<String> coverImages) {
+        this.coverImages = coverImages;
     }
 
     // ================= GET ID =================

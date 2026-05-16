@@ -109,67 +109,124 @@
 package com.example.stud_erp.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
-@Data
 @Table(
+        name = "stu_attendance",
         uniqueConstraints = @UniqueConstraint(
                 columnNames = {
                         "student_id",
-                        "classNumber",
-                        "date"
+                        "class_id",
+                        "section",
+                        "attendance_date"
                 }
         )
 )
 public class StuAttendance {
 
+    // =====================================================
+    // ID
+    // =====================================================
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ================= SCHOOL =================
+    // =====================================================
+    // SCHOOL
+    // =====================================================
+
     private Long schoolId;
 
     private String schoolName;
 
-    // ================= CLASS =================
+    // =====================================================
+    // CLASS
+    // =====================================================
+
+    @Column(name = "class_id")
     private Long classId;
 
     private String className;
 
-    // ================= DATE =================
-    private LocalDate date;
+    // =====================================================
+    // SECTION
+    // =====================================================
 
-    // P / A
+    private String section;
+
+    // =====================================================
+    // ATTENDANCE DATE
+    // =====================================================
+
+    @Column(name = "attendance_date")
+    private LocalDate attendanceDate;
+
+    // =====================================================
+    // STATUS
+    // =====================================================
+
+    // P = Present
+    // A = Absent
+    // L = Leave
+
     private String status;
 
-    // ================= STUDENT =================
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    // =====================================================
+    // QR INFO
+    // =====================================================
+
+    private Boolean qrScanned = false;
+
+    private LocalDate qrScanDate;
+
+    // =====================================================
+    // STUDENT RELATION
+    // =====================================================
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "student_id",
+            nullable = false
+    )
     private Student student;
 
-    // ================= TAKEN BY =================
-    private Long takenById;
+    // =====================================================
+    // CREATED INFO
+    // =====================================================
 
-    private String takenByName;
+    private LocalDate createdDate;
 
-    // HOD / TEACHER / SCHOOL_ADMIN
-    private String takenByRole;
+    private Long createdBy;
 
+    private String createdByRole;
 
-// GETTERS & SETTERS
+    private String createdByName;
 
+    // =====================================================
+    // UPDATED INFO
+    // =====================================================
 
-    public Long getClassId() {
-        return classId;
+    private Long updatedBy;
+
+    private String updatedByRole;
+
+    private String updatedByName;
+
+    private LocalDate updatedDate;
+
+    // =====================================================
+    // CONSTRUCTORS
+    // =====================================================
+
+    public StuAttendance() {
     }
 
-    public void setClassId(Long classId) {
-        this.classId = classId;
-    }
+    // =====================================================
+    // GETTERS & SETTERS
+    // =====================================================
 
     public Long getId() {
         return id;
@@ -195,6 +252,14 @@ public class StuAttendance {
         this.schoolName = schoolName;
     }
 
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
+    }
+
     public String getClassName() {
         return className;
     }
@@ -203,12 +268,20 @@ public class StuAttendance {
         this.className = className;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getSection() {
+        return section;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
     }
 
     public String getStatus() {
@@ -219,6 +292,22 @@ public class StuAttendance {
         this.status = status;
     }
 
+    public Boolean getQrScanned() {
+        return qrScanned;
+    }
+
+    public void setQrScanned(Boolean qrScanned) {
+        this.qrScanned = qrScanned;
+    }
+
+    public LocalDate getQrScanDate() {
+        return qrScanDate;
+    }
+
+    public void setQrScanDate(LocalDate qrScanDate) {
+        this.qrScanDate = qrScanDate;
+    }
+
     public Student getStudent() {
         return student;
     }
@@ -227,27 +316,67 @@ public class StuAttendance {
         this.student = student;
     }
 
-    public Long getTakenById() {
-        return takenById;
+    public LocalDate getCreatedDate() {
+        return createdDate;
     }
 
-    public void setTakenById(Long takenById) {
-        this.takenById = takenById;
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public String getTakenByName() {
-        return takenByName;
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
-    public void setTakenByName(String takenByName) {
-        this.takenByName = takenByName;
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public String getTakenByRole() {
-        return takenByRole;
+    public String getCreatedByRole() {
+        return createdByRole;
     }
 
-    public void setTakenByRole(String takenByRole) {
-        this.takenByRole = takenByRole;
+    public void setCreatedByRole(String createdByRole) {
+        this.createdByRole = createdByRole;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public Long getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(Long updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public String getUpdatedByRole() {
+        return updatedByRole;
+    }
+
+    public void setUpdatedByRole(String updatedByRole) {
+        this.updatedByRole = updatedByRole;
+    }
+
+    public String getUpdatedByName() {
+        return updatedByName;
+    }
+
+    public void setUpdatedByName(String updatedByName) {
+        this.updatedByName = updatedByName;
+    }
+
+    public LocalDate getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDate updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }

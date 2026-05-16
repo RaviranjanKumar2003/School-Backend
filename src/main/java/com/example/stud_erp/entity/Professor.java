@@ -149,7 +149,6 @@ public class Professor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JsonIgnore
     private School school;
 
     // ================= SCHOOL ADMIN =================
