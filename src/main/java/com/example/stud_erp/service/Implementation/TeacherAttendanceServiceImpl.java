@@ -405,4 +405,24 @@ public class TeacherAttendanceServiceImpl
 
         return dto;
     }
+
+    @Override
+    public List<TeacherAttendanceDTO> getMyAttendance(
+
+            Long teacherId,
+
+            LocalDate attendanceDate
+    ) {
+
+        List<TeacherAttendance> list =
+                repository
+                        .findByTeacherIdAndAttendanceDate(
+                                teacherId,
+                                attendanceDate
+                        );
+
+        return list.stream()
+                .map(this::toDTO)
+                .toList();
+    }
 }

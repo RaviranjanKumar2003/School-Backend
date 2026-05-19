@@ -271,4 +271,11 @@ public interface StuAttendanceService {
             LocalDate attendanceDate
     );
 
+    public List<StuAttendanceDTO> getStudentAttendanceByDate(
+
+            Long studentId,
+
+            LocalDate date
+    );
+
 }

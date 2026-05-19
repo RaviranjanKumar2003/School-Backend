@@ -88,8 +88,20 @@ public class School {
     @Column(name = "image")
     private List<String> coverImages;
 
+
+    @Column(unique = true)
+    private String slug;
+
 // ================= GETTERS & SETTERS =================
 
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
 
     public List<String> getCoverImages() {
         return coverImages;

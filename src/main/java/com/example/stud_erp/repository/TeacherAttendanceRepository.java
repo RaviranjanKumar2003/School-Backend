@@ -46,4 +46,13 @@ public interface TeacherAttendanceRepository
             Long schoolId,
             LocalDate attendanceDate
     );
+
+
+    List<TeacherAttendance>
+    findByTeacherIdAndAttendanceDate(
+
+            Long teacherId,
+
+            LocalDate attendanceDate
+    );
 }

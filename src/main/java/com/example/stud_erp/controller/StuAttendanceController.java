@@ -123,6 +123,22 @@ public class StuAttendanceController {
         );
     }
 
+    @GetMapping("/student/{studentId}/date")
+    public List<StuAttendanceDTO> getStudentAttendanceByDate(
+
+            @PathVariable Long studentId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getStudentAttendanceByDate(
+
+                studentId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
     // =========================================================
     // GET ATTENDANCE BY ID
     // =========================================================

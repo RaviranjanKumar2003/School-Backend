@@ -920,4 +920,25 @@ public class StuAttendanceServiceImpl
             );
         }
     }
+
+
+    @Override
+    public List<StuAttendanceDTO> getStudentAttendanceByDate(
+
+            Long studentId,
+
+            LocalDate date
+    ) {
+
+        List<StuAttendance> list =
+                repo
+                        .findByStudentIdAndAttendanceDate(
+                                studentId,
+                                date
+                        );
+
+        return list.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 }

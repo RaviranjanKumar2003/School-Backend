@@ -43,4 +43,11 @@ public interface TeacherAttendanceService {
     List<TeacherAttendanceDTO> getWeekly(
             Long schoolId
     );
+
+    List<TeacherAttendanceDTO> getMyAttendance(
+
+            Long teacherId,
+
+            LocalDate attendanceDate
+    );
 }

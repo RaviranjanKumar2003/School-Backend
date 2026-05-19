@@ -36,6 +36,14 @@ public class SchoolServiceImpl implements SchoolService {
 
         // ================= SCHOOL =================
         school.setSchoolName(dto.getSchoolName());
+
+        String slug = dto.getSchoolName()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-");
+
+        school.setSlug(slug);
+
         school.setSchoolCode(dto.getSchoolCode());
         school.setAddress(dto.getAddress());
         school.setEmail(dto.getEmail());

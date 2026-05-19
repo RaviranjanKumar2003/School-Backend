@@ -120,4 +120,20 @@ public class TeacherAttendanceController {
                 schoolId
         );
     }
+
+    @GetMapping("/my-attendance")
+    public List<TeacherAttendanceDTO> getMyAttendance(
+
+            @RequestParam Long teacherId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getMyAttendance(
+
+                teacherId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
 }

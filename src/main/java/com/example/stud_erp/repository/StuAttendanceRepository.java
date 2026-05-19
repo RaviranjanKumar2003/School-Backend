@@ -184,4 +184,9 @@ public interface StuAttendanceRepository
             Long attendanceId
     );
 
+    List<StuAttendance> findByStudentIdAndAttendanceDate(
+            Long studentId,
+            LocalDate attendanceDate
+    );
+
 }
