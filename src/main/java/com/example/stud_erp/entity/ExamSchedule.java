@@ -39,8 +39,21 @@ public class ExamSchedule {
 
     private String cancelReason; // 🔥 NEW
 
+
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     // getters setters
 
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
 
     public Long getId() {
         return id;

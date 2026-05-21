@@ -134,8 +134,6 @@ public class Student {
 
     // ================= ACADEMIC INFO =================
 
-    private String className;
-
     private String section;
 
     private Long studRollNo;
@@ -414,14 +412,6 @@ public class Student {
 
     public void setStatus(StudentStatus status) {
         this.status = status;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
     }
 
     public String getSection() {

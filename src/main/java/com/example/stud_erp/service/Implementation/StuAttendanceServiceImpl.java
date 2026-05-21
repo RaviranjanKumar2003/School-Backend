@@ -280,7 +280,7 @@ public class StuAttendanceServiceImpl
         );
 
         attendance.setClassName(
-                student.getClassName()
+                student.getClassEntity().getClassName()
         );
 
         attendance.setSection(

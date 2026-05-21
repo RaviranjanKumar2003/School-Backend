@@ -1,129 +1,3 @@
-//
-//package com.example.stud_erp.repository;
-//
-//import com.example.stud_erp.entity.Student;
-//import com.example.stud_erp.payload.StudentDto;
-//import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.repository.query.Param;
-//
-//import java.util.Optional;
-//import java.util.List;
-//
-//public interface StudentRepository extends JpaRepository<Student, Long> {
-//
-//
-//    Optional<Student> findByUsername(String username);
-//
-//    Optional<Student> findByEmail(String email);
-//
-//    boolean existsByEmail(String email);
-//
-//    boolean existsByUsername(String username);
-//
-//    boolean existsByStudentId(String studentId);
-//
-//    Optional<Student> findByStudentId(String studentId);
-//
-//    Optional<Student> findByUsernameAndPassword(
-//            String username,
-//            String password
-//    );
-//
-//    Optional<Student> findByStudName(String studName);
-//
-//    boolean existsByStudRollNo(Long studRollNo);
-//
-//    boolean existsByStudentIdOrUsernameOrEmailOrStudRollNo(
-//            String studentId,
-//            String username,
-//            String email,
-//            Long studRollNo
-//    );
-//
-//    // =========================================================
-//    // SCHOOL WISE
-//    // =========================================================
-//
-//    List<Student> findBySchoolIdAndIsDeletedFalse(Long schoolId);
-//
-//    List<Student> findBySchoolIdAndClassNumberAndIsDeletedFalse(
-//            Long schoolId,
-//            Long classNumber
-//    );
-//
-//    Long countBySchoolIdAndIsDeletedFalse(Long schoolId);
-//
-//    // =========================================================
-//    // ACTIVE / ARCHIVE
-//    // =========================================================
-//
-//    List<Student> findByIsDeletedFalse();
-//
-//    List<Student> findByIsDeletedTrue();
-//
-//    List<Student> findByClassNumberAndIsDeletedFalse(
-//            Long classNumber
-//    );
-//
-//
-//    List<Student> findByClassNumber(Long classNumber);
-//
-//    List<Student> findBySchoolIdAndIsDeletedTrue(Long schoolId);
-//
-//    // =========================================================
-//    // ROLL NUMBER
-//    // =========================================================
-//
-//    @Query("""
-//        SELECT s.studRollNo
-//        FROM Student s
-//        WHERE s.classNumber = :classNumber
-//        AND s.isDeleted = false
-//        ORDER BY s.studRollNo ASC
-//    """)
-//    List<Long> findActiveRollsByClass(
-//            @Param("classNumber") Long classNumber
-//    );
-//
-//    boolean existsByClassNumberAndStudRollNoAndIsDeletedFalse(
-//            Long classNumber,
-//            Long studRollNo
-//    );
-//
-//    Optional<Student> findByClassNumberAndStudRollNo(
-//            Long classNumber,
-//            Long studRollNo
-//    );
-//
-//    List<Student> findByClassNameIgnoreCase(String className);
-//
-//    @Query("SELECT MAX(s.id) FROM Student s")
-//    Long findMaxId();
-//
-//    Long countByClassNumber(Long classNumber);
-//
-//    // =========================================================
-//    // DTO
-//    // =========================================================
-//
-//    @Query("""
-//        SELECT new com.example.stud_erp.payload.StudentDTO(
-//            s.username,
-//            s.email
-//        )
-//        FROM Student s
-//        WHERE s.id = :id
-//    """)
-//    Optional<StudentDto> findStudentUsernameAndEmailById(
-//            Long id
-//    );
-//
-//}
-
-
-
-//====================================================================================== NEW
 
 package com.example.stud_erp.repository;
 
@@ -198,26 +72,19 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         SELECT s
         FROM Student s
         WHERE s.school.id = :schoolId
-        AND LOWER(s.className) = LOWER(:className)
+        AND s.classEntity.id = :classId
         AND s.isDeleted = false
         ORDER BY s.studRollNo ASC
     """)
-    List<Student> findBySchoolIdAndClassNameAndIsDeletedFalse(
+    List<Student> findBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
             @Param("schoolId") Long schoolId,
-            @Param("className") String className
+            @Param("classId") Long classId
     );
 
-    List<Student> findByClassNameIgnoreCase(String className);
 
-    List<Student> findByClassNameAndIsDeletedFalse(
-            String className
-    );
-
-    List<Student> findByClassEntity_IdAndIsDeletedFalse(Long classId);
-
-    Long countBySchoolIdAndClassNameAndIsDeletedFalse(
+    Long countBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
             Long schoolId,
-            String className
+            Long classId
     );
 
     // =========================================================
@@ -226,29 +93,29 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     boolean existsByStudRollNo(Long studRollNo);
 
-    boolean existsByClassNameAndStudRollNoAndIsDeletedFalse(
-            String className,
+    boolean existsByClassEntity_IdAndStudRollNoAndIsDeletedFalse(
+            Long classId,
             Long studRollNo
     );
 
-    Optional<Student> findByClassNameAndStudRollNo(
-            String className,
+    Optional<Student> findByClassEntity_IdAndStudRollNo(
+            Long classId,
             Long studRollNo
     );
 
     @Query("""
         SELECT s.studRollNo
         FROM Student s
-        WHERE s.className = :className
+        WHERE s.classEntity.id = :classId
         AND s.isDeleted = false
         ORDER BY s.studRollNo ASC
     """)
     List<Long> findActiveRollsByClass(
-            @Param("className") String className
+            @Param("classId") Long classId
     );
 
-    Long countByClassNameAndIsDeletedFalse(
-            String className
+    Long countByClassEntity_IdAndIsDeletedFalse(
+            Long classId
     );
 
     // =========================================================
@@ -300,7 +167,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             OR LOWER(s.studlastName) LIKE LOWER(CONCAT('%', :keyword, '%'))
             OR LOWER(s.studentId) LIKE LOWER(CONCAT('%', :keyword, '%'))
             OR LOWER(s.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(s.className) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(s.classEntity.className) LIKE LOWER(CONCAT('%', :keyword, '%'))
         )
         ORDER BY s.id DESC
     """)
@@ -332,4 +199,20 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         FROM Student s
     """)
     Long findMaxId();
+
+
+    @Query("""
+       SELECT MAX(s.studRollNo)
+       FROM Student s
+       WHERE s.classEntity.id = :classId
+       AND s.section = :section
+       """)
+    Long findMaxRollNumber(
+
+            @Param("classId") Long classId,
+
+            @Param("section") String section
+    );
+
+
 }

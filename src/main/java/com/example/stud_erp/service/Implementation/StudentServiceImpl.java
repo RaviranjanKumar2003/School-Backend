@@ -1,395 +1,3 @@
-//package com.example.stud_erp.service.Implementation;
-//
-//import com.example.stud_erp.entity.ClassEntity;
-//import com.example.stud_erp.entity.Student;
-//import com.example.stud_erp.payload.LoginRequest;
-//import com.example.stud_erp.payload.LoginResponse;
-//import com.example.stud_erp.payload.StudentDto;
-//import com.example.stud_erp.repository.ClassRepository;
-//import com.example.stud_erp.repository.StudentRepository;
-//import com.example.stud_erp.service.ImageService;
-//import com.example.stud_erp.service.StudentService;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import java.io.IOException;
-//import java.nio.file.Files;
-//import java.nio.file.Path;
-//import java.nio.file.Paths;
-//import java.nio.file.StandardCopyOption;
-//import java.time.Year;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.UUID;
-//
-//@Service
-//public class StudentServiceImpl implements StudentService {
-//
-//    @Autowired
-//    private StudentRepository studentRepository;
-//
-//    @Autowired
-//    private ClassRepository classRepository;
-//
-//    @Autowired
-//    private ImageService imageService;
-//
-//
-//    // ================= CREATE =================
-//    @Override
-//    public Student createStudent(
-//            Student student,
-//            MultipartFile image
-//    ) throws IOException, IOException {
-//
-//        // ================= EMAIL VALIDATION =================
-//        if (student.getEmail() == null ||
-//                student.getEmail().trim().isEmpty()) {
-//
-//            throw new RuntimeException("Email required");
-//        }
-//
-//        // LOWERCASE EMAIL
-//        student.setEmail(
-//                student.getEmail().trim().toLowerCase()
-//        );
-//
-//        // ================= DUPLICATE EMAIL =================
-//        if (studentRepository.existsByEmail(student.getEmail())) {
-//
-//            throw new RuntimeException("Email already exists");
-//        }
-//
-//        // ================= PHONE VALIDATION =================
-//        if (student.getStudPhoneNumber() == null ||
-//                student.getStudPhoneNumber().length() < 10) {
-//
-//            throw new RuntimeException("Valid phone number required");
-//        }
-//
-//        // ================= CLASS FETCH =================
-//        ClassEntity cls = classRepository
-//                .findById(student.getClassNumber())
-//                .orElseThrow(() ->
-//                        new RuntimeException("Class not found")
-//                );
-//
-//        // ================= SET CLASS NAME =================
-//        student.setClassName(cls.getClassName());
-//
-//        // ================= AUTO STUDENT ID =================
-//        String regNo =
-//                "SCH-"
-//                        + Year.now().getValue()
-//                        + "-"
-//                        + System.currentTimeMillis();
-//
-//        student.setStudentId(regNo);
-//
-//        // ================= AUTO USERNAME =================
-//        String username =
-//                student.getEmail()
-//                        .split("@")[0]
-//                        + "_"
-//                        + cls.getClassName()
-//                        .replaceAll("\\s+", "")
-//                        .toLowerCase();
-//
-//        student.setUsername(username);
-//
-//        // ================= AUTO PASSWORD =================
-//        String password =
-//                "STUD@"
-//                        + student.getStudPhoneNumber().substring(
-//                        student.getStudPhoneNumber().length() - 4
-//                );
-//
-//        student.setPassword(password);
-//
-//        // ================= AUTO ROLL NUMBER =================
-//
-//        Long totalStudents =
-//                studentRepository.countByClassNumber(
-//                        student.getClassNumber()
-//                );
-//
-//        Long nextRollNo = totalStudents + 1;
-//
-//        student.setStudRollNo(nextRollNo);
-//
-//        // ================= IMAGE UPLOAD =================
-//        if (image != null && !image.isEmpty()) {
-//
-//            String imageUrl =
-//                    imageService.uploadImage(image);
-//
-//            student.setImageUrl(imageUrl);
-//        }
-//
-//        // ================= DEFAULT DELETE FLAG =================
-//        student.setDeleted(false);
-//
-//        // ================= SAVE =================
-//        return studentRepository.save(student);
-//    }
-//
-//    // ================= UPDATE =================
-//    @Override
-//    public Student updateStudent(
-//
-//            Long id,
-//
-//            Student updatedStudent,
-//
-//            MultipartFile image
-//
-//    ) throws IOException {
-//
-//        Student student =
-//                studentRepository.findById(id)
-//                        .orElseThrow(() ->
-//                                new RuntimeException(
-//                                        "Student not found"
-//                                )
-//                        );
-//
-//        // ================= UPDATE FIELDS =================
-//
-//        student.setStudName(
-//                updatedStudent.getStudName()
-//        );
-//
-//        student.setStudLastName(
-//                updatedStudent.getStudLastName()
-//        );
-//
-//        student.setEmail(
-//                updatedStudent.getEmail()
-//        );
-//
-//        student.setStudPhoneNumber(
-//                updatedStudent.getStudPhoneNumber()
-//        );
-//
-//        student.setClassNumber(
-//                updatedStudent.getClassNumber()
-//        );
-//
-//        student.setStudRollNo(
-//                updatedStudent.getStudRollNo()
-//        );
-//
-//        // ================= IMAGE =================
-//
-//        if (
-//                image != null &&
-//                        !image.isEmpty()
-//        ) {
-//
-//            String fileName =
-//                    UUID.randomUUID()
-//                            + "_"
-//                            + image.getOriginalFilename();
-//
-//            Path uploadPath =
-//                    Paths.get(
-//                            "uploads/students"
-//                    );
-//
-//            if (
-//                    !Files.exists(uploadPath)
-//            ) {
-//
-//                Files.createDirectories(
-//                        uploadPath
-//                );
-//            }
-//
-//            Files.copy(
-//                    image.getInputStream(),
-//
-//                    uploadPath.resolve(fileName),
-//
-//                    StandardCopyOption.REPLACE_EXISTING
-//            );
-//
-//            student.setImageUrl(fileName);
-//        }
-//
-//        return studentRepository.save(student);
-//    }
-//
-//    // ================= DELETE =================
-//    @Override
-//    public void deleteStudent(Long id) {
-//
-//        Student st = studentRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Student not found"));
-//
-//        st.setDeleted(true);
-//
-//        studentRepository.save(st);
-//    }
-//
-//    // ================= GET ALL =================
-//    @Override
-//    public List<StudentDto> getAllStudents(Long schoolId) {
-//
-//        return studentRepository
-//                .findBySchoolIdAndIsDeletedFalse(schoolId)
-//                .stream()
-//                .map(this::toDTO)
-//                .toList();
-//    }
-//
-//    // ================= CLASS WISE =================
-//    @Override
-//    public List<StudentDto> getStudentsByClass(Long schoolId, Long classNumber) {
-//
-//        return studentRepository
-//                .findBySchoolIdAndClassNumberAndIsDeletedFalse(schoolId, classNumber)
-//                .stream()
-//                .map(this::toDTO)
-//                .toList();
-//    }
-//
-//    // ================= GET BY ID =================
-//    @Override
-//    public Optional<Student> getStudentById(Long id) {
-//        return studentRepository.findById(id);
-//    }
-//
-//    @Override
-//    public Optional<Student> getByStudentId(String studentId) {
-//        return studentRepository.findByStudentId(studentId);
-//    }
-//
-//    // ================= DTO MAPPER =================
-//    private StudentDto toDTO(Student s) {
-//
-//        StudentDto dto = new StudentDto();
-//
-//        dto.setId(s.getId());
-//
-//        dto.setSchoolId(s.getSchoolId());
-//        dto.setSchoolCode(s.getSchoolCode());
-//        dto.setSchoolName(s.getSchoolName());
-//
-//        dto.setStudentId(s.getStudentId());
-//        dto.setUsername(s.getUsername());
-//        dto.setEmail(s.getEmail());
-//
-//        dto.setClassNumber(s.getClassNumber());
-//        dto.setClassName(s.getClassName());
-//
-//        dto.setStudRollNo(s.getStudRollNo());
-//        dto.setStudName(s.getStudName());
-//        dto.setStudPhoneNumber(s.getStudPhoneNumber());
-//
-//        dto.setImageUrl(s.getImageUrl());
-//
-//        return dto;
-//    }
-//
-//
-//    // ================= LOGIN =================
-//    @Override
-//    public LoginResponse authenticateUser(LoginRequest request) {
-//
-//        Student student = studentRepository
-//                .findByUsername(request.getUsername())
-//
-//                .orElseThrow(() ->
-//                        new RuntimeException("Student not found")
-//                );
-//
-//        if (!student.getPassword().equals(request.getPassword())) {
-//
-//            throw new RuntimeException("Invalid password");
-//        }
-//
-//        // ================= RESPONSE =================
-//        LoginResponse response = new LoginResponse();
-//
-//        response.setId(student.getId());
-//
-//        response.setName(student.getStudName());
-//
-//        response.setUsername(student.getUsername());
-//
-//        response.setEmail(student.getEmail());
-//
-//        response.setRole("STUDENT");
-//
-//        response.setSchoolId(student.getSchoolId());
-//
-//        response.setSchoolName(student.getSchoolName());
-//
-//        response.setSchoolCode(student.getSchoolCode());
-//
-//        return response;
-//    }
-//
-//    // ================= TOTAL STUDENTS =================
-//    @Override
-//    public Long getTotalStudents(Long schoolId) {
-//
-//        return studentRepository
-//                .countBySchoolIdAndIsDeletedFalse(schoolId);
-//    }
-//
-//
-//    @Override
-//    public Student getById(Long id) {
-//
-//        return studentRepository.findById(id)
-//                .orElseThrow(() ->
-//                        new RuntimeException(
-//                                "Student not found"
-//                        )
-//                );
-//    }
-//
-//
-//    @Override
-//    public List<StudentDto> getDeletedStudents(Long schoolId) {
-//
-//        return studentRepository.findBySchoolIdAndIsDeletedTrue(schoolId)
-//                .stream()
-//                .map(s -> {
-//                    StudentDto dto = new StudentDto();
-//                    dto.setId(s.getId());
-//                    dto.setStudName(s.getStudName());
-//                    dto.setEmail(s.getEmail());
-//                    dto.setStudPhoneNumber(s.getStudPhoneNumber());
-//                    dto.setStudRollNo(s.getStudRollNo());
-//                    dto.setClassNumber(s.getClassNumber());
-//                    dto.setImageUrl(s.getImageUrl());
-//                    return dto;
-//                })
-//                .toList();
-//    }
-//
-//
-//    @Override
-//    public void restoreStudent(Long id) {
-//
-//        Student s = studentRepository.findById(id)
-//                .orElseThrow();
-//
-//        s.setDeleted(false);
-//
-//        studentRepository.save(s);
-//    }
-//
-//    @Override
-//    public void permanentDelete(Long id) {
-//        studentRepository.deleteById(id);
-//    }
-//}
-
-
 
 //====================================================================================== NEW
 
@@ -402,6 +10,7 @@ import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.LoginResponse;
 import com.example.stud_erp.payload.StudentDto;
 import com.example.stud_erp.enums.StudentStatus;
+import com.example.stud_erp.payload.StudentPromotionRequest;
 import com.example.stud_erp.repository.ClassRepository;
 import com.example.stud_erp.repository.SchoolRepository;
 import com.example.stud_erp.repository.StudentRepository;
@@ -551,8 +160,6 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= ACADEMIC =================
 
-        student.setClassName(cls.getClassName());
-
         student.setClassEntity(cls);
 
         student.setSection(dto.getSection());
@@ -628,7 +235,7 @@ public class StudentServiceImpl implements StudentService {
                                 dto.getStudPhoneNumber().length() - 4
                         );
 
-// ================= SET GENERATED VALUES =================
+      // ================= SET GENERATED VALUES =================
 
         student.setStudentId(studentId);
 
@@ -642,9 +249,9 @@ public class StudentServiceImpl implements StudentService {
 
         Long totalStudents =
                 studentRepository
-                        .countBySchoolIdAndClassNameAndIsDeletedFalse(
+                        .countBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
                                 dto.getSchoolId(),
-                                cls.getClassName()
+                                cls.getId()
                         );
 
         student.setStudRollNo(totalStudents + 1);
@@ -666,7 +273,7 @@ public class StudentServiceImpl implements StudentService {
                         + "\"studentId\":\"" + student.getStudentId() + "\","
                         + "\"name\":\"" + student.getFullName() + "\","
                         + "\"fatherName\":\"" + student.getStudFatherName() + "\","
-                        + "\"class\":\"" + student.getClassName() + "\","
+                        + "\"class\":\"" + student.getClassEntity().getClassName() + "\","
                         + "\"section\":\"" + student.getSection() + "\","
                         + "\"rollNo\":\"" + student.getStudRollNo() + "\","
                         + "\"phone\":\"" + student.getStudPhoneNumber() + "\","
@@ -786,8 +393,6 @@ public class StudentServiceImpl implements StudentService {
                             );
 
             student.setClassEntity(cls);
-
-            student.setClassName(cls.getClassName());
         }
 
         // ================= IMAGE =================
@@ -891,13 +496,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDto> getStudentsByClass(
             Long schoolId,
-            String className
+            Long classId
     ) {
 
         return studentRepository
-                .findBySchoolIdAndClassNameAndIsDeletedFalse(
+                .findBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
                         schoolId,
-                        className
+                        classId
                 )
                 .stream()
                 .map(this::mapToDto)
@@ -1123,8 +728,6 @@ public class StudentServiceImpl implements StudentService {
 
         dto.setStatus(s.getStatus());
 
-        dto.setClassName(s.getClassName());
-
         dto.setSection(s.getSection());
 
         dto.setStudRollNo(s.getStudRollNo());
@@ -1213,6 +816,17 @@ public class StudentServiceImpl implements StudentService {
 
         dto.setUpdatedAt(s.getUpdatedAt());
 
+        if (s.getClassEntity() != null) {
+
+            dto.setClassId(
+                    s.getClassEntity().getId()
+            );
+
+            dto.setClassName(
+                    s.getClassEntity().getClassName()
+            );
+        }
+
         if (s.getSchool() != null) {
 
             dto.setSchoolId(
@@ -1225,5 +839,92 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return dto;
+    }
+
+    @Override
+    public void promoteStudents(StudentPromotionRequest req) {
+
+        // ================= VALIDATION =================
+
+        if (req.getStudentIds() == null ||
+                req.getStudentIds().isEmpty()) {
+
+            throw new RuntimeException(
+                    "No students selected"
+            );
+        }
+
+        if (req.getToClassId() == null) {
+
+            throw new RuntimeException(
+                    "Target class required"
+            );
+        }
+
+        if (req.getToSection() == null ||
+                req.getToSection().isBlank()) {
+
+            throw new RuntimeException(
+                    "Target section required"
+            );
+        }
+
+        // ================= TARGET CLASS =================
+
+        ClassEntity toClass =
+                classRepository.findById(req.getToClassId())
+
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Class not found"
+                                ));
+
+        // ================= FETCH STUDENTS =================
+
+        List<Student> students =
+                studentRepository.findAllById(
+                        req.getStudentIds()
+                );
+
+        if (students.isEmpty()) {
+
+            throw new RuntimeException(
+                    "Students not found"
+            );
+        }
+
+        // ================= LAST ROLL NUMBER =================
+
+        Long lastRoll =
+                studentRepository.findMaxRollNumber(
+                        toClass.getId(),
+                        req.getToSection()
+                );
+
+        Long nextRoll =
+                (lastRoll == null) ? 1L : lastRoll + 1;
+
+        // ================= PROMOTION =================
+
+        for (Student s : students) {
+
+            // UPDATE CLASS
+            s.setClassEntity(toClass);
+
+            // UPDATE SECTION
+            s.setSection(req.getToSection());
+
+            // ASSIGN NEW ROLL NUMBER
+            s.setStudRollNo(nextRoll);
+
+            // OPTIONAL STATUS
+            s.setUpdatedBy(req.getUpdatedBy());
+
+            // SAVE
+            studentRepository.save(s);
+
+            // NEXT ROLL
+            nextRoll++;
+        }
     }
 }

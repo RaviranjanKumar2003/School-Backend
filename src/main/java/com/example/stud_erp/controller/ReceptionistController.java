@@ -8,11 +8,18 @@ import com.example.stud_erp.entity.Receptionist;
 import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ReceptionistDto;
 import com.example.stud_erp.service.ReceptionistService;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -131,5 +138,56 @@ public class ReceptionistController {
                 .getReceptionistsBySchool(
                         schoolId
                 );
+    }
+
+
+    // ================= GET IMAGE =================
+    @GetMapping("/image/{fileName}")
+    public ResponseEntity<Resource> getImage(
+            @PathVariable String fileName
+    ) {
+
+        try {
+
+            Path path = Paths.get(
+                    "images",
+                    fileName
+            );
+
+            Resource resource =
+                    new UrlResource(path.toUri());
+
+            if (!resource.exists()) {
+
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType =
+                    Files.probeContentType(path);
+
+            if (contentType == null) {
+
+                contentType =
+                        "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; fileName=\"" +
+                                    resource.getFilename() + "\""
+                    )
+
+                    .contentType(
+                            MediaType.parseMediaType(contentType)
+                    )
+
+                    .body(resource);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

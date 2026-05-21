@@ -3,6 +3,7 @@ package com.example.stud_erp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -63,9 +64,57 @@ public class Inquiry {
         createdAt = LocalDateTime.now();
     }
 
+   // ========= NEW
+    private String assignedTo;   // receptionist id
+    private String source;       // WALK_IN / WEBSITE / CALL
+    private String priority;     // HIGH / MEDIUM / LOW
+
+    private LocalDate followUpDate;
+
+    private String lastAction;
 
 // GETTERS & SETTERS
 
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public LocalDate getFollowUpDate() {
+        return followUpDate;
+    }
+
+    public void setFollowUpDate(LocalDate followUpDate) {
+        this.followUpDate = followUpDate;
+    }
+
+    public String getLastAction() {
+        return lastAction;
+    }
+
+    public void setLastAction(String lastAction) {
+        this.lastAction = lastAction;
+    }
 
     public Long getId() {
         return id;

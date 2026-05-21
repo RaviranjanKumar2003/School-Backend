@@ -123,12 +123,12 @@ public class ExamScheduleService {
 
         // 🔥 AUTO STUDENT ASSIGN
 
-        Long classNumber = (long) classRepo.findById(req.getClassId())
-                .get()
-                .getId().intValue(); // id = 1,2,3,4
-
         List<Student> students =
-                studentRepo.findByClassEntity_IdAndIsDeletedFalse(classNumber);
+                studentRepo
+                        .findBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
+                                req.getSchool().getId(),
+                                req.getClassId()
+                        );
 
         System.out.println("Students found: " + students.size());
 
