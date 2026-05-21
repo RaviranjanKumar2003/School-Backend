@@ -21,4 +21,10 @@ public interface RecheckRepository extends JpaRepository<RecheckRequest, Long> {
             Long examId,
             String subject
     );
+    List<RecheckRequest> findBySchoolId(Long schoolId);
+
+    List<RecheckRequest> findByProfessorIdAndSchoolId(
+            Long professorId,
+            Long schoolId
+    );
 }

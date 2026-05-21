@@ -58,6 +58,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/attendance/teacher")
@@ -134,6 +135,42 @@ public class TeacherAttendanceController {
                 teacherId,
 
                 LocalDate.parse(attendanceDate)
+        );
+    }
+
+
+    // =====================================================
+    // TODAY SUMMARY
+    // =====================================================
+
+    @GetMapping("/summary/{schoolId}")
+    public Map<String, Object> getSummaryByDate(
+
+            @PathVariable Long schoolId,
+
+            @RequestParam String attendanceDate
+    ) {
+
+        return service.getSummaryByDate(
+
+                schoolId,
+
+                LocalDate.parse(attendanceDate)
+        );
+    }
+
+    // =====================================================
+    // WEEKLY SUMMARY
+    // =====================================================
+
+    @GetMapping("/weekly-summary/{schoolId}")
+    public List<Map<String, Object>> getWeeklySummary(
+
+            @PathVariable Long schoolId
+    ) {
+
+        return service.getWeeklySummary(
+                schoolId
         );
     }
 }

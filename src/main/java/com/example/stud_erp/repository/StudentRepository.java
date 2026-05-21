@@ -214,5 +214,29 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             @Param("section") String section
     );
 
+    List<Student> findByClassEntity_IdAndIsDeletedFalse(Long classId);
+
+
+    @Query("""
+    SELECT COUNT(s)
+    FROM Student s
+    WHERE s.school.id = :schoolId
+    AND LOWER(TRIM(s.gender)) = 'male'
+    AND s.isDeleted = false
+""")
+    Long countBoys(Long schoolId);
+
+
+    @Query("""
+    SELECT COUNT(s)
+    FROM Student s
+    WHERE s.school.id = :schoolId
+    AND LOWER(TRIM(s.gender)) = 'female'
+    AND s.isDeleted = false
+""")
+    Long countGirls(Long schoolId);
+
+    boolean existsByClassEntityId(Long classId);
+
 
 }

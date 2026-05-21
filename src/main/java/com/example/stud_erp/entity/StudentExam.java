@@ -13,6 +13,9 @@ public class StudentExam {
     private Long studentId;
     private Long examScheduleId;
 
+    private Long schoolId;
+
+    private String schoolCode;
     private String status = "ACTIVE"; // ACTIVE / CANCELLED
 
     private String cancelReason; // 🔥 show to student
@@ -20,6 +23,22 @@ public class StudentExam {
     private String examStatus = "PENDING"; // PENDING / GIVEN / ABSENT
     // getters setters
 
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
 
     public Long getId() {
         return id;

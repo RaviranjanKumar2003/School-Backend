@@ -39,20 +39,37 @@ public class ExamSchedule {
 
     private String cancelReason; // 🔥 NEW
 
+    private Long schoolId;
 
-    @ManyToOne
-    @JoinColumn(name = "school_id")
-    private School school;
+    private String schoolCode;
+
+    private String createdBy;
 
     // getters setters
 
 
-    public School getSchool() {
-        return school;
+    public Long getSchoolId() {
+        return schoolId;
     }
 
-    public void setSchool(School school) {
-        this.school = school;
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Long getId() {

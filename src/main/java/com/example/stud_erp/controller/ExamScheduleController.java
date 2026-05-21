@@ -68,12 +68,14 @@ public class ExamScheduleController {
     }
 
     // All teacher
-    @GetMapping
-    public List<ExamScheduleDTO> getAll() {
-        return service.getAllExams();
+    @GetMapping("/{schoolId}")
+    public List<ExamScheduleDTO> getAll(
+            @PathVariable Long schoolId
+    ){
+        return service.getAllExams(schoolId);
     }
 
-//    teacher Attendance exam ke din Banayga
+    //    teacher Attendance exam ke din Banayga
     @PutMapping("/exam_attendance")
     public void markAttendance(@RequestBody StudentExam req) {
         service.markAttendance(req);

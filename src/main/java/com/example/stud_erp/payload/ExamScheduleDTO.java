@@ -23,6 +23,35 @@ public class ExamScheduleDTO {
 
     // 🔥 NEW
     private String endTime;
+    private Long schoolId;
+
+    private String schoolCode;
+
+    private String createdBy;
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Long getId() {
         return id;

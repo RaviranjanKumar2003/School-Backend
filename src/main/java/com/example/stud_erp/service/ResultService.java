@@ -1,13 +1,9 @@
 package com.example.stud_erp.service;
 
-import com.example.stud_erp.entity.ExamSchedule;
-import com.example.stud_erp.entity.Result;
-import com.example.stud_erp.entity.StudentExam;
+import com.example.stud_erp.entity.*;
 import com.example.stud_erp.enums.ExamType;
 import com.example.stud_erp.payload.ResultDTO;
-import com.example.stud_erp.repository.ExamScheduleRepository;
-import com.example.stud_erp.repository.ResultRepository;
-import com.example.stud_erp.repository.StudentExamRepository;
+import com.example.stud_erp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -20,6 +16,12 @@ public class ResultService {
 
     @Autowired
     private ResultRepository resultRepository;
+
+    @Autowired
+    private ProfessorRepository professorRepo;
+
+    @Autowired
+    private ClassRepository classRepo;
 
     @Autowired
     private StudentExamRepository studentExamRepo;
@@ -61,6 +63,39 @@ public class ResultService {
         ExamSchedule exam = examRepo
                 .findById(se.getExamScheduleId())
                 .orElseThrow(() -> new RuntimeException("❌ Exam not found"));
+
+        // 🔥 TEACHER VALIDATION
+        Professor teacher = professorRepo
+                .findById(r.getProfessorId())
+                .orElseThrow(() ->
+                        new RuntimeException("Teacher not found")
+                );
+
+        // 🔥 CLASS VALIDATION
+        ClassEntity cls = classRepo
+                .findById(exam.getClassId())
+                .orElseThrow(() ->
+                        new RuntimeException("Class not found")
+                );
+
+        // 🔥 SAME SCHOOL SECURITY
+        if (!cls.getSchoolId().equals(
+                teacher.getSchool().getId()
+        )) {
+
+            throw new RuntimeException(
+                    "❌ You cannot submit marks for another school"
+            );
+        }
+
+        // 🔥 SAVE SCHOOL INFO
+        r.setSchoolId(teacher.getSchool().getId());
+
+        r.setSchoolCode(
+                teacher.getSchool().getSchoolCode()
+        );
+
+        r.setCreatedBy(teacher.getName());
 
         r.setExamId(se.getExamScheduleId());
         r.setClassId(exam.getClassId());
@@ -199,6 +234,21 @@ public class ResultService {
         // ✅ get ALL exams of class + type (ALL subjects)
         List<ExamSchedule> exams =
                 examRepo.findByClassIdAndExamType(classId, type);
+
+        ClassEntity cls = classRepo.findById(classId)
+                .orElseThrow(() ->
+                        new RuntimeException("Class not found")
+                );
+
+        for (ExamSchedule exam : exams) {
+
+            if (!exam.getSchoolId().equals(cls.getSchoolId())) {
+
+                throw new RuntimeException(
+                        "❌ Invalid school exam mapping"
+                );
+            }
+        }
 
         if (exams.isEmpty()) {
             return "❌ No exams found";

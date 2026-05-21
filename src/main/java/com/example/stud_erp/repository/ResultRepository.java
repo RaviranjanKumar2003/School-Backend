@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface ResultRepository extends JpaRepository<Result, Long> {
 
     List<Result> findByStudentId(Long studentId);
+    List<Result> findBySchoolId(Long schoolId);
 
     // 🔥 MUST FOR RECHECK SYSTEM
     Optional<Result> findByStudentIdAndSubject(Long studentId, String subject);

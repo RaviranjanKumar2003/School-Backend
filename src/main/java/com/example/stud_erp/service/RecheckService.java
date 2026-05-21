@@ -1,13 +1,7 @@
 package com.example.stud_erp.service;
 
-import com.example.stud_erp.entity.ExamSchedule;
-import com.example.stud_erp.entity.RecheckRequest;
-import com.example.stud_erp.entity.Result;
-import com.example.stud_erp.entity.Student;
-import com.example.stud_erp.repository.ExamScheduleRepository;
-import com.example.stud_erp.repository.RecheckRepository;
-import com.example.stud_erp.repository.ResultRepository;
-import com.example.stud_erp.repository.StudentRepository;
+import com.example.stud_erp.entity.*;
+import com.example.stud_erp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +9,12 @@ import java.util.List;
 
 @Service
 public class RecheckService {
+
+    @Autowired
+    private ClassRepository classRepo;
+
+    @Autowired
+    private ProfessorRepository professorRepo;
 
     @Autowired
     private RecheckRepository recheckRepository;
@@ -46,6 +46,30 @@ public class RecheckService {
         request.setProfessorId(exam.getTeacherId());
         request.setClassId(exam.getClassId());
         request.setSubjectName(subject);
+        // 🔥 CLASS FETCH
+        ClassEntity cls = classRepo.findById(exam.getClassId())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+        request.setClassName(cls.getClassName());
+
+        // 🔥 TEACHER FETCH
+        Professor teacher = professorRepo.findById(exam.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        // 🔥 SAME SCHOOL VALIDATION
+        if (!cls.getSchoolId().equals(
+                student.getSchool().getId()
+        )) {
+            throw new RuntimeException(
+                    "❌ Invalid school access"
+            );
+        }
+
+        // 🔥 SAVE SCHOOL INFO
+        request.setSchoolId(cls.getSchoolId());
+
+        request.setSchoolCode(
+                teacher.getSchool().getSchoolCode()
+        );
 
         request.setTotalMarks(exam.getTotalMarks());
         request.setExamType(exam.getExamType().name());
@@ -114,5 +138,25 @@ public class RecheckService {
     // 🔥 8. SAVE (for controller use)
     public RecheckRequest save(RecheckRequest req) {
         return recheckRepository.save(req);
+    }
+
+
+    public List<RecheckRequest> getTeacherRequests(Long teacherId) {
+
+        Professor teacher = professorRepo.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        return recheckRepository
+                .findByProfessorIdAndSchoolId(
+                        teacherId,
+                        teacher.getSchool().getId()
+                )
+                .stream()
+                .filter(r -> "APPROVED".equals(r.getStatus()))
+                .toList();
+    }
+
+    public List<RecheckRequest> getRequestsBySchool(Long schoolId) {
+        return recheckRepository.findBySchoolId(schoolId);
     }
 }

@@ -191,7 +191,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TeacherAttendanceServiceImpl
@@ -424,5 +426,123 @@ public class TeacherAttendanceServiceImpl
         return list.stream()
                 .map(this::toDTO)
                 .toList();
+    }
+
+    // =====================================================
+    // SUMMARY BY DATE
+    // =====================================================
+
+    @Override
+    public Map<String, Object> getSummaryByDate(
+
+            Long schoolId,
+
+            LocalDate attendanceDate
+    ) {
+
+        List<TeacherAttendance> list =
+                repository.findBySchoolIdAndAttendanceDate(
+                        schoolId,
+                        attendanceDate
+                );
+
+        long present =
+                list.stream()
+                        .filter(a ->
+                                "Present".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        long absent =
+                list.stream()
+                        .filter(a ->
+                                "Absent".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        long leave =
+                list.stream()
+                        .filter(a ->
+                                "Leave".equalsIgnoreCase(
+                                        a.getStatus()
+                                )
+                        )
+                        .count();
+
+        Map<String, Object> map =
+                new HashMap<>();
+
+        map.put("present", present);
+
+        map.put("absent", absent);
+
+        map.put("leave", leave);
+
+        map.put("total", list.size());
+
+        return map;
+    }
+
+    // =====================================================
+    // WEEKLY SUMMARY
+    // =====================================================
+
+    @Override
+    public List<Map<String, Object>> getWeeklySummary(
+
+            Long schoolId
+    ) {
+
+        List<Map<String, Object>> result =
+                new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        for (int i = 6; i >= 0; i--) {
+
+            LocalDate date =
+                    today.minusDays(i);
+
+            List<TeacherAttendance> list =
+                    repository.findBySchoolIdAndAttendanceDate(
+                            schoolId,
+                            date
+                    );
+
+            long present =
+                    list.stream()
+                            .filter(a ->
+                                    "Present".equalsIgnoreCase(
+                                            a.getStatus()
+                                    )
+                            )
+                            .count();
+
+            long absent =
+                    list.stream()
+                            .filter(a ->
+                                    "Absent".equalsIgnoreCase(
+                                            a.getStatus()
+                                    )
+                            )
+                            .count();
+
+            Map<String, Object> map =
+                    new HashMap<>();
+
+            map.put("attendanceDate", date.toString());
+
+            map.put("present", present);
+
+            map.put("absent", absent);
+
+            result.add(map);
+        }
+
+        return result;
     }
 }

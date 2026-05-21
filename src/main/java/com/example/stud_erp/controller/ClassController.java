@@ -4,6 +4,8 @@ import com.example.stud_erp.payload.ClassDTO;
 import com.example.stud_erp.service.ClassService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,11 +50,28 @@ public class ClassController {
 
     // ================= DELETE CLASS =================
     @DeleteMapping("/{schoolId}/{classId}")
-    public void deleteClass(
+    public ResponseEntity<?> deleteClass(
             @PathVariable Long schoolId,
             @PathVariable Long classId
     ) {
-        classService.deleteClass(schoolId, classId);
+
+        try {
+
+            classService.deleteClass(
+                    schoolId,
+                    classId
+            );
+
+            return ResponseEntity.ok(
+                    "Class deleted successfully"
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
+        }
     }
 
     // ================= ADD SUBJECT =================

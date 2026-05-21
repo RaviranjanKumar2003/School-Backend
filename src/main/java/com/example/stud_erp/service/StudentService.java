@@ -104,4 +104,17 @@ public interface StudentService {
     );
 
     void promoteStudents(StudentPromotionRequest req);
+
+
+    // =========================================================
+// TOTAL BOYS
+// =========================================================
+
+    Long getTotalBoys(Long schoolId);
+
+// =========================================================
+// TOTAL GIRLS
+// =========================================================
+
+    Long getTotalGirls(Long schoolId);
 }

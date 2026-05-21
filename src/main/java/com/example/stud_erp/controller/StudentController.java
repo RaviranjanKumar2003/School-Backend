@@ -534,4 +534,43 @@ public class StudentController {
                 "Students promoted successfully"
         );
     }
+
+
+    // =========================================================
+// TOTAL BOYS
+// =========================================================
+
+    @GetMapping("/count/boys/{schoolId}")
+    public ResponseEntity<Long> getTotalBoys(
+
+            @PathVariable Long schoolId
+
+    ) {
+
+        Long total =
+                studentService.getTotalBoys(
+                        schoolId
+                );
+
+        return ResponseEntity.ok(total);
+    }
+
+// =========================================================
+// TOTAL GIRLS
+// =========================================================
+
+    @GetMapping("/count/girls/{schoolId}")
+    public ResponseEntity<Long> getTotalGirls(
+
+            @PathVariable Long schoolId
+
+    ) {
+
+        Long total =
+                studentService.getTotalGirls(
+                        schoolId
+                );
+
+        return ResponseEntity.ok(total);
+    }
 }

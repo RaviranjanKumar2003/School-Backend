@@ -26,17 +26,26 @@ public class Result {
 
     private Long professorId;
 
+    private Long schoolId;
+
+    private String schoolCode;
+
+    private String createdBy;
+
     private String status;
     private Double percentage;
     private String grade;
     public Result() {}
 
-    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId){
+    public Result(Long studentId, String subject, int marks, int totalMarks, Long professorId,Long schoolId,String schoolCode,String createdBy){
         this.studentId = studentId;
         this.subject = subject;
         this.marks = marks;
         this.totalMarks = totalMarks;
         this.professorId = professorId;
+        this.schoolId=schoolId;
+        this.schoolCode=schoolCode;
+        this.createdBy=createdBy;
     }
 
     // 🔹 AUTO CALCULATION
@@ -69,6 +78,31 @@ public class Result {
     }
 
     // getters setters (same as before)
+
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Long getId() {
         return id;

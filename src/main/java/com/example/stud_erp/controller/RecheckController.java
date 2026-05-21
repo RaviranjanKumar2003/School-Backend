@@ -86,17 +86,17 @@ public class RecheckController {
 
     // ✅ 4. TEACHER VIEW APPROVED LIST
     @GetMapping("/teacher/{teacherId}")
-    public List<RecheckRequest> getTeacherRequests(@PathVariable Long teacherId) {
-        return recheckService.getAllRequests()
-                .stream()
-                .filter(r -> "APPROVED".equals(r.getStatus())
-                        && r.getProfessorId().equals(teacherId))
-                .toList();
+    public List<RecheckRequest> getTeacherRequests(
+            @PathVariable Long teacherId
+    ) {
+        return recheckService.getTeacherRequests(teacherId);
     }
 
-    @GetMapping("/admin")
-    public List<RecheckRequest> getAllForAdmin() {
-        return recheckService.getAllRequests();
+    @GetMapping("/admin/{schoolId}")
+    public List<RecheckRequest> getAllForAdmin(
+            @PathVariable Long schoolId
+    ) {
+        return recheckService.getRequestsBySchool(schoolId);
     }
 
 
@@ -124,11 +124,6 @@ public class RecheckController {
         return recheckService.getStudentRequests(studentId);
     }
 
-    // ✅ 6. ADMIN VIEW ALL
-    @GetMapping("/all")
-    public List<RecheckRequest> getAllRequests() {
-        return recheckService.getAllRequests();
-    }
 
 
     @PutMapping("/no-change/{id}")

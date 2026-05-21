@@ -118,17 +118,41 @@ public class ExamScheduleService {
             }
         }
 
+
+        // 🔥 CLASS VALIDATION
+        ClassEntity cls = classRepo.findById(req.getClassId())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+
+        // 🔥 TEACHER VALIDATION
+        Professor teacher = professorRepo.findById(req.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        // 🔥 SAME SCHOOL CHECK
+        if (!cls.getSchoolId().equals(teacher.getSchool().getId())) {
+            throw new RuntimeException(
+                    "❌ You cannot create exam for another school"
+            );
+        }
+
+        // 🔥 SAVE SCHOOL INFO
+        req.setSchoolId(teacher.getSchool().getId());
+
+        req.setSchoolCode(
+                teacher.getSchool().getSchoolCode()
+        );
+
+        req.setCreatedBy(teacher.getName());
         // ✅ SAVE
         ExamSchedule saved = repo.save(req);
 
         // 🔥 AUTO STUDENT ASSIGN
 
+        Long classNumber = (long) classRepo.findById(req.getClassId())
+                .get()
+                .getId().intValue(); // id = 1,2,3,4
+
         List<Student> students =
-                studentRepo
-                        .findBySchoolIdAndClassEntity_IdAndIsDeletedFalse(
-                                req.getSchool().getId(),
-                                req.getClassId()
-                        );
+                studentRepo.findByClassEntity_IdAndIsDeletedFalse(classNumber);
 
         System.out.println("Students found: " + students.size());
 
@@ -137,11 +161,11 @@ public class ExamScheduleService {
             se.setStudentId(s.getId());
             se.setExamScheduleId(saved.getId());
             se.setExamStatus("PENDING");
+            se.setSchoolId(saved.getSchoolId());
+            se.setSchoolCode(saved.getSchoolCode());
             studentExamRepo.save(se);
         }
     }
-
-
 
 
 
@@ -301,54 +325,57 @@ public class ExamScheduleService {
     public List<ExamSchedule> getTeacher(Long teacherId) {
         return repo.findByTeacherId(teacherId);
     }
-   // ALL TEACHER VIEW
-   public List<ExamScheduleDTO> getAllExams() {
 
-       List<ExamSchedule> list = repo.findAll();
 
-       return list.stream().map(e -> {
+    // ALL TEACHER VIEW
+    public List<ExamScheduleDTO> getAllExams(Long schoolId) {
 
-           ExamScheduleDTO dto = new ExamScheduleDTO();
+        List<ExamSchedule> list =
+                repo.findBySchoolId(schoolId);
 
-           dto.setId(e.getId());
-           dto.setSubjectName(e.getSubjectName());
-           dto.setTeacherId(e.getTeacherId());
-           dto.setTotalMarks(e.getTotalMarks());
-           dto.setExamDate(e.getExamDate());
-           dto.setStartTime(e.getStartTime());
-           dto.setDuration(e.getDuration());
-           dto.setShift(e.getShift());
-           dto.setMode(e.getMode());
-           dto.setRoomNo(e.getRoomNo());
-           dto.setMessage(e.getMessage());
-           dto.setStatus(e.getStatus());
+        return list.stream().map(e -> {
 
-           // ✅ CLASS NAME
-           dto.setClassName("Unknown");
-           if (e.getClassId() != null) {
-               classRepo.findById(e.getClassId())
-                       .ifPresent(c -> dto.setClassName(c.getClassName()));
-           }
+            ExamScheduleDTO dto = new ExamScheduleDTO();
 
-           // ✅ TEACHER NAME
-           dto.setTeacherName("Unknown");
-           if (e.getTeacherId() != null) {
-               professorRepo.findById(e.getTeacherId())
-                       .ifPresent(t -> dto.setTeacherName(t.getName()));
-           }
+            dto.setId(e.getId());
+            dto.setSubjectName(e.getSubjectName());
+            dto.setTeacherId(e.getTeacherId());
+            dto.setTotalMarks(e.getTotalMarks());
+            dto.setExamDate(e.getExamDate());
+            dto.setStartTime(e.getStartTime());
+            dto.setDuration(e.getDuration());
+            dto.setShift(e.getShift());
+            dto.setMode(e.getMode());
+            dto.setRoomNo(e.getRoomNo());
+            dto.setMessage(e.getMessage());
+            dto.setStatus(e.getStatus());
 
-           // 🔥 END TIME CALCULATION
-           try {
-               LocalTime start = LocalTime.parse(e.getStartTime());
-               LocalTime end = start.plusMinutes(e.getDuration());
-               dto.setEndTime(end.toString());
-           } catch (Exception ex) {
-               dto.setEndTime("-");
-           }
-           return dto;
+            // ✅ CLASS NAME
+            dto.setClassName("Unknown");
+            if (e.getClassId() != null) {
+                classRepo.findById(e.getClassId())
+                        .ifPresent(c -> dto.setClassName(c.getClassName()));
+            }
 
-       }).toList();
-   }
+            // ✅ TEACHER NAME
+            dto.setTeacherName("Unknown");
+            if (e.getTeacherId() != null) {
+                professorRepo.findById(e.getTeacherId())
+                        .ifPresent(t -> dto.setTeacherName(t.getName()));
+            }
+
+            // 🔥 END TIME CALCULATION
+            try {
+                LocalTime start = LocalTime.parse(e.getStartTime());
+                LocalTime end = start.plusMinutes(e.getDuration());
+                dto.setEndTime(end.toString());
+            } catch (Exception ex) {
+                dto.setEndTime("-");
+            }
+            return dto;
+
+        }).toList();
+    }
 
 
     // ✅ CANCEL (FULL SAFE)
@@ -398,7 +425,19 @@ public class ExamScheduleService {
         StudentExam se = studentExamRepo.findById(req.getId())
                 .orElseThrow();
 
-        se.setExamStatus(req.getExamStatus()); // GIVEN / ABSENT
+        // 🔥 EXAM FETCH
+        ExamSchedule exam = repo.findById(se.getExamScheduleId())
+                .orElseThrow();
+
+        // ❌ CANCELLED CHECK
+        if ("CANCELLED".equalsIgnoreCase(exam.getStatus())) {
+
+            throw new RuntimeException(
+                    "❌ Cannot mark attendance. Exam is cancelled"
+            );
+        }
+
+        se.setExamStatus(req.getExamStatus());
 
         studentExamRepo.save(se);
     }
@@ -412,6 +451,21 @@ public class ExamScheduleService {
                 repo.findTopByClassIdAndTeacherIdOrderByIdDesc(
                         classId, teacherId
                 );
+
+        Professor teacher = professorRepo.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        ClassEntity cls = classRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+
+        // 🔥 SAME SCHOOL SECURITY
+        if (!cls.getSchoolId().equals(
+                teacher.getSchool().getId()
+        )) {
+            throw new RuntimeException(
+                    "❌ You cannot access another school students"
+            );
+        }
 
         if (latestExam == null) {
             throw new RuntimeException("❌ This class has no exam for you");

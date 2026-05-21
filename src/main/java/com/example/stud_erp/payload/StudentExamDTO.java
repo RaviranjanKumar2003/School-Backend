@@ -7,6 +7,9 @@ public class StudentExamDTO {
     private String examDate;
     private String startTime;
     private Integer duration;
+    private Long schoolId;
+
+    private String schoolCode;
 
     private String mode;
     private String roomNo;
@@ -22,6 +25,22 @@ public class StudentExamDTO {
     private Integer totalMarks;
 
     private String cancelReason;
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
 
     public String getCancelReason() {
         return cancelReason;

@@ -26,6 +26,7 @@ import com.example.stud_erp.payload.TeacherAttendanceDTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface TeacherAttendanceService {
 
@@ -49,5 +50,15 @@ public interface TeacherAttendanceService {
             Long teacherId,
 
             LocalDate attendanceDate
+    );
+
+
+    Map<String, Object> getSummaryByDate(
+            Long schoolId,
+            LocalDate attendanceDate
+    );
+
+    List<Map<String, Object>> getWeeklySummary(
+            Long schoolId
     );
 }

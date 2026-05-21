@@ -37,6 +37,9 @@ public class RecheckRequest {
     private int oldMarks;
     private int totalMarks;
     private String examType;
+    private Long schoolId;
+    private String schoolCode;
+    private String className;
 
     // 🔹 Timestamps
     private LocalDateTime createdAt;
@@ -55,6 +58,29 @@ public class RecheckRequest {
     }
 
     // 🔹 Getters & Setters
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public String getSchoolCode() {
+        return schoolCode;
+    }
+
+    public void setSchoolCode(String schoolCode) {
+        this.schoolCode = schoolCode;
+    }
 
     public Long getId() {
         return id;

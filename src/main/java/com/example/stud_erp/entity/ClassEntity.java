@@ -1,5 +1,6 @@
 package com.example.stud_erp.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -16,7 +17,12 @@ public class ClassEntity {
     // ⭐ IMPORTANT: SCHOOL LINK
     private Long schoolId;
 
-    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "classEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
     private List<Subject> subjects;
 
     @OneToMany(

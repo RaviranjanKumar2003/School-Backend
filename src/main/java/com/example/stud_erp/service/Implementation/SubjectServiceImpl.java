@@ -47,8 +47,16 @@ public class SubjectServiceImpl implements SubjectService {
 
         return subjectRepo.findByClassEntityId(classId)
                 .stream()
-                .filter(s -> s.getSchoolId().equals(schoolId)) // ⭐ SECURITY
+
+                .filter(s ->
+
+                        s.getSchoolId() != null
+                                &&
+                                schoolId.equals(s.getSchoolId())
+                )
+
                 .map(this::mapToDTO)
+
                 .collect(Collectors.toList());
     }
 

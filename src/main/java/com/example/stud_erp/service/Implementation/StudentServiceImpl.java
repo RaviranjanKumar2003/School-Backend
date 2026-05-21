@@ -927,4 +927,29 @@ public class StudentServiceImpl implements StudentService {
             nextRoll++;
         }
     }
+
+
+    // =========================================================
+// TOTAL BOYS
+// =========================================================
+
+    @Override
+    public Long getTotalBoys(Long schoolId) {
+
+        return studentRepository.countBoys(
+                schoolId
+        );
+    }
+
+// =========================================================
+// TOTAL GIRLS
+// =========================================================
+
+    @Override
+    public Long getTotalGirls(Long schoolId) {
+
+        return studentRepository.countGirls(
+                schoolId
+        );
+    }
 }

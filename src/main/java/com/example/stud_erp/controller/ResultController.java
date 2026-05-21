@@ -1,9 +1,11 @@
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.ExamSchedule;
+import com.example.stud_erp.entity.Professor;
 import com.example.stud_erp.entity.Result;
 import com.example.stud_erp.entity.RecheckRequest;
 import com.example.stud_erp.payload.ResultDTO;
+import com.example.stud_erp.repository.ProfessorRepository;
 import com.example.stud_erp.repository.ResultRepository;
 import com.example.stud_erp.repository.RecheckRepository;
 
@@ -28,6 +30,9 @@ public class ResultController {
 
     @Autowired
     private ResultService resultService;
+
+    @Autowired
+    private ProfessorRepository professorRepo;
 
 
 
@@ -87,6 +92,17 @@ public class ResultController {
             throw new RuntimeException("Marks cannot exceed total marks");
         }
 
+
+        Professor teacher = professorRepo.findById(professorId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        if (!result.getSchoolId().equals(
+                teacher.getSchool().getId()
+        )) {
+            throw new RuntimeException(
+                    "❌ You cannot update another school result"
+            );
+        }
         // 🔥 update marks
         result.setMarks(newMarks);
         Result updated = repo.save(result);
@@ -117,5 +133,14 @@ public class ResultController {
             @PathVariable String examType
     ) {
         return resultService.getResultByClassAndType(classId, examType);
+    }
+
+    @GetMapping("/student/{studentId}")
+    public List<Result> getByStudent(
+            @PathVariable Long studentId
+    ) {
+
+        return repo
+                .findByStudentId(studentId);
     }
 }
