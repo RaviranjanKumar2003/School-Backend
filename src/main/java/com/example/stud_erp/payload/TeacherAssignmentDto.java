@@ -1,24 +1,16 @@
-package com.example.stud_erp.entity;
+package com.example.stud_erp.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+public class TeacherAssignmentDto {
 
-@Entity
-@Table(name = "teacher_assignments")
-public class TeacherAssignment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // =====================================================
     // PROFESSOR
     // =====================================================
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professor_id")
-    @JsonIgnore
-    private Professor professor;
+    private Long professorId;
+
+    private String professorName;
 
     // =====================================================
     // SCHOOL
@@ -27,7 +19,7 @@ public class TeacherAssignment {
     private Long schoolId;
 
     // =====================================================
-    // CLASS DETAILS
+    // CLASS
     // =====================================================
 
     private Long classId;
@@ -36,8 +28,6 @@ public class TeacherAssignment {
 
     // =====================================================
     // SECTION
-    // Example:
-    // A / B / C
     // =====================================================
 
     private String section;
@@ -49,25 +39,16 @@ public class TeacherAssignment {
     private String subjectName;
 
     // =====================================================
-    // WEEKLY PERIOD LIMIT
-    // Example:
-    // Math -> 6 periods weekly
+    // WEEKLY PERIODS
     // =====================================================
 
     private Integer weeklyPeriods;
 
     // =====================================================
-    // ACTIVE STATUS
+    // STATUS
     // =====================================================
 
-    private Boolean active = true;
-
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-
-    public TeacherAssignment() {
-    }
+    private Boolean active;
 
 
 
@@ -84,12 +65,20 @@ public class TeacherAssignment {
         this.id = id;
     }
 
-    public Professor getProfessor() {
-        return professor;
+    public Long getProfessorId() {
+        return professorId;
     }
 
-    public void setProfessor(Professor professor) {
-        this.professor = professor;
+    public void setProfessorId(Long professorId) {
+        this.professorId = professorId;
+    }
+
+    public String getProfessorName() {
+        return professorName;
+    }
+
+    public void setProfessorName(String professorName) {
+        this.professorName = professorName;
     }
 
     public Long getSchoolId() {

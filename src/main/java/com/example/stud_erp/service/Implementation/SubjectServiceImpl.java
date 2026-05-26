@@ -84,6 +84,16 @@ public class SubjectServiceImpl implements SubjectService {
         subjectRepo.delete(subject);
     }
 
+    @Override
+    public List<SubjectDTO> getAllSubjects() {
+
+        return subjectRepo
+                .findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
     // ================= MAPPER =================
     private SubjectDTO mapToDTO(Subject sub) {
 
@@ -97,4 +107,6 @@ public class SubjectServiceImpl implements SubjectService {
 
         return dto;
     }
+
+
 }

@@ -12,4 +12,6 @@ public interface SubjectService {
     List<SubjectDTO> getSubjectsBySchool(Long schoolId);
 
     void deleteSubject(Long schoolId, Long subjectId);
+
+    List<SubjectDTO> getAllSubjects();
 }

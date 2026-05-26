@@ -3,6 +3,8 @@ package com.example.stud_erp.service;
 import com.example.stud_erp.entity.SchoolAdmin;
 import com.example.stud_erp.payload.LoginResponse;
 
+import java.util.List;
+
 public interface SchoolAdminService {
 
     SchoolAdmin create(SchoolAdmin admin);
@@ -17,4 +19,6 @@ public interface SchoolAdminService {
     LoginResponse login(String username, String password);
 
     SchoolAdmin saveSchoolAdmin(SchoolAdmin admin);
+
+    List<SchoolAdmin> getAllAdmins();
 }

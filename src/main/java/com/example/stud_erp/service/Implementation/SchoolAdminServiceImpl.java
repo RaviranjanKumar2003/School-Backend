@@ -7,6 +7,8 @@ import com.example.stud_erp.service.ImageService;
 import com.example.stud_erp.service.SchoolAdminService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SchoolAdminServiceImpl implements SchoolAdminService {
 
@@ -139,5 +141,11 @@ public class SchoolAdminServiceImpl implements SchoolAdminService {
     public SchoolAdmin saveSchoolAdmin(SchoolAdmin admin) {
 
         return repo.save(admin);
+    }
+
+    @Override
+    public List<SchoolAdmin> getAllAdmins() {
+
+        return repo.findAll();
     }
 }

@@ -259,10 +259,33 @@ public class StuAttendanceServiceImpl
                         student.getSection()
                 );
 
+        // =====================================================
+        // IF ALREADY EXISTS -> UPDATE TO PRESENT
+        // =====================================================
+
         if (existingOpt.isPresent()) {
 
-            return "Attendance already marked";
+            StuAttendance existing =
+                    existingOpt.get();
+
+            existing.setStatus("P");
+
+            existing.setUpdatedBy(takenById);
+
+            existing.setUpdatedByName(takenByName);
+
+            existing.setUpdatedByRole(takenByRole);
+
+            existing.setUpdatedDate(LocalDate.now());
+
+            repo.save(existing);
+
+            return "Attendance Updated To Present";
         }
+
+        // =====================================================
+        // NEW ENTRY
+        // =====================================================
 
         StuAttendance attendance =
                 new StuAttendance();

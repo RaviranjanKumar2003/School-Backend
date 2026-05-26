@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/school-admin")
@@ -38,6 +39,12 @@ public class SchoolAdminController {
     public SchoolAdmin update(@PathVariable Long id,
                               @RequestBody SchoolAdmin admin) {
         return service.update(id, admin);
+    }
+
+    @GetMapping
+    public List<SchoolAdmin> getAllAdmins() {
+
+        return service.getAllAdmins();
     }
 
     @GetMapping("/{id}")

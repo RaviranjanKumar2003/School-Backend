@@ -56,4 +56,11 @@ public class SubjectController {
     ) {
         subjectService.deleteSubject(schoolId, subjectId);
     }
+
+    // ================= GET ALL SUBJECTS =================
+    @GetMapping
+    public List<SubjectDTO> getAllSubjects() {
+
+        return subjectService.getAllSubjects();
+    }
 }
