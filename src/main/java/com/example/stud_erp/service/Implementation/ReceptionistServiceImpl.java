@@ -4,15 +4,19 @@ import com.example.stud_erp.entity.Receptionist;
 import com.example.stud_erp.entity.School;
 import com.example.stud_erp.payload.LoginRequest;
 import com.example.stud_erp.payload.ReceptionistDto;
+import com.example.stud_erp.repository.ActivityLogRepository;
 import com.example.stud_erp.repository.ReceptionistRepository;
 import com.example.stud_erp.repository.SchoolRepository;
 import com.example.stud_erp.service.ImageService;
 import com.example.stud_erp.service.ReceptionistService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.time.LocalDateTime;
+
+import com.example.stud_erp.entity.ActivityLog;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +26,9 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     private final ReceptionistRepository receptionistRepository;
     private final SchoolRepository schoolRepository;
     private final ImageService imageService;
+
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
 
     public ReceptionistServiceImpl(
             ReceptionistRepository receptionistRepository,
@@ -46,12 +53,17 @@ public class ReceptionistServiceImpl implements ReceptionistService {
         Receptionist receptionist = new Receptionist();
 
         // ================= BASIC INFO =================
+
         receptionist.setName(dto.getName());
+
         receptionist.setEmail(dto.getEmail());
+
         receptionist.setPhone(dto.getPhone());
+
         receptionist.setSchool(school);
 
         // ================= AUTO USERNAME =================
+
         String cleanName = dto.getName()
                 .trim()
                 .replaceAll("\\s+", "")
@@ -63,27 +75,71 @@ public class ReceptionistServiceImpl implements ReceptionistService {
         receptionist.setUsername(username);
 
         // ================= AUTO PASSWORD =================
+
         String password =
                 "REC@" + (1000 + new Random().nextInt(9000));
 
         receptionist.setPassword(password);
 
         // ================= IMAGE =================
+
         if (file != null && !file.isEmpty()) {
+
             String imageUrl = imageService.uploadImage(file);
+
             receptionist.setImageUrl(imageUrl);
         }
 
         receptionist.setCreatedAt(LocalDateTime.now());
+
         receptionist.setUpdatedAt(LocalDateTime.now());
 
         // ================= SAVE =================
-        Receptionist saved = receptionistRepository.save(receptionist);
+
+        Receptionist saved =
+                receptionistRepository.save(receptionist);
+
+        // =====================================================
+        // ACTIVITY LOG
+        // =====================================================
+
+        try {
+
+            ActivityLog log = new ActivityLog();
+
+            log.setSchoolId(
+                    school.getId()
+            );
+
+            log.setTitle("New Receptionist Added");
+
+            log.setDescription(
+                    saved.getName()
+                            + " joined as Receptionist"
+            );
+
+            log.setType("STAFF");
+
+            log.setCreatedAt(LocalDateTime.now());
+
+            activityLogRepository.save(log);
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Activity log error : "
+                            + e.getMessage()
+            );
+        }
 
         // OPTIONAL LOG (for admin)
+
         System.out.println("=========== RECEPTIONIST LOGIN DETAILS ===========");
+
         System.out.println("USERNAME : " + saved.getUsername());
+
         System.out.println("PASSWORD : " + saved.getPassword());
+
         System.out.println("===================================================");
 
         return saved;

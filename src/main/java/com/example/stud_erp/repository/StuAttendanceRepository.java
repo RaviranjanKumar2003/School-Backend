@@ -189,4 +189,19 @@ public interface StuAttendanceRepository
             LocalDate attendanceDate
     );
 
+
+    // =========================================================
+// MONTHLY CLASS ATTENDANCE
+// =========================================================
+
+    List<StuAttendance>
+    findBySchoolIdAndAttendanceDateBetween(
+
+            Long schoolId,
+
+            LocalDate startDate,
+
+            LocalDate endDate
+    );
+
 }

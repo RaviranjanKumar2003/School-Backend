@@ -300,6 +300,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -319,6 +320,9 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
+
     // ================= CREATE =================
     @Override
     public Professor createProfessor(
@@ -326,11 +330,52 @@ public class ProfessorServiceImpl implements ProfessorService {
             MultipartFile image
     ) throws IOException {
 
-        return saveProfessor(
-                new Professor(),
-                dto,
-                image
-        );
+        // =====================================================
+        // SAVE PROFESSOR
+        // =====================================================
+
+        Professor savedProfessor =
+                saveProfessor(
+                        new Professor(),
+                        dto,
+                        image
+                );
+
+        // =====================================================
+        // ACTIVITY LOG
+        // =====================================================
+
+        try {
+
+            ActivityLog log = new ActivityLog();
+
+            log.setSchoolId(
+                    savedProfessor.getSchool().getId()
+            );
+
+            log.setTitle("New Teacher Added");
+
+            log.setDescription(
+                    savedProfessor.getName()
+                            + " joined as "
+                            + savedProfessor.getDesignation()
+            );
+
+            log.setType("TEACHER");
+
+            log.setCreatedAt(LocalDateTime.now());
+
+            activityLogRepository.save(log);
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Activity log error : "
+                            + e.getMessage()
+            );
+        }
+
+        return savedProfessor;
     }
 
     // ================= UPDATE =================

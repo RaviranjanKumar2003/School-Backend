@@ -964,4 +964,122 @@ public class StuAttendanceServiceImpl
                 .map(this::convertToDTO)
                 .toList();
     }
+
+
+    // =========================================================
+// LOW ATTENDANCE ALERT
+// =========================================================
+
+    @Override
+    public List<Map<String, Object>> getLowAttendanceAlerts(
+
+            Long schoolId
+    ) {
+
+        YearMonth currentMonth =
+                YearMonth.now();
+
+        LocalDate startDate =
+                currentMonth.atDay(1);
+
+        LocalDate endDate =
+                currentMonth.atEndOfMonth();
+
+        List<StuAttendance> attendanceList =
+                repo.findBySchoolIdAndAttendanceDateBetween(
+                        schoolId,
+                        startDate,
+                        endDate
+                );
+
+        // =====================================================
+        // GROUP BY CLASS + SECTION
+        // =====================================================
+
+        Map<String, List<StuAttendance>> grouped =
+                attendanceList.stream()
+                        .collect(
+                                java.util.stream.Collectors.groupingBy(
+                                        a ->
+                                                a.getClassName()
+                                                        + "-"
+                                                        + a.getSection()
+                                )
+                        );
+
+        List<Map<String, Object>> result =
+                new ArrayList<>();
+
+        // =====================================================
+        // CALCULATE %
+        // =====================================================
+
+        for (
+                Map.Entry<String, List<StuAttendance>> entry
+                : grouped.entrySet()
+        ) {
+
+            List<StuAttendance> list =
+                    entry.getValue();
+
+            long total =
+                    list.size();
+
+            long present =
+                    list.stream()
+                            .filter(a ->
+                                    "P".equalsIgnoreCase(
+                                            a.getStatus()
+                                    )
+                            )
+                            .count();
+
+            double percentage =
+                    total == 0
+                            ? 0
+                            : ((double) present / total) * 100;
+
+            // =================================================
+            // BELOW 75%
+            // =================================================
+
+            if (percentage < 75) {
+
+                Map<String, Object> map =
+                        new HashMap<>();
+
+                String[] split =
+                        entry.getKey().split("-");
+
+                map.put(
+                        "className",
+                        split[0]
+                );
+
+                map.put(
+                        "section",
+                        split[1]
+                );
+
+                map.put(
+                        "attendancePercentage",
+                        Math.round(percentage)
+                );
+
+                map.put(
+                        "totalAttendance",
+                        total
+                );
+
+                map.put(
+                        "presentAttendance",
+                        present
+                );
+
+                result.add(map);
+            }
+        }
+
+        return result;
+    }
 }

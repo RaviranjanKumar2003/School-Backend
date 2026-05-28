@@ -1,13 +1,16 @@
 package com.example.stud_erp.service.Implementation;
 
+import com.example.stud_erp.entity.ActivityLog;
 import com.example.stud_erp.entity.Period;
 import com.example.stud_erp.payload.PeriodDto;
+import com.example.stud_erp.repository.ActivityLogRepository;
 import com.example.stud_erp.repository.PeriodRepo;
 import com.example.stud_erp.service.PeriodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,9 @@ public class PeriodServiceImpl
 
     @Autowired
     private PeriodRepo repo;
+
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
 
     // =====================================================
     // CREATE
@@ -55,7 +61,45 @@ public class PeriodServiceImpl
                         : true
         );
 
+        // =====================================================
+        // SAVE PERIOD
+        // =====================================================
+
         Period saved = repo.save(period);
+
+        // =====================================================
+        // ACTIVITY LOG
+        // =====================================================
+
+        try {
+
+            ActivityLog log = new ActivityLog();
+
+            log.setSchoolId(saved.getSchoolId());
+
+            log.setTitle("New Period Created");
+
+            log.setDescription(
+                    saved.getTitle()
+                            + " scheduled from "
+                            + saved.getStartTime()
+                            + " to "
+                            + saved.getEndTime()
+            );
+
+            log.setType("TIMETABLE");
+
+            log.setCreatedAt(LocalDateTime.now());
+
+            activityLogRepository.save(log);
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Activity log error : "
+                            + e.getMessage()
+            );
+        }
 
         return mapToDto(saved);
     }

@@ -3,6 +3,7 @@
 
 package com.example.stud_erp.service.Implementation;
 
+import com.example.stud_erp.entity.ActivityLog;
 import com.example.stud_erp.entity.ClassEntity;
 import com.example.stud_erp.entity.School;
 import com.example.stud_erp.entity.Student;
@@ -11,6 +12,7 @@ import com.example.stud_erp.payload.LoginResponse;
 import com.example.stud_erp.payload.StudentDto;
 import com.example.stud_erp.enums.StudentStatus;
 import com.example.stud_erp.payload.StudentPromotionRequest;
+import com.example.stud_erp.repository.ActivityLogRepository;
 import com.example.stud_erp.repository.ClassRepository;
 import com.example.stud_erp.repository.SchoolRepository;
 import com.example.stud_erp.repository.StudentRepository;
@@ -44,6 +46,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
 
     // =========================================================
     // CREATE STUDENT
@@ -296,8 +301,54 @@ public class StudentServiceImpl implements StudentService {
 
         // ================= SAVE =================
 
+//        Student savedStudent =
+//                studentRepository.save(student);
+//
+//        StudentDto response =
+//                mapToDto(savedStudent);
+//
+//        response.setPassword(rawPassword);
+//
+//        return response;
+
         Student savedStudent =
                 studentRepository.save(student);
+
+// =====================================================
+// ACTIVITY LOG
+// =====================================================
+
+        try {
+
+            ActivityLog log = new ActivityLog();
+
+            log.setSchoolId(
+                    savedStudent.getSchool().getId()
+            );
+
+            log.setTitle("New Student Added");
+
+            log.setDescription(
+                    savedStudent.getFullName()
+                            + " admitted in Class "
+                            + savedStudent.getClassEntity().getClassName()
+                            + " Section "
+                            + savedStudent.getSection()
+            );
+
+            log.setType("STUDENT");
+
+            log.setCreatedAt(LocalDateTime.now());
+
+            activityLogRepository.save(log);
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Activity log error : "
+                            + e.getMessage()
+            );
+        }
 
         StudentDto response =
                 mapToDto(savedStudent);

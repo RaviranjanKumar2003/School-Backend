@@ -472,4 +472,20 @@ public class StuAttendanceController {
                 LocalDate.parse(attendanceDate)
         );
     }
+
+
+    // =========================================================
+// LOW ATTENDANCE ALERT
+// =========================================================
+
+    @GetMapping("/low-attendance-alert/{schoolId}")
+    public List<Map<String, Object>> getLowAttendanceAlerts(
+
+            @PathVariable Long schoolId
+    ) {
+
+        return service.getLowAttendanceAlerts(
+                schoolId
+        );
+    }
 }

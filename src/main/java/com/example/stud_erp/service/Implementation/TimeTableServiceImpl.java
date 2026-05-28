@@ -1,13 +1,16 @@
 package com.example.stud_erp.service.Implementation;
 
+import com.example.stud_erp.entity.ActivityLog;
 import com.example.stud_erp.entity.TimeTable;
 import com.example.stud_erp.payload.TimeTableDto;
+import com.example.stud_erp.repository.ActivityLogRepository;
 import com.example.stud_erp.repository.TimeTableRepo;
 import com.example.stud_erp.service.TimeTableService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +20,57 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Autowired
     private TimeTableRepo repo;
 
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
+
     // ================= CREATE =================
+
+//    @Override
+//    public TimeTableDto createTimeTable(TimeTableDto dto) {
+//
+//        // =========================================
+//        // CHECK TEACHER CONFLICT
+//        // =========================================
+//
+//        boolean teacherBusy =
+//                repo.existsByTeacherIdAndDayNameAndPeriodNumber(
+//                        dto.getTeacherId(),
+//                        dto.getDayName(),
+//                        dto.getPeriodNumber()
+//                );
+//
+//        if (teacherBusy) {
+//
+//            throw new RuntimeException(
+//                    "Teacher already assigned in this period"
+//            );
+//        }
+//
+//        // =========================================
+//        // CHECK CLASS CONFLICT
+//        // =========================================
+//
+//        boolean classBusy =
+//                repo.existsByClassIdAndSectionNameAndDayNameAndPeriodNumber(
+//                        dto.getClassId(),
+//                        dto.getSectionName(),
+//                        dto.getDayName(),
+//                        dto.getPeriodNumber()
+//                );
+//
+//        if (classBusy) {
+//
+//            throw new RuntimeException(
+//                    "Class already has a subject in this period"
+//            );
+//        }
+//
+//        TimeTable table = mapToEntity(dto);
+//
+//        TimeTable saved = repo.save(table);
+//
+//        return mapToDto(saved);
+//    }
 
     @Override
     public TimeTableDto createTimeTable(TimeTableDto dto) {
@@ -59,9 +112,52 @@ public class TimeTableServiceImpl implements TimeTableService {
             );
         }
 
+        // =========================================
+        // SAVE TIMETABLE
+        // =========================================
+
         TimeTable table = mapToEntity(dto);
 
         TimeTable saved = repo.save(table);
+
+        // =========================================
+        // ACTIVITY LOG
+        // =========================================
+
+        try {
+
+            ActivityLog log = new ActivityLog();
+
+            log.setSchoolId(saved.getSchoolId());
+
+            log.setTitle("New Timetable Published");
+
+            log.setDescription(
+                    saved.getSubjectName()
+                            + " added for Class "
+                            + saved.getClassName()
+                            + " Section "
+                            + saved.getSectionName()
+                            + " on "
+                            + saved.getDayName()
+                            + " (Period "
+                            + saved.getPeriodNumber()
+                            + ")"
+            );
+
+            log.setType("TIMETABLE");
+
+            log.setCreatedAt(LocalDateTime.now());
+
+            activityLogRepository.save(log);
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Activity log error : "
+                            + e.getMessage()
+            );
+        }
 
         return mapToDto(saved);
     }

@@ -1,22 +1,3 @@
-//package com.example.stud_erp.service;
-//
-//import com.example.stud_erp.entity.StuAttendance;
-//import com.example.stud_erp.payload.StuAttendanceDTO;
-//
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//public interface StuAttendanceService {
-//
-//    String save(Integer classNumber, LocalDate date, List<StuAttendanceDTO> list);
-//
-//    List<StuAttendanceDTO> getByClassAndDate(Integer classNumber, LocalDate date);
-//
-//    List<StuAttendance> getByDate(LocalDate date);
-//
-//}
-
-
 
 package com.example.stud_erp.service;
 
@@ -276,6 +257,15 @@ public interface StuAttendanceService {
             Long studentId,
 
             LocalDate date
+    );
+
+    // =========================================================
+// LOW ATTENDANCE ALERT
+// =========================================================
+
+    List<Map<String, Object>> getLowAttendanceAlerts(
+
+            Long schoolId
     );
 
 }
