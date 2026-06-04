@@ -428,7 +428,9 @@ public class LiveClassServiceImpl implements LiveClassService {
     public List<LiveClass> getSchoolClasses(Long schoolId) {
 
         return liveClassRepo
-                .findBySchool_IdOrderByCreatedAtDesc(schoolId);
+                .findBySchool_IdAndDeletedFalseOrderByCreatedAtDesc(
+                        schoolId
+                );
     }
 
     @Override
@@ -447,7 +449,9 @@ public class LiveClassServiceImpl implements LiveClassService {
     public List<LiveClass> getClassLiveHistory(Long classId) {
 
         return liveClassRepo
-                .findByClassEntity_IdOrderByCreatedAtDesc(classId);
+                .findByClassEntity_IdAndDeletedFalseOrderByCreatedAtDesc(
+                        classId
+                );
     }
 
     @Override
@@ -466,7 +470,10 @@ public class LiveClassServiceImpl implements LiveClassService {
     public List<LiveClassResponse> getProfessorClasses(Long professorId) {
 
         List<LiveClass> list =
-                liveClassRepo.findByProfessor_IdOrderByCreatedAtDesc(professorId);
+                liveClassRepo
+                        .findByProfessor_IdAndDeletedFalseOrderByCreatedAtDesc(
+                                professorId
+                        );
 
         return list.stream().map(lc -> {
 
@@ -614,7 +621,10 @@ public class LiveClassServiceImpl implements LiveClassService {
         Long classId = student.getClassEntity().getId();
 
         List<LiveClass> list =
-                liveClassRepo.findByClassEntity_IdOrderByCreatedAtDesc(classId);
+                liveClassRepo
+                        .findByClassEntity_IdAndDeletedFalseOrderByCreatedAtDesc(
+                                classId
+                        );
 
         return list.stream().map(lc -> {
 

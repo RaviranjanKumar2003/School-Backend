@@ -12,6 +12,11 @@ import com.example.stud_erp.service.ReceptionistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 
 import com.example.stud_erp.entity.ActivityLog;
@@ -19,6 +24,7 @@ import com.example.stud_erp.entity.ActivityLog;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class ReceptionistServiceImpl implements ReceptionistService {
@@ -229,5 +235,44 @@ public class ReceptionistServiceImpl implements ReceptionistService {
     @Override
     public List<Receptionist> getReceptionistsBySchool(Long schoolId) {
         return receptionistRepository.findBySchoolId(schoolId);
+    }
+
+
+    public Receptionist uploadImage(
+            Long id,
+            MultipartFile image
+    ) throws IOException {
+
+        Receptionist receptionist =
+                receptionistRepository
+                        .findById(id)
+                        .orElseThrow();
+
+        if (image != null && !image.isEmpty()) {
+
+            String fileName =
+                    UUID.randomUUID() +
+                            "_" +
+                            image.getOriginalFilename();
+
+            Path path =
+                    Paths.get("images");
+
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+
+            Files.copy(
+                    image.getInputStream(),
+                    path.resolve(fileName),
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            receptionist.setImageUrl(fileName);
+        }
+
+        return receptionistRepository.save(
+                receptionist
+        );
     }
 }

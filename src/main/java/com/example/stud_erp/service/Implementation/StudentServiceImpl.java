@@ -25,9 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -1002,5 +1007,44 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.countGirls(
                 schoolId
         );
+    }
+
+    @Override
+    public StudentDto uploadProfileImage(
+            Long id,
+            MultipartFile file
+    ) throws IOException {
+
+        Student student =
+                studentRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException("Student not found"));
+
+        String fileName =
+                UUID.randomUUID() +
+                        "_" +
+                        file.getOriginalFilename();
+
+        Path uploadPath = Paths.get(
+                System.getProperty("user.dir"),
+                "images"
+        );
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Files.copy(
+                file.getInputStream(),
+                uploadPath.resolve(fileName),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+        student.setProfileImage(fileName);
+
+        Student saved =
+                studentRepository.save(student);
+
+        return mapToDto(saved); // tumhara existing mapper
     }
 }

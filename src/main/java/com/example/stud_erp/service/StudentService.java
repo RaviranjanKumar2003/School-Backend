@@ -117,4 +117,9 @@ public interface StudentService {
 // =========================================================
 
     Long getTotalGirls(Long schoolId);
+
+    StudentDto uploadProfileImage(
+            Long id,
+            MultipartFile file
+    ) throws IOException;
 }

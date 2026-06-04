@@ -190,4 +190,21 @@ public class ReceptionistController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping(
+            value = "/image/upload/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public Receptionist uploadImage(
+
+            @PathVariable Long id,
+
+            @RequestParam("image")
+            MultipartFile image
+
+    ) throws IOException {
+
+        return receptionistService
+                .uploadImage(id, image);
+    }
 }

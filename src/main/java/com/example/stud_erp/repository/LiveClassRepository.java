@@ -127,4 +127,23 @@ public interface LiveClassRepository extends JpaRepository<LiveClass, Long> {
     Optional<LiveClass> findTopByProfessor_IdOrderByCreatedAtDesc(Long professorId);
 
     Optional<LiveClass> findTopByClassEntity_IdOrderByCreatedAtDesc(Long classId);
+
+    List<LiveClass>
+    findByProfessor_IdAndDeletedFalseOrderByCreatedAtDesc(
+            Long professorId
+    );
+
+    List<LiveClass>
+    findByClassEntity_IdAndDeletedFalseOrderByCreatedAtDesc(
+            Long classId
+    );
+
+    List<LiveClass>
+    findBySchool_IdAndDeletedFalseOrderByCreatedAtDesc(
+            Long schoolId
+    );
+
+
+
+
 }

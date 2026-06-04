@@ -573,4 +573,26 @@ public class StudentController {
 
         return ResponseEntity.ok(total);
     }
+
+    @PostMapping(
+            value = "/image/upload/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> uploadStudentImage(
+
+            @PathVariable Long id,
+
+            @RequestParam("file")
+            MultipartFile file
+
+    ) throws Exception {
+
+        StudentDto student =
+                studentService.uploadProfileImage(
+                        id,
+                        file
+                );
+
+        return ResponseEntity.ok(student);
+    }
 }

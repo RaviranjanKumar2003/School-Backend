@@ -99,4 +99,9 @@ public interface ProfessorService {
             ProfessorDTO dto,
             MultipartFile image
     ) throws Exception;
+
+    Professor uploadProfileImage(
+            Long professorId,
+            MultipartFile file
+    ) throws Exception;
 }

@@ -752,4 +752,27 @@ public class ProfessorController {
                         image
                 );
     }
+
+
+    @PostMapping(
+            value = "/image/upload/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> uploadProfessorImage(
+
+            @PathVariable Long id,
+
+            @RequestParam("file")
+            MultipartFile file
+
+    ) throws Exception {
+
+        Professor professor =
+                professorService.uploadProfileImage(
+                        id,
+                        file
+                );
+
+        return ResponseEntity.ok(professor);
+    }
 }

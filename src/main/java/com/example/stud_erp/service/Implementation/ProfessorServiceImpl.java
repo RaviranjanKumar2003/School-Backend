@@ -841,4 +841,23 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         return professorRepository.save(professor);
     }
+
+    @Override
+    public Professor uploadProfileImage(
+            Long professorId,
+            MultipartFile file
+    ) throws Exception {
+
+        Professor professor =
+                getProfessorById(professorId);
+
+        String fileName =
+                imageService.uploadImage(file);
+
+        professor.setImageUrl(fileName);
+
+        return professorRepository.save(
+                professor
+        );
+    }
 }

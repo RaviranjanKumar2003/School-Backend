@@ -38,4 +38,9 @@ public interface ReceptionistService {
 
     // ================= GET BY SCHOOL =================
     List<Receptionist> getReceptionistsBySchool(Long schoolId);
+
+    Receptionist uploadImage(
+            Long id,
+            MultipartFile image
+    ) throws IOException;
 }
