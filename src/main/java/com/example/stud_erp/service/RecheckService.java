@@ -31,6 +31,24 @@ public class RecheckService {
     public RecheckRequest createRequest(RecheckRequest request){
 
         String subject = request.getSubjects().get(0);
+        // ✅ DUPLICATE CHECK
+
+        List<RecheckRequest> existing =
+                recheckRepository
+                        .findByStudentIdAndExamIdAndSubjectsContaining(
+                                request.getStudentId(),
+                                request.getExamId(),
+                                subject
+                        );
+
+        boolean alreadyRequested = existing.stream()
+                .anyMatch(r ->
+                        !"REJECTED".equals(r.getStatus())
+                );
+
+        if (alreadyRequested) {
+            throw new RuntimeException("Already requested");
+        }
 
         Student student = studentRepository.findById(request.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));

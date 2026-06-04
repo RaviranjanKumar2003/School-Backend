@@ -1,170 +1,3 @@
-//package com.example.stud_erp.service;
-//
-//import com.example.stud_erp.entity.Notification;
-//import com.example.stud_erp.entity.Professor;
-//import com.example.stud_erp.entity.Student;
-//import com.example.stud_erp.payload.NotificationDTO;
-//import com.example.stud_erp.repository.NotificationRepository;
-//import com.example.stud_erp.repository.ProfessorRepository;
-//import com.example.stud_erp.repository.StudentRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//
-//@Service
-//public class NotificationService {
-//
-//    @Autowired
-//    private NotificationRepository notificationRepository;
-//
-//    @Autowired
-//    private StudentRepository studentRepository;
-//
-//    @Autowired
-//    private ProfessorRepository professorRepository;
-//
-//    // ✅ SEND NOTIFICATION (UNCHANGED)
-//    public String sendNotification(NotificationDTO dto) {
-//
-//        String type = dto.getRecipientType();
-//
-//        switch (type) {
-//
-//            case "STUDENT":
-//            case "INDIVIDUAL":
-//
-//                if (dto.getRecipientId() == null) {
-//                    throw new RuntimeException("Recipient ID required");
-//                }
-//
-//                Student student = studentRepository.findById(dto.getRecipientId()).orElse(null);
-//
-//                if (student != null) {
-//                    Notification n = new Notification(dto);
-//                    n.setStudent(student);
-//                    notificationRepository.save(n);
-//                    return "Sent to Student";
-//                }
-//
-//                Professor professor = professorRepository.findById(dto.getRecipientId()).orElse(null);
-//
-//                if (professor != null) {
-//                    Notification n = new Notification(dto);
-//                    n.setProfessor(professor);
-//                    notificationRepository.save(n);
-//                    return "Sent to Professor";
-//                }
-//
-//                throw new RuntimeException("User not found");
-//
-//            case "ALL_STUDENTS":
-//
-//                List<Student> students = studentRepository.findAll();
-//
-//                for (Student s : students) {
-//                    Notification n = new Notification(dto);
-//                    n.setStudent(s);
-//                    notificationRepository.save(n);
-//                }
-//
-//                return "Sent to all students";
-//
-//            case "ALL_TEACHERS":
-//
-//                List<Professor> professors = professorRepository.findAll();
-//
-//                for (Professor p : professors) {
-//                    Notification n = new Notification(dto);
-//                    n.setProfessor(p);
-//                    notificationRepository.save(n);
-//                }
-//
-//                return "Sent to all teachers";
-//
-//            case "ALL":
-//
-//                studentRepository.findAll().forEach(s -> {
-//                    Notification n = new Notification(dto);
-//                    n.setStudent(s);
-//                    notificationRepository.save(n);
-//                });
-//
-//                professorRepository.findAll().forEach(p -> {
-//                    Notification n = new Notification(dto);
-//                    n.setProfessor(p);
-//                    notificationRepository.save(n);
-//                });
-//
-//                return "Sent to all users";
-//
-//            default:
-//                throw new RuntimeException("Invalid Recipient Type");
-//        }
-//    }
-//
-//    // ✅ FIXED (only active notifications)
-//    public List<Notification> getNotificationsForStudent(Long studentId) {
-//        return notificationRepository.findActiveByStudentId(studentId);
-//    }
-//
-//    public List<Notification> getNotificationsForProfessor(Long professorId) {
-//        return notificationRepository.findByProfessorId(professorId);
-//    }
-//
-//    // ✅ MARK AS READ
-//    public void markAsRead(Long id) {
-//        Notification n = notificationRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Notification not found"));
-//
-//        n.setReadStatus(true);
-//        notificationRepository.save(n);
-//    }
-//
-//    // ✅ ARCHIVE (SOFT DELETE)
-//    public void archiveNotification(Long id) {
-//        Notification n = notificationRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Notification not found"));
-//
-//        if (!n.getReadStatus()) {
-//            throw new RuntimeException("पहले read करो");
-//        }
-//
-//        n.setIsArchived(true);
-//        notificationRepository.save(n);
-//    }
-//
-//    // ✅ GET ARCHIVED
-//    public List<Notification> getArchivedNotifications(Long studentId) {
-//        return notificationRepository.findArchivedByStudentId(studentId);
-//    }
-//
-//    // ✅ PERMANENT DELETE
-//    public void deletePermanently(Long id){
-//        notificationRepository.deleteById(id);
-//    }
-//
-//   //  Unarchive
-//    public void unarchiveNotification(Long id) {
-//        Notification n = notificationRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Notification not found"));
-//
-//        n.setIsArchived(false);
-//        notificationRepository.save(n);
-//    }
-//}
-//
-
-
-
-
-
-
-
-
-
-
-
 
 package com.example.stud_erp.service;
 
@@ -175,7 +8,9 @@ import com.example.stud_erp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NotificationService {
@@ -192,111 +27,343 @@ public class NotificationService {
     @Autowired
     private NotificationUserRepository notificationUserRepository;
 
+    @Autowired
+    private HODRepository hodRepository;
+
     public String sendNotification(NotificationDTO dto) {
 
-        String type = dto.getRecipientType();
+        switch (dto.getRecipientType()) {
 
-        switch (type) {
+            // =====================================
+            // ALL STUDENTS
+            // =====================================
 
-            case "INDIVIDUAL": {
+            case "ALL_STUDENTS":
 
-                Student student = studentRepository.findById(dto.getRecipientId()).orElse(null);
+                Notification allStudentNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
 
-                if (student != null) {
-                    Notification n = new Notification(dto);
-                    notificationRepository.save(n);
-
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
-                    nu.setUserId(student.getId());
-                    nu.setUserType("STUDENT");
-
-                    notificationUserRepository.save(nu);
-                    return "Sent to Student";
-                }
-
-                Professor professor = professorRepository.findById(dto.getRecipientId()).orElse(null);
-
-                if (professor != null) {
-                    Notification n = new Notification(dto);
-                    notificationRepository.save(n);
-
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
-                    nu.setUserId(professor.getId());
-                    nu.setUserType("TEACHER");
-
-                    notificationUserRepository.save(nu);
-                    return "Sent to Teacher";
-                }
-
-                throw new RuntimeException("User not found");
-            }
-
-            case "ALL_STUDENTS": {
-
-                Notification n = new Notification(dto);
-                notificationRepository.save(n);
-
-                List<Student> students = studentRepository.findAll();
+                List<Student> students =
+                        studentRepository.findBySchool_Id(
+                                dto.getSchoolId()
+                        );
 
                 for (Student s : students) {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            allStudentNotification.getId()
+                    );
+
                     nu.setUserId(s.getId());
+
                     nu.setUserType("STUDENT");
+
                     notificationUserRepository.save(nu);
                 }
 
                 return "Sent to all students";
-            }
 
-            case "ALL_TEACHERS": {
+            // =====================================
+            // ALL TEACHERS
+            // =====================================
 
-                Notification n = new Notification(dto);
-                notificationRepository.save(n);
+            case "ALL_TEACHERS":
 
-                List<Professor> professors = professorRepository.findAll();
+                Notification allTeacherNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
 
-                for (Professor p : professors) {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
+                List<Professor> teachers =
+                        professorRepository.findBySchoolId(
+                                dto.getSchoolId()
+                        );
+
+                for (Professor p : teachers) {
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            allTeacherNotification.getId()
+                    );
+
                     nu.setUserId(p.getId());
+
                     nu.setUserType("TEACHER");
+
                     notificationUserRepository.save(nu);
                 }
 
                 return "Sent to all teachers";
-            }
 
-            case "ALL": {
+            // =====================================
+            // ALL
+            // =====================================
 
-                Notification n = new Notification(dto);
-                notificationRepository.save(n);
+            case "ALL":
 
-                studentRepository.findAll().forEach(s -> {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
+                Notification allNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                List<Student> allStudents =
+                        studentRepository.findBySchool_Id(
+                                dto.getSchoolId()
+                        );
+
+                for (Student s : allStudents) {
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            allNotification.getId()
+                    );
+
                     nu.setUserId(s.getId());
+
                     nu.setUserType("STUDENT");
-                    notificationUserRepository.save(nu);
-                });
 
-                professorRepository.findAll().forEach(p -> {
-                    NotificationUser nu = new NotificationUser();
-                    nu.setNotificationId(n.getId());
+                    notificationUserRepository.save(nu);
+                }
+
+                List<Professor> allTeachers =
+                        professorRepository.findBySchoolId(
+                                dto.getSchoolId()
+                        );
+
+                for (Professor p : allTeachers) {
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            allNotification.getId()
+                    );
+
                     nu.setUserId(p.getId());
+
                     nu.setUserType("TEACHER");
+
                     notificationUserRepository.save(nu);
-                });
+                }
 
-                return "Sent to all users";
-            }
+                return "Sent to all";
 
+            // =====================================
+            // SINGLE STUDENT
+            // =====================================
+
+            case "SINGLE_STUDENT":
+
+                Notification studentNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser studentUser =
+                        new NotificationUser();
+
+                studentUser.setNotificationId(
+                        studentNotification.getId()
+                );
+
+                studentUser.setUserId(
+                        dto.getStudentId()
+                );
+
+                studentUser.setUserType("STUDENT");
+
+                notificationUserRepository.save(studentUser);
+
+                return "Sent to student";
+
+            // =====================================
+            // SINGLE TEACHER
+            // =====================================
+
+            case "SINGLE_TEACHER":
+
+                Notification teacherNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser teacherUser =
+                        new NotificationUser();
+
+                teacherUser.setNotificationId(
+                        teacherNotification.getId()
+                );
+
+                teacherUser.setUserId(
+                        dto.getTeacherId()
+                );
+
+                teacherUser.setUserType("TEACHER");
+
+                notificationUserRepository.save(teacherUser);
+
+                return "Sent to teacher";
+
+            // =====================================
+            // CLASS STUDENTS
+            // =====================================
+
+            case "CLASS_STUDENTS":
+
+                Notification classNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                List<Student> classStudents =
+                        studentRepository
+                                .findBySchool_IdAndClassEntity_Id(
+                                        dto.getSchoolId(),
+                                        dto.getClassId()
+                                );
+
+                for (Student s : classStudents) {
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            classNotification.getId()
+                    );
+
+                    nu.setUserId(s.getId());
+
+                    nu.setUserType("STUDENT");
+
+                    notificationUserRepository.save(nu);
+                }
+
+                return "Sent to class students";
+
+            // =====================================
+            // ALL HOD
+            // =====================================
+
+            case "ALL_HOD":
+
+                Notification hodNotificationAll =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                List<HOD> hods =
+                        hodRepository.findBySchoolId(
+                                dto.getSchoolId()
+                        );
+
+                for (HOD h : hods) {
+
+                    NotificationUser nu =
+                            new NotificationUser();
+
+                    nu.setNotificationId(
+                            hodNotificationAll.getId()
+                    );
+
+                    nu.setUserId(
+                            h.getId()
+                    );
+
+                    nu.setUserType(
+                            "HOD"
+                    );
+
+                    nu.setReadStatus(false);
+
+                    nu.setArchived(false);
+
+                    notificationUserRepository.save(nu);
+                }
+
+                return "Sent to all HOD";
+
+
+
+            // =====================================
+            // SINGLE HOD
+            // =====================================
+
+            case "SINGLE_HOD":
+
+                Notification hodNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser hodUser =
+                        new NotificationUser();
+
+                hodUser.setNotificationId(
+                        hodNotification.getId()
+                );
+
+                hodUser.setUserId(
+                        dto.getRecipientId()
+                );
+
+                hodUser.setUserType(
+                        "HOD"
+                );
+
+                notificationUserRepository.save(
+                        hodUser
+                );
+
+                return "Sent to HOD";
+
+
+            // =====================================
+            // SINGLE ADMIN
+            // =====================================
+
+            case "SINGLE_ADMIN":
+
+                Notification adminNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser adminUser =
+                        new NotificationUser();
+
+                adminUser.setNotificationId(
+                        adminNotification.getId()
+                );
+
+                adminUser.setUserId(
+                        dto.getRecipientId()
+                );
+
+                adminUser.setUserType(
+                        "ADMIN"
+                );
+
+                notificationUserRepository.save(
+                        adminUser
+                );
+
+                return "Sent to Admin";
             default:
-                throw new RuntimeException("Invalid Recipient Type");
+                throw new RuntimeException(
+                        "Invalid recipient type"
+                );
         }
     }
+
 
     public List<NotificationResponse> getArchivedNotifications(Long studentId) {
 
@@ -315,6 +382,7 @@ public class NotificationService {
             res.setTitle(n.getTitle());
             res.setMessage(n.getMessage());
             res.setSender(n.getSender());
+            res.setSenderType(n.getSenderType());
             res.setReadStatus(nu.isReadStatus());
             res.setSentAt(n.getSentAt());
 
@@ -352,16 +420,32 @@ public class NotificationService {
                 .size();
     }
 
-    public void markAsRead(Long notificationId, Long studentId) {
+    public void markAsRead(
 
-        NotificationUser nu = notificationUserRepository
-                .findByNotificationIdAndUserIdAndUserType(notificationId, studentId, "STUDENT");
+            Long notificationId,
+
+            Long userId,
+
+            String userType
+    ) {
+
+        NotificationUser nu =
+                notificationUserRepository
+                        .findByNotificationIdAndUserIdAndUserType(
+
+                                notificationId,
+
+                                userId,
+
+                                userType
+                        );
 
         if (nu == null) {
             return;
         }
 
         nu.setReadStatus(true);
+
         notificationUserRepository.save(nu);
     }
 
@@ -380,26 +464,324 @@ public class NotificationService {
 
     public List<NotificationResponse> getNotificationsForStudent(Long studentId) {
 
+        List<NotificationUser> users =
+                notificationUserRepository
+                        .findByUserIdAndUserTypeAndIsArchivedFalse(
+                                studentId,
+                                "STUDENT"
+                        );
+
+        List<NotificationResponse> responses =
+                new ArrayList<>();
+
+        for (NotificationUser nu : users) {
+
+            Optional<Notification> optionalNotification =
+                    notificationRepository.findById(
+                            nu.getNotificationId()
+                    );
+
+            if (optionalNotification.isEmpty()) {
+                continue;
+            }
+
+            Notification n =
+                    optionalNotification.get();
+
+            NotificationResponse res =
+                    new NotificationResponse();
+
+            res.setNotificationUserId(
+                    nu.getId()
+            );
+
+            res.setNotificationId(
+                    n.getId()
+            );
+
+            res.setTitle(
+                    n.getTitle()
+            );
+
+            res.setMessage(
+                    n.getMessage()
+            );
+
+            res.setSender(
+                    n.getSender()
+            );
+
+            // 🔥 IMPORTANT
+            res.setSenderType(
+                    n.getSenderType()
+            );
+
+            res.setReadStatus(
+                    nu.isReadStatus()
+            );
+
+            res.setSentAt(
+                    n.getSentAt()
+            );
+
+            responses.add(res);
+        }
+
+        return responses;
+    }
+
+
+
+
+
+
+    public List<NotificationResponse>
+    getTeacherNotifications(Long teacherId) {
+
         List<NotificationUser> list =
-                notificationUserRepository.findByUserIdAndUserTypeAndIsArchivedFalse(studentId, "STUDENT");
+
+                notificationUserRepository
+                        .findByUserIdAndUserTypeAndIsArchivedFalse(
+                                teacherId,
+                                "TEACHER"
+                        );
 
         return list.stream().map(nu -> {
 
-            Notification n = notificationRepository
-                    .findById(nu.getNotificationId())
-                    .orElse(null);
+            Notification n =
+                    notificationRepository
+                            .findById(
+                                    nu.getNotificationId()
+                            )
+                            .orElse(null);
 
-            NotificationResponse res = new NotificationResponse();
-            res.setNotificationUserId(nu.getId());
-            res.setNotificationId(n.getId());
-            res.setTitle(n.getTitle());
-            res.setMessage(n.getMessage());
-            res.setSender(n.getSender());
-            res.setReadStatus(nu.isReadStatus());
-            res.setSentAt(n.getSentAt());
+            NotificationResponse res =
+                    new NotificationResponse();
+
+            if (n != null) {
+
+                res.setNotificationUserId(
+                        nu.getId()
+                );
+
+                res.setNotificationId(
+                        n.getId()
+                );
+
+                res.setTitle(
+                        n.getTitle()
+                );
+
+                res.setMessage(
+                        n.getMessage()
+                );
+
+                res.setSender(
+                        n.getSender()
+                );
+
+                res.setSenderType(
+                        n.getSenderType()
+                );
+
+                res.setReadStatus(
+                        nu.isReadStatus()
+                );
+
+                res.setSentAt(
+                        n.getSentAt()
+                );
+            }
 
             return res;
 
         }).toList();
+    }
+
+
+
+
+    public List<NotificationResponse>
+    getNotificationsByUserType(
+
+            Long userId,
+
+            String userType
+    ) {
+
+        List<NotificationUser> list =
+
+                notificationUserRepository
+                        .findByUserIdAndUserTypeAndIsArchivedFalse(
+
+                                userId,
+
+                                userType
+                        );
+
+        return list.stream().map(nu -> {
+
+            Notification n =
+                    notificationRepository
+                            .findById(
+                                    nu.getNotificationId()
+                            )
+                            .orElse(null);
+
+            NotificationResponse res =
+                    new NotificationResponse();
+
+            if (n != null) {
+
+                res.setNotificationUserId(
+                        nu.getId()
+                );
+
+                res.setNotificationId(
+                        n.getId()
+                );
+
+                res.setTitle(
+                        n.getTitle()
+                );
+
+                res.setMessage(
+                        n.getMessage()
+                );
+
+                res.setSender(
+                        n.getSender()
+                );
+
+                res.setSenderType(
+                        n.getSenderType()
+                );
+
+                res.setReadStatus(
+                        nu.isReadStatus()
+                );
+
+                res.setSentAt(
+                        n.getSentAt()
+                );
+            }
+
+            return res;
+
+        }).toList();
+    }
+
+
+
+    // =====================================
+// MY NOTIFICATIONS
+// =====================================
+
+    public List<Notification>
+    getMyNotifications(
+
+            Long senderId,
+
+            String senderType
+    ) {
+
+        return notificationRepository
+                .findBySenderIdAndSenderTypeOrderBySentAtDesc(
+
+                        senderId,
+
+                        senderType
+                );
+    }
+
+
+// =====================================
+// UPDATE NOTIFICATION
+// =====================================
+
+    public String updateNotification(
+
+            Long notificationId,
+
+            NotificationDTO dto
+    ) {
+
+        Notification n =
+                notificationRepository
+                        .findById(notificationId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Notification not found"
+                                )
+                        );
+
+        // SECURITY
+
+        if (
+                !n.getSenderId().equals(dto.getSenderId())
+
+                        ||
+
+                        !n.getSenderType().equals(dto.getSenderType())
+        ) {
+
+            throw new RuntimeException(
+                    "You can update only your notifications"
+            );
+        }
+
+        n.setTitle(dto.getTitle());
+
+        n.setSubject(dto.getSubject());
+
+        n.setMessage(dto.getMessage());
+
+        notificationRepository.save(n);
+
+        return "Notification updated";
+    }
+
+
+
+// =====================================
+// DELETE NOTIFICATION
+// =====================================
+
+    public String deleteNotification(
+
+            Long notificationId,
+
+            Long senderId,
+
+            String senderType
+    ) {
+
+        Notification n =
+                notificationRepository
+                        .findById(notificationId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Notification not found"
+                                )
+                        );
+
+        // SECURITY
+
+        if (
+                !n.getSenderId().equals(senderId)
+
+                        ||
+
+                        !n.getSenderType().equals(senderType)
+        ) {
+
+            throw new RuntimeException(
+                    "You can delete only your notifications"
+            );
+        }
+
+        notificationRepository.delete(n);
+
+        return "Notification deleted";
     }
 }

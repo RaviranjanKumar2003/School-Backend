@@ -16,8 +16,13 @@ public class Notification {
     private String title;
     private String subject;
     private String message;
+    private Long schoolId;
+
+    private Long classId;
 
     private String sender;
+    private Long senderId;
+    private String senderType;
 
     private LocalDateTime sentAt;
 
@@ -44,10 +49,42 @@ public class Notification {
         this.subject = dto.getSubject();
         this.message = dto.getMessage();
         this.sender = dto.getSender();
+        this.senderId = dto.getSenderId();
+        this.senderType=dto.getSenderType();
         this.recipientType = dto.getRecipientType();
         this.sentAt = LocalDateTime.now();
         this.readStatus = false;
         this.isArchived = false;
+        this.schoolId = dto.getSchoolId();
+        this.classId = dto.getClassId();
+    }
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
+    }
+
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 
     public Long getId() {
@@ -102,6 +139,13 @@ public class Notification {
         return student;
     }
 
+    public String getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(String senderType) {
+        this.senderType = senderType;
+    }
     public void setStudent(Student student) {
         this.student = student;
     }

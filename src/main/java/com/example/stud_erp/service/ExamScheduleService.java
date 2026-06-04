@@ -1,10 +1,7 @@
 package com.example.stud_erp.service;
 import com.example.stud_erp.entity.*;
 import com.example.stud_erp.enums.ExamType;
-import com.example.stud_erp.payload.ExamScheduleDTO;
-import com.example.stud_erp.payload.ExamStatusDTO;
-import com.example.stud_erp.payload.StudentExamAttendanceDTO;
-import com.example.stud_erp.payload.StudentExamDTO;
+import com.example.stud_erp.payload.*;
 import com.example.stud_erp.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,9 @@ public class ExamScheduleService {
 
     @Autowired
     private SubjectRepository subjectRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     // ✅ CREATE
@@ -164,6 +164,48 @@ public class ExamScheduleService {
             se.setSchoolId(saved.getSchoolId());
             se.setSchoolCode(saved.getSchoolCode());
             studentExamRepo.save(se);
+            NotificationDTO dto = new NotificationDTO();
+
+            dto.setTitle(
+                    "New Exam Scheduled"
+            );
+
+            dto.setSubject(
+                    req.getExamType() + " Exam"
+            );
+
+            dto.setMessage(
+                    req.getSubjectName()
+                            + " exam scheduled on "
+                            + req.getExamDate()
+            );
+
+            dto.setSender(
+                    teacher.getName()
+            );
+
+            dto.setSenderId(
+                    teacher.getId()
+            );
+
+            dto.setSenderType(
+                    "TEACHER"
+            );
+
+            dto.setRecipientType(
+                    "SINGLE_STUDENT"
+            );
+
+            dto.setStudentId(
+                    s.getId()
+            );
+
+            dto.setSchoolId(
+                    req.getSchoolId()
+            );
+
+            notificationService
+                    .sendNotification(dto);
         }
     }
 
@@ -287,6 +329,62 @@ public class ExamScheduleService {
         current.setMessage(req.getMessage());
 
         repo.save(current);
+
+        // =====================================
+// STUDENT NOTIFICATION
+// =====================================
+
+        List<StudentExam> studentExams =
+
+                studentExamRepo
+                        .findByExamScheduleId(
+                                current.getId()
+                        );
+
+        for (StudentExam se : studentExams) {
+
+            NotificationDTO dto = new NotificationDTO();
+
+            dto.setTitle(
+                    "Exam Updated"
+            );
+
+            dto.setSubject(
+                    current.getExamType() + " Exam"
+            );
+
+            dto.setMessage(
+                    current.getSubjectName()
+                            + " exam updated"
+            );
+
+            dto.setSender(
+                    current.getCreatedBy()
+            );
+
+            dto.setSenderId(
+                    current.getTeacherId()
+            );
+
+            dto.setSenderType(
+                    "TEACHER"
+            );
+
+            dto.setRecipientType(
+                    "SINGLE_STUDENT"
+            );
+
+            dto.setStudentId(
+                    se.getStudentId()
+            );
+
+            dto.setSchoolId(
+                    current.getSchoolId()
+            );
+
+            notificationService
+                    .sendNotification(dto);
+        }
     }
     // DELETE
     public void delete(Long id) {
@@ -417,6 +515,57 @@ public class ExamScheduleService {
         }
 
         studentExamRepo.saveAll(students);
+        // =====================================
+        // STUDENT NOTIFICATION
+        // =====================================
+
+        for (StudentExam se : students) {
+
+            NotificationDTO dto =
+                    new NotificationDTO();
+
+            dto.setTitle(
+                    "Exam Cancelled"
+            );
+
+            dto.setSubject(
+                    ex.getExamType() + " Exam"
+            );
+
+            dto.setMessage(
+                    ex.getSubjectName()
+                            + " exam cancelled"
+                            + " : "
+                            + reason
+            );
+
+            dto.setSender(
+                    ex.getCreatedBy()
+            );
+
+            dto.setSenderId(
+                    ex.getTeacherId()
+            );
+
+            dto.setSenderType(
+                    "TEACHER"
+            );
+
+            dto.setRecipientType(
+                    "SINGLE_STUDENT"
+            );
+
+            dto.setStudentId(
+                    se.getStudentId()
+            );
+
+            dto.setSchoolId(
+                    ex.getSchoolId()
+            );
+
+            notificationService
+                    .sendNotification(dto);
+        }
     }
 
 

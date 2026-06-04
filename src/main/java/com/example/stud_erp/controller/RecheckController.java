@@ -37,8 +37,13 @@ public class RecheckController {
         dto.setTitle("Recheck Request");
         dto.setMessage("Student requested recheck for subjects: "
                 + String.join(", ", request.getSubjects()));
-        dto.setRecipientType("ALL_TEACHERS");
-        dto.setSender("STUDENT");
+        dto.setRecipientType("ALL_HOD");
+        dto.setSender(saved.getStudentName());
+        dto.setSchoolId(saved.getSchoolId());
+
+        dto.setSenderId(saved.getStudentId());
+
+        dto.setSenderType("STUDENT");
 
         notificationService.sendNotification(dto);
 
@@ -57,8 +62,15 @@ public class RecheckController {
         dto.setMessage("Recheck approved for studentId: "
                 + updated.getStudentId()
                 + ", Subjects: " + String.join(", ", updated.getSubjects()));
-        dto.setRecipientType("ALL_TEACHERS");
-        dto.setSender("ADMIN");
+        dto.setRecipientType("SINGLE_TEACHER");
+        dto.setSender("HOD");
+        dto.setSenderId(0L);
+        dto.setTeacherId(updated.getProfessorId());
+        dto.setRecipientId(updated.getProfessorId());
+
+        dto.setSchoolId(updated.getSchoolId());
+
+        dto.setSenderType("HOD");
 
         notificationService.sendNotification(dto);
 
@@ -75,9 +87,15 @@ public class RecheckController {
         NotificationDTO dto = new NotificationDTO();
         dto.setTitle("Recheck Rejected");
         dto.setMessage("Your recheck request has been rejected");
-        dto.setRecipientType("INDIVIDUAL");
+        dto.setRecipientType("SINGLE_STUDENT");
         dto.setRecipientId(updated.getStudentId());
-        dto.setSender("ADMIN");
+        dto.setStudentId(updated.getStudentId());
+
+        dto.setSchoolId(updated.getSchoolId());
+
+        dto.setSenderType("HOD");
+        dto.setSender("HOD");
+        dto.setSenderId(0L);
 
         notificationService.sendNotification(dto);
 
@@ -106,13 +124,42 @@ public class RecheckController {
             @RequestParam String subject,
             @RequestParam int newMarks
     ) {
-
         RecheckRequest req = recheckService.getById(id);
 
-        resultService.updateMarks(req.getStudentId(), subject, newMarks);
-
+        resultService.updateMarks(req.getStudentId(), subject, req.getExamId(), newMarks);
         req.setStatus("COMPLETED");
+
         recheckService.save(req);
+
+        // 🔥 IMPORTANT DELAY
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        req = recheckService.getById(id);
+        NotificationDTO dto = new NotificationDTO();
+
+        dto.setTitle("Recheck Completed");
+
+        dto.setMessage(
+                "Marks updated for " + subject
+        );
+
+        dto.setRecipientType("SINGLE_STUDENT");
+
+        dto.setStudentId(req.getStudentId());
+        dto.setRecipientId(req.getStudentId());
+        dto.setSender("TEACHER");
+
+        dto.setSenderId(req.getProfessorId());
+
+        dto.setSenderType("TEACHER");
+
+        dto.setSchoolId(req.getSchoolId());
+
+        notificationService.sendNotification(dto);
 
         return "Recheck Completed ✅";
     }
@@ -137,6 +184,26 @@ public class RecheckController {
         req.setTeacherRemark(remark); // ✅ reason save
 
         recheckService.save(req);
+        NotificationDTO dto = new NotificationDTO();
+
+        dto.setTitle("Recheck Completed");
+
+        dto.setMessage("No marks changed");
+
+        dto.setRecipientType("SINGLE_STUDENT");
+
+        dto.setStudentId(req.getStudentId());
+        dto.setRecipientId(req.getStudentId());
+
+        dto.setSender("TEACHER");
+
+        dto.setSenderId(req.getProfessorId());
+
+        dto.setSenderType("TEACHER");
+
+        dto.setSchoolId(req.getSchoolId());
+
+        notificationService.sendNotification(dto);
 
         return "No Change Saved ✅";
     }

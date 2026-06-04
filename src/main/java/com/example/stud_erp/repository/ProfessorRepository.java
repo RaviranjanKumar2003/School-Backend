@@ -45,4 +45,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     // ================= LOGIN =================
 
     Optional<Professor> findByUsername(String username);
+
+    List<Professor> findBySchoolId(Long schoolId);
 }

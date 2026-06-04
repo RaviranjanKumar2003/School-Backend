@@ -44,6 +44,26 @@ public class ExamNotice {
 
     private Boolean teacherAssigned = true;
 
+    private Long senderId;
+
+    private String senderType;
+
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(String senderType) {
+        this.senderType = senderType;
+    }
+
     // ===== GETTERS & SETTERS =====
     public String getCreatedBy() {
         return createdBy;

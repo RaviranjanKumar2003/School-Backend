@@ -15,5 +15,5 @@ public interface NotificationUserRepository extends JpaRepository<NotificationUs
     NotificationUser findByNotificationIdAndUserIdAndUserType(Long notificationId, Long userId, String userType);
 
     List<NotificationUser> findByUserIdAndUserTypeAndIsArchivedTrue(Long userId, String userType);
-    
+
 }

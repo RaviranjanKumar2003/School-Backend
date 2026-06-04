@@ -1,5 +1,6 @@
 package com.example.stud_erp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,7 @@ public class ClassSectionEntity {
 
     @ManyToOne
     @JoinColumn(name = "class_id")
+    @JsonBackReference
     private ClassEntity classEntity;
 
 

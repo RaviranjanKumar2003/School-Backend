@@ -2,6 +2,7 @@ package com.example.stud_erp.service;
 
 import com.example.stud_erp.entity.*;
 import com.example.stud_erp.payload.ExamNoticeDTO;
+import com.example.stud_erp.payload.NotificationDTO;
 import com.example.stud_erp.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,28 @@ public class ExamNoticeService {
     @Autowired
     private ClassRepository classRepo;
 
-    public void createExamNotice(Long classId, String examType, String message, Long schoolId,String schoolCode,String createdBy) {
+    @Autowired
+    private NotificationService notificationService;
+
+    public void createExamNotice( ExamNotice req) {
+
+        Long classId =
+                req.getClassId();
+
+        String examType =
+                req.getExamType();
+
+        String message =
+                req.getMessage();
+
+        Long schoolId =
+                req.getSchoolId();
+
+        String schoolCode =
+                req.getSchoolCode();
+
+        String createdBy =
+                req.getCreatedBy();
 
         List<Subject> subjects =
                 subjectRepository
@@ -107,6 +129,47 @@ public class ExamNoticeService {
                 notice.setTeacherAssigned(true);
 
                 noticeRepo.save(notice);
+                NotificationDTO dto =
+                        new NotificationDTO();
+
+                dto.setTitle(
+                        "Exam Assigned"
+                );
+
+                dto.setSubject(
+                        examType + " Exam"
+                );
+
+                dto.setMessage(
+                        message
+                );
+
+                dto.setSender(
+                        createdBy
+                );
+
+                dto.setSenderId(
+                        req.getSenderId()
+                );
+
+                dto.setSenderType(
+                        req.getSenderType()
+                );
+
+                dto.setRecipientType(
+                        "SINGLE_TEACHER"
+                );
+
+                dto.setTeacherId(
+                        teacher.getId()
+                );
+
+                dto.setSchoolId(
+                        schoolId
+                );
+
+                notificationService
+                        .sendNotification(dto);
             }
         }
     }

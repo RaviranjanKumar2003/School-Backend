@@ -12,16 +12,22 @@ public class NotificationUser {
 
     private Long notificationId;
     private Long userId;
-    private String userType; // STUDENT / TEACHER
+    private String userType; // STUDENT / TEACHER / HOD / ADMIN
 
     private boolean readStatus = false;
     private boolean isArchived = false;
 
     // getters setters
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getNotificationId() { return notificationId; }
-    public void setNotificationId(Long notificationId) { this.notificationId = notificationId; }
+    public Long getNotificationId() {
+        return notificationId;
+    }
+    public void setNotificationId(Long notificationId) {
+        this.notificationId = notificationId;
+    }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }

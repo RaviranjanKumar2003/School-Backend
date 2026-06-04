@@ -1,6 +1,5 @@
 package com.example.stud_erp.payload;
 
-import com.example.stud_erp.entity.RecipientType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,13 +10,42 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationDTO {
+
     private String title;
+
     private String subject;
+
     private String message;
+
     private String sender;
-    private Long senderId;
-    private String recipientType;
+
     private Long recipientId;
+    private Long senderId;
+    private String senderType;
+
+    // 🔥 MULTI SCHOOL
+    private Long schoolId;
+
+    /*
+      ALL_STUDENTS
+      ALL_TEACHERS
+      ALL
+      SINGLE_STUDENT
+      SINGLE_TEACHER
+      CLASS_STUDENTS
+     */
+
+    private String recipientType;
+
+    // 🔥 SINGLE STUDENT
+    private Long studentId;
+
+    // 🔥 SINGLE TEACHER
+    private Long teacherId;
+
+    // 🔥 CLASS STUDENTS
+    private Long classId;
+
     private LocalDateTime sentAt;
 
     public String getTitle() {
@@ -26,6 +54,14 @@ public class NotificationDTO {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(String senderType) {
+        this.senderType = senderType;
     }
 
     public String getSubject() {
@@ -52,12 +88,28 @@ public class NotificationDTO {
         this.sender = sender;
     }
 
+    public Long getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(Long recipientId) {
+        this.recipientId = recipientId;
+    }
+
     public Long getSenderId() {
         return senderId;
     }
 
     public void setSenderId(Long senderId) {
         this.senderId = senderId;
+    }
+
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
     }
 
     public String getRecipientType() {
@@ -68,12 +120,28 @@ public class NotificationDTO {
         this.recipientType = recipientType;
     }
 
-    public Long getRecipientId() {
-        return recipientId;
+    public Long getStudentId() {
+        return studentId;
     }
 
-    public void setRecipientId(Long recipientId) {
-        this.recipientId = recipientId;
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
     }
 
     public LocalDateTime getSentAt() {

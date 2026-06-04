@@ -178,7 +178,7 @@ public class ResultService {
     }
 
     // ✅ UPDATE MARKS (Recheck)
-    public Result updateMarks(Long studentId, String subject, int newMarks) {
+    public Result updateMarks(Long studentId, String subject, Long examId, int newMarks) {
 
         Result result = resultRepository
                 .findByStudentIdAndSubject(studentId, subject)

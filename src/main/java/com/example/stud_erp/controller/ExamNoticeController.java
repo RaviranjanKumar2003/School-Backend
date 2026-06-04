@@ -21,14 +21,7 @@ public class ExamNoticeController {
     @PostMapping("/create")
     public String create(@RequestBody ExamNotice req) {
 
-        service.createExamNotice(
-                req.getClassId(),
-                req.getExamType(),
-                req.getMessage(),
-                req.getSchoolId(),
-                req.getSchoolCode(),
-                req.getCreatedBy()
-        );
+        service.createExamNotice(req);
 
         return "Exam Notice Created ✅";
     }

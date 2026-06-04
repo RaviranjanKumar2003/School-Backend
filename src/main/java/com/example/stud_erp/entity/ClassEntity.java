@@ -30,6 +30,7 @@ public class ClassEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @JsonManagedReference
     private List<ClassSectionEntity> sections;
 
 // GETTERS & SETTERS

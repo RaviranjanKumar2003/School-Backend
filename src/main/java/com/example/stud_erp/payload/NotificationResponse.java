@@ -9,9 +9,17 @@ public class NotificationResponse {
     private String title;
     private String message;
     private String sender;
+    private String senderType;
     private boolean readStatus;
     private LocalDateTime sentAt;
 
+    public String getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(String senderType) {
+        this.senderType = senderType;
+    }
 
     public Long getNotificationUserId() {
         return notificationUserId;

@@ -14,4 +14,6 @@ public interface HODRepository extends JpaRepository<HOD, Long> {
     HOD findByEmail(String email);
 
     List<HOD> findBySchoolId(Long schoolId);
+
+    List<HOD> findBySchool_Id(Long schoolId);
 }
