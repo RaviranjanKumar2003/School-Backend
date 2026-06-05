@@ -7,4 +7,8 @@ public interface SchoolRepository extends JpaRepository<School, Long> {
 
     School findBySlug(String slug);
 
+    School findBySchoolCode(
+            String schoolCode
+    );
+
 }

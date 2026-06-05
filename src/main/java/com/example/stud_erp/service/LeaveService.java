@@ -34,6 +34,9 @@ public class LeaveService {
     @Autowired
     private SchoolAdminRepository schoolAdminRepository;
 
+    @Autowired
+    private ReceptionistRepository receptionistRepository;
+
     // =====================================================
     // APPLY LEAVE
     // =====================================================
@@ -196,6 +199,21 @@ public class LeaveService {
             );
         }
 
+        else if ("RECEPTIONIST".equals(dto.getSenderType())) {
+
+            Receptionist receptionist =
+                    receptionistRepository
+                            .findById(dto.getSenderId())
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Receptionist not found"
+                                    ));
+
+            leave.setSchoolId(
+                    receptionist.getSchool().getId()
+            );
+        }
+
         // =====================================================
         // ADMIN FLOW
         // =====================================================
@@ -213,8 +231,8 @@ public class LeaveService {
                 leaveRepository.save(leave);
 
         // =====================================================
-// STUDENT -> TEACHER
-// =====================================================
+        // STUDENT -> TEACHER
+        // =====================================================
 
         if (
 
@@ -246,9 +264,9 @@ public class LeaveService {
 
 
 
-// =====================================================
-// STUDENT -> HOD
-// =====================================================
+        // =====================================================
+        // STUDENT -> HOD
+        // =====================================================
 
         else if (
 
@@ -292,9 +310,9 @@ public class LeaveService {
 
 
 
-// =====================================================
-// TEACHER -> HOD
-// =====================================================
+        // =====================================================
+        // TEACHER -> HOD
+        // =====================================================
 
         else if (
 
@@ -338,9 +356,9 @@ public class LeaveService {
 
 
 
-// =====================================================
-// TEACHER -> ADMIN
-// =====================================================
+        // =====================================================
+        // TEACHER -> ADMIN
+        // =====================================================
 
         else if (
 
@@ -412,6 +430,44 @@ public class LeaveService {
                         "HOD Leave Request",
 
                         "HOD applied for leave",
+
+                        "SINGLE_ADMIN",
+
+                        admin.getId()
+                );
+            }
+        }
+
+        else if (
+
+                "RECEPTIONIST".equals(
+                        savedLeave.getSenderType()
+                )
+
+                        &&
+
+                        "ADMIN".equals(
+                                savedLeave.getSendTo()
+                        )
+
+        ) {
+
+            List<SchoolAdmin> admins =
+
+                    schoolAdminRepository
+                            .findBySchoolId(
+                                    savedLeave.getSchoolId()
+                            );
+
+            for (SchoolAdmin admin : admins) {
+
+                sendLeaveNotification(
+
+                        savedLeave,
+
+                        "Receptionist Leave Request",
+
+                        "Receptionist applied for leave",
 
                         "SINGLE_ADMIN",
 
@@ -544,9 +600,9 @@ public class LeaveService {
             );
         }
 
-// =====================================
-// HOD
-// =====================================
+        // =====================================
+        // HOD
+        // =====================================
 
         else if ("HOD".equals(
                 leave.getSenderType()
@@ -561,6 +617,24 @@ public class LeaveService {
                     "Your leave approved",
 
                     "SINGLE_HOD",
+
+                    leave.getSenderId()
+            );
+        }
+
+        else if ("RECEPTIONIST".equals(
+                leave.getSenderType()
+        )) {
+
+            sendLeaveNotification(
+
+                    leave,
+
+                    "Leave Approved",
+
+                    "Your leave approved",
+
+                    "SINGLE_RECEPTIONIST",
 
                     leave.getSenderId()
             );
@@ -661,6 +735,25 @@ public class LeaveService {
                     leave.getSenderId()
             );
         }
+
+
+        else if ("RECEPTIONIST".equals(
+                leave.getSenderType()
+        )) {
+
+            sendLeaveNotification(
+
+                    leave,
+
+                    "Leave Rejected",
+
+                    responseMessage,
+
+                    "SINGLE_RECEPTIONIST",
+
+                    leave.getSenderId()
+            );
+        }
     }
 
 
@@ -701,7 +794,7 @@ public class LeaveService {
 
                         schoolId,
 
-                        List.of("HOD", "TEACHER")
+                        List.of("HOD", "TEACHER","RECEPTIONIST")
                 );
     }
 

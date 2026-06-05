@@ -1,4 +1,3 @@
-
 package com.example.stud_erp.service;
 
 import com.example.stud_erp.entity.*;
@@ -357,13 +356,72 @@ public class NotificationService {
                 );
 
                 return "Sent to Admin";
+
+
+            case "SUPER_ADMIN":
+                Notification superAdminNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser superAdminUser =
+                        new NotificationUser();
+
+                superAdminUser.setNotificationId(
+                        superAdminNotification.getId()
+                );
+
+                superAdminUser.setUserId(
+                        1L
+                );
+
+                superAdminUser.setUserType(
+                        "SUPER_ADMIN"
+                );
+
+                notificationUserRepository.save(
+                        superAdminUser
+                );
+
+                return "Sent to Super Admin";
+
+
+
+            case "SINGLE_RECEPTIONIST":
+
+                Notification receptionistNotification =
+                        notificationRepository.save(
+                                new Notification(dto)
+                        );
+
+                NotificationUser receptionistUser =
+                        new NotificationUser();
+
+                receptionistUser.setNotificationId(
+                        receptionistNotification.getId()
+                );
+
+                receptionistUser.setUserId(
+                        dto.getRecipientId()
+                );
+
+                receptionistUser.setUserType(
+                        "RECEPTIONIST"
+                );
+
+                notificationUserRepository.save(
+                        receptionistUser
+                );
+
+                return "Sent to Receptionist";
+
+
             default:
                 throw new RuntimeException(
                         "Invalid recipient type"
                 );
         }
     }
-
 
     public List<NotificationResponse> getArchivedNotifications(Long studentId) {
 

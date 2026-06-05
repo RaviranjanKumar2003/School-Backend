@@ -1,4 +1,3 @@
-
 package com.example.stud_erp.controller;
 
 import com.example.stud_erp.entity.Notification;
@@ -113,6 +112,21 @@ public class NotificationController {
     }
 
 
+
+    @GetMapping("/super-admin/{id}")
+    public List<NotificationResponse>
+    getSuperAdminNotifications(
+
+            @PathVariable Long id
+    ) {
+
+        return notificationService
+                .getNotificationsByUserType(
+                        id,
+                        "SUPER_ADMIN"
+                );
+    }
+
 // =====================================
 // ADMIN NOTIFICATIONS
 // =====================================
@@ -208,6 +222,20 @@ public class NotificationController {
                         senderId,
 
                         senderType
+                );
+    }
+
+
+    @GetMapping("/receptionist/{id}")
+    public List<NotificationResponse>
+    getReceptionistNotifications(
+            @PathVariable Long id
+    ) {
+
+        return notificationService
+                .getNotificationsByUserType(
+                        id,
+                        "RECEPTIONIST"
                 );
     }
 }
